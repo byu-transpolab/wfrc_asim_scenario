@@ -3,6 +3,8 @@
 .RData
 .Ruserdata
 
-**/data
-**/output
-**/output_all
+AS_package/
+scenarios/
+data/
+output/
+output_all/
