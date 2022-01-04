@@ -71,11 +71,11 @@ skims_file: skims_wfrc.omx
 #input_store: ../output/input_data.h5
 
 # number of households to simulate
-households_sample_size: 250000
+households_sample_size: 250
 # simulate all households
 # households_sample_size: 0
 
-multiprocess: False
+multiprocess: True
 strict: False   # this is a warning filter
 mem_tick: 30  # I think its a helper for tracking memory usage.
 
@@ -85,7 +85,7 @@ multiprocess_steps:
     begin: initialize_landuse
   - name: mp_households
     begin: school_location
-    num_processes: 2
+    num_processes: 8
   #  chunk_size: 3000
     # stagger: 0
     slice:
@@ -165,6 +165,7 @@ models:
   - trip_scheduling
   - trip_mode_choice
   ### mp_summarize step
+  - generate_beam_plans
   - write_data_dictionary
   - track_skim_usage
   - write_trip_matrices
