@@ -1,3 +1,6 @@
+#WFRC ActivitySim Scenario
+This is a repo of the configs/settings/etc. for the wfrc asim scenario. The actual data (skims, population, etc.) is very large, so is not included in this repo. It is currently hosted on Box. Below is the original README.
+
 <!-- ReadME to instruct how to use the input files on box
 my folder will eventually match -->
 
