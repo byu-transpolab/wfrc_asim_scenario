@@ -8,8 +8,9 @@ sf <- read_sf(
   select(TAZID, geometry)
 land_use <- read_csv("data/land_use_taz.csv")
 
-sf_tibble <- sf %>% as_tibble()
+sf_geom <- sf %>% as_tibble() %>% 
+  mutate(geometry = sf_convert(sf['geometry']))
 
 new_land_use <- left_join(land_use, sf_geom, by = c('ZONE' = 'TAZID'))
 
-write_csv(new_land_use, "land_use.csv")
+write_csv(new_land_use, "data/land_use_taz_geom.csv")
