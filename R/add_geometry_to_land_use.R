@@ -14,3 +14,4 @@ sf_geom <- sf %>% as_tibble() %>%
 new_land_use <- left_join(land_use, sf_geom, by = c('ZONE' = 'TAZID'))
 
 write_csv(new_land_use, "data/land_use_taz_geom.csv")
+write_csv(new_land_use, "land_use_taz_geom.csv")
