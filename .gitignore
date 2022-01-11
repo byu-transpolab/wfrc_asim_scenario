@@ -11,3 +11,5 @@ output_all/
 
 data.zip
 scenarios.zip
+
+__pycache__/

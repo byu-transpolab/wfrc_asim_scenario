@@ -87,14 +87,14 @@ multiprocess_steps:
   - name: mp_households
     begin: school_location
     num_processes: 16
-  #  chunk_size: 3000
-    # stagger: 0
     slice:
       tables:
         - households
         - persons
   - name: mp_summarize
     begin: write_data_dictionary
+  - name: mp_beam
+    begin: generate_beam_plans
 
 
 chunk_size: 0
@@ -170,6 +170,7 @@ models:
   - track_skim_usage
   - write_trip_matrices
   - write_tables
+  ### mp_beam step
   - generate_beam_plans
 
 output_tables:
