@@ -30,7 +30,7 @@ input_table_list:
       - pstudent
       - ptype
   - tablename: land_use
-    filename: land_use_taz.csv
+    filename: land_use_taz_geom.csv
     index_col: TAZ
     rename_columns:
       ZONE: TAZ
