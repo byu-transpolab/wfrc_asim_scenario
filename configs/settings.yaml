@@ -60,6 +60,7 @@ input_table_list:
       - COLLPTE
       - TOPOLOGY
       - TERMINAL
+      - geometry
 
 
 # input skims
