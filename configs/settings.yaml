@@ -92,8 +92,6 @@ multiprocess_steps:
         - households
         - persons
   - name: mp_summarize
-    begin: write_data_dictionary
-  - name: mp_beam
     begin: generate_beam_plans
 
 
@@ -166,26 +164,28 @@ models:
   - trip_scheduling
   - trip_mode_choice
   ### mp_summarize step
+  - generate_beam_plans
   - write_data_dictionary
   - track_skim_usage
   - write_trip_matrices
   - write_tables
-  ### mp_beam step
-  - generate_beam_plans
+
 
 output_tables:
-  h5_store: True
+  h5_store: False
   action: include
   prefix: final_
   tables:
     - checkpoints
     - accessibility
+    - blocks
     - land_use
     - households
     - persons
     - tours
     - trips
     - joint_tour_participants
+    - plans
 
 # area_types less than this are considered urban
 urban_threshold: 4
