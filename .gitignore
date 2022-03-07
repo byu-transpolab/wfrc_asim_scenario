@@ -13,3 +13,4 @@ data.zip
 scenarios.zip
 
 __pycache__/
+_targets/
