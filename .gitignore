@@ -6,6 +6,7 @@
 AS_package/
 scenarios/
 data/
+data_popsim/
 output/
 output_all/
 

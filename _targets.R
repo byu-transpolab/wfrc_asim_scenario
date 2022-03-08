@@ -60,7 +60,7 @@ list(
   tar_target(pp_seed_file, "inputs/psam_p49.csv.zip", format = "file"),
   tar_target(seed, make_seed(hh_seed_file, pp_seed_file, crosswalk)),
   
-  tar_target(write, write_files(meta, tract_controls, taz_control, seed, crosswalk, path = "data")),
+  tar_target(write, write_files(meta, tract_controls, taz_control, seed, crosswalk, path = "data_popsim")),
   
   
   # Build land use dataset =================================
