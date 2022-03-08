@@ -1,3 +1,15 @@
+#' Run populationsim
+#' 
+run_populationsim <- function(write_result, data_path, out_path){
+  # TODO: I couldn't figure out a way to run the python scripts directly from targets.
+  # We'll have to work on this later.
+  message("You are ready to run populationsim.",  
+          "To do this, run the following shell commands:\n \t", 
+          "conda activate popsim\n \t",
+          "python py/runpopsim.py --config configs_popsim --data ", data_path,  " --output ", out_path)
+}
+
+
 #' Get a crosswalk between PUMA's and tracts
 #' 
 #' @param statefips Which state are we looking for?
