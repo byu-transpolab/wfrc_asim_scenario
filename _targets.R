@@ -10,6 +10,7 @@ library(targets)
 # This is where you write source(\"R/functions.R\")
 # if you keep your functions in external scripts.
 source("R/populationsim_setup.R")
+source("R/network_setup.R")
 
 # Set target-specific options such as packages.
 tar_option_set(packages = c("tidyverse", "sf", "tigris", "tidycensus"))
@@ -60,16 +61,27 @@ list(
   tar_target(pp_seed_file, "inputs/psam_p49.csv.zip", format = "file"),
   tar_target(seed, make_seed(hh_seed_file, pp_seed_file, crosswalk)),
   
-  tar_target(write, write_files(meta, tract_controls, taz_control, seed, 
+  tar_target(write_popsim, write_files(meta, tract_controls, taz_control, seed, 
                                 crosswalk, path = "data_popsim")),
   
-  tar_target(popsim_success, run_populationsim(write, "data_popsim", "output_popsim")),
+  tar_target(popsim_success, run_populationsim(write_popsim, "data_popsim", "output_popsim")),
   
   
   # Build land use dataset =================================
   #tar_target(land_use, build_land_use()),
   #tar_target(land_use_file, write_land_use(land_use), format = "file"),
   
+  
+  
+  # Build network ===========================================
+  tar_target(link_file, "inputs/wfrc_links.dbf", format = "file"),
+  tar_target(node_file, "inputs/wfrc_nodes.dbf", format = "file"),
+  tar_target(network, read_wfrcmag(node_file, link_file, 32612)),
+  tar_target(write_net, write_linknodes(network, "data/wfrc_network")),
+  
+  
+  # Build ActivitySim Populaiton ===========================
+  # This is basically just the populationsim outputs, but 
   
   tar_target(dummy, message("Done"))
   
