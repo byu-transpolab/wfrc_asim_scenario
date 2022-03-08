@@ -1,3 +1,44 @@
+#' Make MATSim network
+#'
+#'
+#'
+make_matsim_network <- function(path, matsim_lib){
+  
+  system2("java", "--version")
+  r <- system2("java", args = c(
+    str_c('-cp ', matsim_lib, '', sep = '"'), 
+    "org.matsim.project.LinkTablesReader",
+    file.path(path, "nodes.csv"),
+    file.path(path, "links.csv"),
+    file.path(path, "."),
+    "EPSG:26912"))
+  
+  if(r != 0){
+    stop("MATsim network converter failed to run")
+  } else {
+    message("Converted network to matsim")
+    file.path(path, "highway_network.xml.gz")
+  }
+  
+}
+
+
+get_matsim_lib <- function(matsim_lib){
+  
+  zipfile <- str_c(matsim_lib, ".zip", sep = "")
+  if(!file.exists(matsim_lib)){
+    dir.create("lib")
+    download.file("https://byu.box.com/shared/static/rvgbo8zvpqry9suovkpguhuq6wk1omcc.zip", 
+                  destfile = zipfile)
+    unzip(zipfile, exdir = "lib")
+  } else {
+    message("Matsim library already present")
+  }
+  return(matsim_lib)
+}
+
+
+
 #' Read dbf files from the WFRC / MAG TDM Network
 #' 
 #' @param node_file Path to a dbf node file exported from CUBE
@@ -42,25 +83,25 @@ read_wfrcmag <- function(node_file, link_file, crs = 32612){
   
   # turn into sf
   my_nodes <- nodes %>%
-    dplyr::select( n = N,  x = X, y = Y ) %>%
+    dplyr::select( id = N,  x = X, y = Y ) %>%
     sf::st_as_sf(coords = c('x', 'y'), crs = crs)
   
   # get centroids as separate file
   taz_ids <- unique(nodes$TAZID)
   
   centroids <- my_nodes %>%
-    dplyr::filter(n %in% taz_ids)
+    dplyr::filter(id %in% taz_ids)
   
   # Append node coords to links ====================
   link_geom <- bind_rows(
     my_links %>%
-      transmute(link_id, end = 1, n = a) %>%
+      transmute(link_id, end = 1, id = a) %>%
       left_join(my_nodes),
     my_links %>%
-      transmute(link_id, end = 2, n = b) %>%
+      transmute(link_id, end = 2, id = b) %>%
       left_join(my_nodes)
   )%>%
-    select(-n) %>%
+    select(-id) %>%
     st_as_sf(crs = crs) %>%
     group_by(link_id) %>%
     arrange(end, .by_group = TRUE) %>%
@@ -98,7 +139,7 @@ read_wfrcmag <- function(node_file, link_file, crs = 32612){
 write_linknodes <- function(linknodeset, folder){
   
   # check if folder exists
-  if(!dir.exists(folder)) dir.create(folder)
+  if(!dir.exists(folder)) dir.create(folder, recursive = TRUE)
   
   # write links as a geojson for mapping
   sf::st_write(linknodeset$links, file.path(folder, "network.geojson"), 
