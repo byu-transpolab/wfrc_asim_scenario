@@ -2,7 +2,7 @@
 #'
 #'
 #'
-make_matsim_network <- function(path, matsim_lib){
+make_matsim_network <- function(path, matsim_lib, write_net){
   
   system2("java", "--version")
   r <- system2("java", args = c(
