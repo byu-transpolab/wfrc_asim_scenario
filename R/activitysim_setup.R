@@ -44,9 +44,45 @@ make_land_use <- function(se, perdata, hhdata, urbanization, buildings, topo, sc
     left_join(topo, by = "zone_id") %>%
     left_join(schools, by = "zone_id") %>%
     left_join(taz, by = c("zone_id" = "TAZ")) %>%
+    # relocate columns for my own sanity
+    transmute(
+      zone_id,
+      TOTHH, HHPOP, TOTPOP,
+      EMPRES, SFDU, MFDU, HHINCQ1, HHINCQ2, HHINCQ3, HHINCQ4, 
+      TOTACRE, RESACRE, CIACRE, SHPOP62P,
+      TOTEMP, AGE0004, AGE0519, AGE2044, AGE4564, AGE65P, RETEMPN, FPSEMPN, HEREMPN,
+      OTHEMPN, AGREMPN, MWTEMPN, PRKCST, OPRKCST, area_type, HSENROLL, COLLFTE,
+      COLLPTE, TOPOLOGY, TERMINAL, gqpop = 0, geometry
+    )  %>%
     mutate(
-      gqpop = TOTPOP - HHPOP
+      across(c(TOTHH:HHINCQ4, SHPOP62P:MWTEMPN, HSENROLL, COLLFTE, COLLPTE), na_int)
     )
+    
+}
+
+#' Turn NA values to zeros, make integer
+#' 
+#' @param x variable
+#'
+na_int <- function(x){
+  ifelse(is.na(x), 0, as.integer(x))
+}
+
+#' Write out land use csv file
+#' 
+#' @param land_use
+#' @param file
+#' 
+#' @details converts the geometry sf column to WKT geometry 
+#' required by activitysim's output file writer.
+#' 
+write_land_use <- function(land_use, file){
+  
+  land_use %>%
+    mutate(geometry = st_as_text(geometry)) %>% 
+    write_csv(file)
+  
+  file
 }
 
 
@@ -78,13 +114,20 @@ read_sedata <- function(se_wfrc, se_boxelder){
   
   bind_rows(boxelder, wfrc) %>%
     mutate(zone_id = as.character(zone_id)) %>%
-    mutate(
+    transmute(
+      zone_id,
+      TOTPOP,
+      TOTEMP,
       RETEMPN = RETL,
       FPSEMPN = OFFI,
       HEREMPN = HLTH + GVED + FOOD,
       OTHEMPN = OTHR + HBJ + FM_CONS,
       AGREMPN = FM_AGRI + FM_MING,
       MWTEMPN = MANU + WSLE,
+      HSENROLL,
+    ) %>%
+    mutate(
+      across(-zone_id, na_int)
     )
 }
 
@@ -108,6 +151,7 @@ read_perdata <- function(popsim_outputs, popsim_success){
       EMPRES = ifelse(COW %in% 1:9, 1, 0)
     ) %>%
     mutate(
+      HHPOP = 1,
       AGE = ifelse(AGEP %in% 0:4, 1, ifelse(AGEP %in% 5:19,2,
                                             ifelse(AGEP %in% 20:44, 3, ifelse(AGEP %in% 45:64, 4, 5)))),
       AGE2 = ifelse(AGEP >= 62, 1, 0),
@@ -125,7 +169,7 @@ read_perdata <- function(popsim_outputs, popsim_success){
     summarise(EMPRES = sum(EMPRES))
   
   ages <- pd %>%
-    select(zone_id, AGE0004, AGE0519, AGE2044, AGE4564, AGE65P, AGE62P) %>%
+    select(zone_id, HHPOP, AGE0004, AGE0519, AGE2044, AGE4564, AGE65P, AGE62P) %>%
     group_by(zone_id) %>%
     summarize_all("sum") %>%
     mutate(
@@ -133,7 +177,8 @@ read_perdata <- function(popsim_outputs, popsim_success){
     )
   
   
-  left_join(emps, ages, by = "zone_id")
+  left_join(emps, ages, by = "zone_id") %>%
+    mutate(across(-zone_id, na_int))
 }
 
 
@@ -152,6 +197,7 @@ read_hhdata <- function(popsim_outputs, popsim_success){
   read_csv(file.path(popsim_outputs, "synthetic_households.csv")) %>%
     mutate(
       zone_id = as.character(TAZ),
+      TOTHH = 1,
       inc = HHINCADJ/(10^6),
       money = ifelse(inc < 30000, 1, ifelse(inc >= 30000 & inc < 60000, 2, 
                                             ifelse(inc >= 60000 & inc < 100000, 3, 4))),
@@ -160,11 +206,13 @@ read_hhdata <- function(popsim_outputs, popsim_success){
       HHINCQ3 = ifelse(money == 3, 1, 0),
       HHINCQ4 = ifelse(money == 4, 1, 0)
     ) %>%
-    select(zone_id, HHINCQ1, HHINCQ2, HHINCQ3, HHINCQ4) %>%
+    select(zone_id, TOTHH, HHINCQ1, HHINCQ2, HHINCQ3, HHINCQ4) %>%
     
     #group the data by ZONE and sum all the values to get the total counts for each ZONE
     group_by(zone_id) %>%
-    summarize_all("sum")
+    summarize_all("sum") %>%
+    mutate(across(-zone_id, na_int))
+  
   
 }
 
@@ -192,11 +240,18 @@ make_buildings <- function(buildfile, parcelsfile){
     mutate(
       zone_id = as.character(zone_id),
       SFDU = ifelse(building_type_id == 1, residential_units, 0),
-      MFDU = ifelse(building_type_id == 2, residential_units, 0)
+      MFDU = ifelse(building_type_id == 2, residential_units, 0),
+      RESACRE = ifelse(building_type_id == 1, parcel_acres, 
+                       ifelse(building_type_id == 2, parcel_acres, 0)),
+      CIACRE = ifelse(building_type_id == 3, parcel_acres, 
+                      ifelse(building_type_id == 4, parcel_acres, 
+                             ifelse(building_type_id == 5, parcel_acres, 0)))
     ) %>% 
-    select(zone_id, SFDU, MFDU) %>%
+    select(zone_id, SFDU, MFDU, RESACRE, CIACRE) %>%
     group_by(zone_id) %>%
-    summarize_all("sum")
+    summarize_all("sum") %>%
+    mutate( across(c(SFDU, MFDU), na_int) )
+  
 }
 
 #' Make topography dataset
@@ -270,10 +325,9 @@ make_schools <- function(schoolfile){
     mutate(
       COLLFTE = ifelse(EDTYPE == "Higher Education", ENROLL_FT, 0),
       COLLPTE = ifelse(EDTYPE == "Higher Education", ENROLL_PT, 0),
-      COLLFTE = ifelse(is.na(COLLFTE), 0, COLLFTE),
-      COLLPTE = ifelse(is.na(COLLPTE), 0, COLLPTE),
     ) %>%
-    select(zone_id, COLLFTE, COLLPTE) 
+    select(zone_id, COLLFTE, COLLPTE) %>%
+    mutate( across(c(COLLFTE, COLLPTE), na_int) )
   
   colleges[!duplicated(colleges$zone_id), ]
 }

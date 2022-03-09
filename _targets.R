@@ -13,6 +13,10 @@ source("R/populationsim_setup.R")
 source("R/network_setup.R")
 source("R/activitysim_setup.R")
 
+
+# debugging
+tar_option_set(debug = "land_use")
+
 # Set target-specific options such as packages.
 tar_option_set(packages = c("tidyverse", "sf", "tigris", "tidycensus"))
 
@@ -87,8 +91,8 @@ list(
   tar_target(schools, make_schools(schoolfile)),
   tar_target(topo, make_topo(topofile)), 
   tar_target(land_use, make_land_use(se, perdata, hhdata, urbanization, buildings, 
-                                     topo, schools, taz_geo)),
-  tar_target(land_use_file, write_land_use(land_use), format = "file"),
+                                     topo, schools, taz)),
+  tar_target(land_use_file, write_land_use(land_use, "data/land_use.csv"), format = "file"),
   
   
   
