@@ -11,6 +11,7 @@ library(targets)
 # if you keep your functions in external scripts.
 source("R/populationsim_setup.R")
 source("R/network_setup.R")
+source("R/activitysim_setup.R")
 
 # Set target-specific options such as packages.
 tar_option_set(packages = c("tidyverse", "sf", "tigris", "tidycensus"))
@@ -71,8 +72,23 @@ list(
   
   
   # Build land use dataset =================================
-  #tar_target(land_use, build_land_use()),
-  #tar_target(land_use_file, write_land_use(land_use), format = "file"),
+  tar_target(se_boxelder, "inputs/SE_Box_Elder_2018.csv", format = "file"),
+  tar_target(se_wfrc,     "inputs/SE_WF_2018.csv", format = "file"),
+  tar_target(se, read_sedata(se_wfrc, se_boxelder)),
+  tar_target(perdata, read_perdata(popsim_outputs, popsim_success)),
+  tar_target(hhdata,  read_hhdata(popsim_outputs, popsim_success)),
+  tar_target(urbanfile, "inputs/other/urbanization.csv", format = "file"),
+  tar_target(urbanization, read_urbanization(urbanfile)),
+  tar_target(buildfile, "inputs/other/buildings.csv", format = "file" ),
+  tar_target(parcelsfile, "inputs/other/parcels.csv", format = "file" ),
+  tar_target(buildings, make_buildings(buildfile, parcelsfile)),
+  tar_target(topofile, "inputs/other/topography.csv", format = "file"),
+  tar_target(schoolfile, "inputs/other/schools.csv", format = "file"),
+  tar_target(schools, make_schools(schoolfile)),
+  tar_target(topo, make_topo(topofile)), 
+  tar_target(land_use, make_land_use(se, perdata, hhdata, urbanization, buildings, 
+                                     topo, schools, taz_geo)),
+  tar_target(land_use_file, write_land_use(land_use), format = "file"),
   
   
   
