@@ -30,15 +30,11 @@ input_table_list:
       - pstudent
       - ptype
   - tablename: land_use
-    filename: land_use_taz_geom.csv
+    filename: land_use.csv
     index_col: TAZ
     rename_columns:
-      ZONE: TAZ
-      COUNTY: county_id
+      ZONE: zone_id
     keep_columns:
-      - DISTRICT
-      - SD
-      - county_id
       - TOTHH
       - TOTPOP
       - TOTACRE
