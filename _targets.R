@@ -15,6 +15,10 @@ source("R/network_setup.R")
 # Set target-specific options such as packages.
 tar_option_set(packages = c("tidyverse", "sf", "tigris", "tidycensus"))
 
+
+popsim_outputs <- "output_popsim"
+
+
 # End this file with a list of target objects.
 list(
   
@@ -63,8 +67,7 @@ list(
   
   tar_target(write_popsim, write_files(meta, tract_controls, taz_control, seed, 
                                 crosswalk, path = "data_popsim")),
-  
-  tar_target(popsim_success, run_populationsim(write_popsim, "data_popsim", "output_popsim")),
+  tar_target(popsim_success, run_populationsim(write_popsim, "data_popsim", popsim_outputs)),
   
   
   # Build land use dataset =================================
