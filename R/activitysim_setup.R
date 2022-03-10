@@ -362,7 +362,16 @@ move_population <- function(popsim_outputs, addressfile, taz, activitysim_inputs
   
   # copy person file from popsim output to activitysim input =========
   perfile <- file.path(popsim_outputs, "synthetic_persons.csv")
-  copy_result <- file.copy(perfile, file.path(activitysim_inputs, "synthetic_persons.csv"))
+  persons <- read_csv(perfile) 
+  
+  # determine how many digits we need for houseid
+  digits_hh <- nchar(max(persons$household_id))
+  
+  persons %>%
+    mutate(person_id = str_c(
+      str_pad(household_id, digits_hh, "left", pad = "0"),
+      str_pad(per_num, 2, "left", pad = "0"), sep = "")) %>%
+    write_csv(file.path(activitysim_inputs, "synthetic_persons.csv"))
   
   # read households file and append random coordinate =================
   hhfile <- file.path(popsim_outputs, "synthetic_households.csv")
