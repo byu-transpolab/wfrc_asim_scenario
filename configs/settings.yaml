@@ -31,9 +31,9 @@ input_table_list:
       - ptype
   - tablename: land_use
     filename: land_use_taz_geom.csv
-    index_col: TAZ
+    index_col: zone_id
     rename_columns:
-      ZONE: TAZ
+      ZONE: zone_id
       COUNTY: county_id
     keep_columns:
       - DISTRICT
