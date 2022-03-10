@@ -438,7 +438,7 @@ move_population <- function(popsim_outputs, addressfile, taz, activitysim_inputs
   
   # output checks
   #  are there households where the TAZ and TAZ of the random point are different?
-  if(nrow(filter(out_hh, TAZ != ptTAZ))) {
+  if(nrow(filter(out_hh, TAZ != ptTAZ)) !=0 ) {
     stop("Some points have been assigned a home address outside their TAZ")
   } 
   
