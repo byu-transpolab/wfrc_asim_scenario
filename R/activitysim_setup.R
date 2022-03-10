@@ -119,6 +119,18 @@ read_sedata <- function(se_wfrc, se_boxelder){
       zone_id,
       TOTPOP,
       TOTEMP,
+      # RETL,retail jobs
+      # FOOD,food/accommodation jobs
+      # MANU,manufacturing jobs
+      # WSLE,wholesale/transportation jobs
+      # OFFI,office jobs
+      # GVED,government/education jobs
+      # HLTH,health care jobs
+      # OTHR,other jobs
+      # FM_AGRI,agriculture jobs
+      # FM_MING,mining jobs
+      # FM_CONS,construction jobs
+      # HBJ,home-based jobs
       RETEMPN = RETL,
       FPSEMPN = OFFI,
       HEREMPN = HLTH + GVED + FOOD,
