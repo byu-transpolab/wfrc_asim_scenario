@@ -112,9 +112,10 @@ list(
   tar_target(activitysim_population, move_population(popsim_outputs, addressfile, taz, 
                                                      activitysim_inputs, popsim_success), 
              format = "file"),
+  tar_target(run_asim, run_activitysim(activitysim_inputs, "configs", "output_activitysim", 
+                                       activitysim_population, land_use_file))
   
   
   
-  tar_target(dummy, message("Done"))
   
 )

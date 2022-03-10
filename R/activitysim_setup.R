@@ -1,3 +1,24 @@
+#' Run activitysim scenario
+#' 
+#' @param data_path
+#' @param config_path
+#' @param output_path
+#' 
+run_activitysim <- function(data_path, config_path, output_path, ...){
+  # TODO: I couldn't figure out a way to run the python scripts directly from targets.
+  # We'll have to work on this later.
+  message("You are ready to run activitysim.",  
+          "To do this, run the following shell commands:\n \t", 
+          "conda activate ASIM_DEV\n \t",
+          "activitysim --config ", config_path, " --data ", data_path,  " --output ", output_path)
+  
+  return(TRUE)
+}
+
+
+
+
+
 #' Make land use table
 #' 
 #' 
