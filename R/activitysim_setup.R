@@ -77,6 +77,13 @@ make_land_use <- function(se, perdata, hhdata, urbanization, buildings, topo, sc
     )  %>%
     mutate(
       across(c(TOTHH:HHINCQ4, SHPOP62P:MWTEMPN, HSENROLL, COLLFTE, COLLPTE), na_int)
+    ) %>%
+    
+    # remove zones that are not in the skims. These zones are in Utah County 
+    # south west of Utah Lake
+    filter(
+      zone_id %in%  c("2859", "2860", "2861", "2862", "2863", "2864", "2865", "2866", 
+                      "2867", "2868", "2869", "2870", "2871", "2872", "2873")
     )
     
 }
