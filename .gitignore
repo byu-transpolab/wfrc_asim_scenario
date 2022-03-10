@@ -2,10 +2,16 @@
 .Rhistory
 .RData
 .Ruserdata
+.Renviron
+
+lib/
 
 AS_package/
 scenarios/
 data/
+data_popsim/
+output_popsim/
+data_activitysim/
 output/
 output_all/
 
@@ -13,3 +19,4 @@ data.zip
 scenarios.zip
 
 __pycache__/
+_targets/
