@@ -77,6 +77,7 @@ na_int <- function(x){
 #' required by activitysim's output file writer.
 #' 
 write_land_use <- function(land_use, file){
+  dir.create(dirname(file))
   
   land_use %>%
     mutate(geometry = st_as_text(geometry)) %>% 
@@ -331,3 +332,123 @@ make_schools <- function(schoolfile){
   
   colleges[!duplicated(colleges$zone_id), ]
 }
+
+
+#' Move households and population to activitysim
+#' 
+#' @param popsim_outputs
+#' @param parcelsfile
+#' @param taz
+#' @param popsim_success Only necessary for targets
+#'
+#' @details Also appends random household location.
+#' 
+move_population <- function(popsim_outputs, addressfile, taz, activitysim_inputs, popsim_success){
+  
+  # create directory
+  dir.create(activitysim_inputs)
+  
+  # copy person file from popsim output to activitysim input =========
+  perfile <- file.path(popsim_outputs, "synthetic_persons.csv")
+  copy_result <- file.copy(perfile, file.path(activitysim_inputs, "synthetic_persons.csv"))
+  
+  # read households file and append random coordinate =================
+  hhfile <- file.path(popsim_outputs, "synthetic_households.csv")
+  
+  # households data table
+  hh <- read_csv(hhfile, col_types = list(
+    household_id = col_character(),
+    PUMA = col_character(),
+    TRACT = col_character(),
+    TAZ = col_character(),
+    NP = col_integer(),
+    WIF = col_integer(),
+    HHT = col_integer(),
+    VEH = col_integer()
+  )) %>%
+    arrange(TAZ)
+  
+  # Addresses from WFRC 
+  addresses <- read_csv(addressfile, col_types = list(TAZID = col_character()))  %>%
+    filter(!is.na(xcoord)) %>%
+    mutate(TAZ = as.character(TAZID)) 
+  
+  # how many households do we need per zone?
+  n_hh <- hh %>%
+    group_by(TAZ) %>%
+    summarise(n_hh = n())
+  
+  # how many properties are in each zone?
+  n_adr <- addresses %>%
+    group_by(TAZ) %>%
+    summarise(n_adr = n())
+  
+  
+  # Generate random points in polygon for zones without addresses -------------
+  # which zones have households but no addresses?
+  random_points <- taz %>%
+    group_by(TAZ) %>%
+    nest() %>%
+    left_join(n_hh) %>%
+    left_join(n_adr)  %>%
+    filter(!is.na(n_hh)) %>%
+    filter(is.na(n_adr)) %>%
+    mutate(
+      points = map(data, mysample, size = n_hh)
+    )
+  
+  
+  # Sample random addresses in polygon for zones with addresses ---------------
+  random_addresses <- addresses %>% 
+    select(TAZ = TAZID, xcoord, ycoord) %>%
+    group_by(TAZ) %>%
+    nest() %>%
+    inner_join(n_hh)  %>%
+    mutate(
+      points = map(data, slice_sample, n = n_hh, replace = T)
+    )
+    
+  # bind random points together, join to hh, and write out -----------------
+  allpts <- bind_rows(
+    random_addresses %>%
+      select(TAZ, points) %>%
+      unnest(cols = c(points)),
+    random_points %>%
+      select(TAZ, points) %>%
+      unnest(cols = c(points))
+  ) %>%
+    arrange(TAZ) %>%
+    rename(home_x = xcoord, home_y = ycoord, ptTAZ = TAZ)
+  
+  
+  out_hh <- bind_cols(hh, allpts)
+  
+  
+  # output checks
+  #  are there households where the TAZ and TAZ of the random point are different?
+  if(nrow(filter(out_hh, TAZ != ptTAZ))) {
+    stop("Some points have been assigned a home address outside their TAZ")
+  } 
+  
+  
+  out_hh %>%
+    select(-ptTAZ) %>%
+    write_csv(file.path(activitysim_inputs, "synthetic_households.csv"))
+  
+  # return path to the households file
+  file.path(activitysim_inputs, "synthetic_households.csv")
+  
+}
+
+mysample <- function(sf, size){
+  pts <- st_sample(sf, size)
+  
+  tibble(
+    xcoord = st_coordinates(pts)[, 1],
+    ycoord = st_coordinates(pts)[, 2],
+  )  
+    
+}
+
+
+

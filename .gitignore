@@ -11,6 +11,7 @@ scenarios/
 data/
 data_popsim/
 output_popsim/
+data_activitysim/
 output/
 output_all/
 

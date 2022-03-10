@@ -22,6 +22,7 @@ tar_option_set(packages = c("tidyverse", "sf", "tigris", "tidycensus"))
 
 
 popsim_outputs <- "output_popsim"
+activitysim_inputs <- "data_activitysim"
 
 
 # End this file with a list of target objects.
@@ -92,7 +93,8 @@ list(
   tar_target(topo, make_topo(topofile)), 
   tar_target(land_use, make_land_use(se, perdata, hhdata, urbanization, buildings, 
                                      topo, schools, taz)),
-  tar_target(land_use_file, write_land_use(land_use, "data/land_use.csv"), format = "file"),
+  tar_target(land_use_file, write_land_use(land_use, file.path(activitysim_inputs, 
+                                                               "land_use.csv")), format = "file"),
   
   
   
@@ -105,8 +107,13 @@ list(
   tar_target(matsim_net, make_matsim_network("data/wfrc_network", matsim_lib, write_net)),
   
   
-  # Build ActivitySim Populaiton ===========================
-  # This is basically just the populationsim outputs, but 
+  # Build ActivitySim Population ===========================
+  tar_target(addressfile, "inputs/AddressCoordinates.csv", format = "file"),
+  tar_target(activitysim_population, move_population(popsim_outputs, addressfile, taz, 
+                                                     activitysim_inputs, popsim_success), 
+             format = "file"),
+  
+  
   
   tar_target(dummy, message("Done"))
   
