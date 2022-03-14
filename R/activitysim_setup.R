@@ -67,7 +67,7 @@ make_land_use <- function(se, perdata, hhdata, urbanization, buildings, topo, sc
     left_join(taz, by = c("zone_id" = "TAZ")) %>%
     # relocate columns for my own sanity
     transmute(
-      zone_id,
+      ZONE = as.numeric(zone_id),
       TOTHH, HHPOP, TOTPOP,
       EMPRES, SFDU, MFDU, HHINCQ1, HHINCQ2, HHINCQ3, HHINCQ4, 
       TOTACRE, RESACRE, CIACRE, SHPOP62P,
@@ -77,7 +77,24 @@ make_land_use <- function(se, perdata, hhdata, urbanization, buildings, topo, sc
     )  %>%
     mutate(
       across(c(TOTHH:HHINCQ4, SHPOP62P:MWTEMPN, HSENROLL, COLLFTE, COLLPTE), na_int)
-    )
+    ) %>%
+    
+    # remove zones that are not in the skims. These zones are in Utah County 
+    filter(ZONE %in% c(136:140, 421:422, 1782:1788, 2874:2881)) %>% 
+    mutate(
+      ZONE = case_when(
+        ZONE < 136 ~ ZONE,
+        ZONE > 140 & ZONE < 421 ~ (ZONE - 5),
+        ZONE > 422 & ZONE < 1782 ~ (ZONE -7),
+        T ~ (ZONE - 14)
+      ),
+      RESACRE = case_when(
+        RESACRE == 0 ~ 1,
+        T ~ RESACRE
+      )
+    ) %>%
+    rename(zone_id = ZONE)
+
     
 }
 
@@ -374,7 +391,8 @@ make_schools <- function(schoolfile){
 #' @param taz
 #' @param popsim_success Only necessary for targets
 #'
-#' @details Also appends random household location.
+#' @details This function does quite a bit of cleaning to move the populationsim
+#' outputs over and get them ready for activitysim.
 #' 
 move_population <- function(popsim_outputs, addressfile, taz, activitysim_inputs, popsim_success){
   
@@ -383,15 +401,50 @@ move_population <- function(popsim_outputs, addressfile, taz, activitysim_inputs
   
   # copy person file from popsim output to activitysim input =========
   perfile <- file.path(popsim_outputs, "synthetic_persons.csv")
-  persons <- read_csv(perfile) 
-  
-  # determine how many digits we need for houseid
-  digits_hh <- nchar(max(persons$household_id))
+  persons <- read_csv(perfile, col_types = list(
+    PUMA = col_character(),
+    TRACT = col_character()
+  )) 
   
   persons %>%
-    mutate(person_id = str_c(
-      str_pad(household_id, digits_hh, "left", pad = "0"),
-      str_pad(per_num, 2, "left", pad = "0"), sep = "")) %>%
+    mutate(person_id = row_number(),
+           PNUM = person_id)%>%
+    rename(age = AGEP) %>%
+    mutate(
+      # create person type variables
+      # ['ptype', 'pemploy', 'pstudent', 'PNUM']
+      ptype = case_when(
+        age >= 18 & SCH == 1 & WKHP >= 30 ~ 1,
+        age >= 18 & SCH == 1 & WKHP > 0 & WKHP < 30 ~ 2,
+        age >= 18 & age < 65 & SCH == 1 & ESR == 3 | age >= 18 & age < 65 & SCH == 1 & ESR == 6 ~ 4,
+        age >= 65 & SCH == 1 & ESR == 3 | age >= 65 & SCH == 1 & ESR == 6 ~ 5,
+        age >= 18 & SCH == 2 | age >= 18 & SCH == 3 ~ 3,
+        age > 15 & age < 18 ~ 6,
+        age > 5 & age < 16 ~ 7,
+        age >= 0 & age < 6 ~ 8
+      ),
+      pstudent = case_when(
+        SCHG >= 2 & SCHG <= 14 ~ 1,
+        SCHG > 14 & SCHG <= 16 ~ 2,
+        T ~ 3
+      ),
+      pemploy = case_when(
+        WKHP >= 30 ~ 1,
+        WKHP > 0 & WKHP < 30 ~ 2,
+        age >= 16 & ESR == 3 | age >= 16 & ESR == 6 ~ 3,
+        T ~ 4
+      ),
+      
+      # the skims skip several cells, so we need to rename a few of them.
+      TAZ2 = case_when(
+        TAZ < 136 ~ TAZ,
+        TAZ > 140 & TAZ < 421 ~ (TAZ - 5),
+        TAZ > 422 & TAZ < 1782 ~ (TAZ -7),
+        T ~ (TAZ - 14)
+      )
+    ) %>% 
+    select(-TAZ) %>% 
+    rename(TAZ = TAZ2) %>%
     write_csv(file.path(activitysim_inputs, "synthetic_persons.csv"))
   
   # read households file and append random coordinate =================
@@ -475,6 +528,16 @@ move_population <- function(popsim_outputs, addressfile, taz, activitysim_inputs
   
   out_hh %>%
     select(-ptTAZ) %>%
+    mutate(
+      TAZ = as.numeric(TAZ),
+      # the skims skip several cells, so we need to rename a few of them.
+      TAZ = as.character(case_when(
+        TAZ < 136 ~ TAZ,
+        TAZ > 140 & TAZ < 421 ~ (TAZ - 5),
+        TAZ > 422 & TAZ < 1782 ~ (TAZ -7),
+        T ~ (TAZ - 14)
+      ))
+    )  %>%
     write_csv(file.path(activitysim_inputs, "synthetic_households.csv"))
   
   # return path to the households file
