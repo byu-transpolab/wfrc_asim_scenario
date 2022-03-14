@@ -20,3 +20,5 @@ scenarios.zip
 
 __pycache__/
 _targets/
+
+*.sh~
