@@ -54,10 +54,16 @@ get_tracts <- function(st_fips, puma_tract){
 #' 
 get_taz <- function(taz_geo, ivt0, tr){
   taz <- st_read(taz_geo) %>% 
-    mutate(TAZ = as.character(TAZID)) %>%
+    mutate(
+      TAZ = as.character(TAZID),
+    ) %>%
     # remove external stations
     filter(CO_FIPS > 0) %>%
-    select(TAZ) %>%
+    select(
+      TAZ, 
+      DISTRICT = DISTLRG,
+      SD = DISTSML
+    ) %>%
     
     # remove taz that do not map to a tract
     st_join(tr) %>% filter(!is.na(PUMA)) %>%
