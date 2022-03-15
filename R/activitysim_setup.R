@@ -10,7 +10,7 @@ run_activitysim <- function(data_path, config_path, output_path, ...){
   message("You are ready to run activitysim.",  
           "To do this, run the following shell commands:\n \t", 
           "conda activate ASIM_DEV\n \t",
-          "activitysim --config ", config_path, " --data ", data_path,  " --output ", output_path)
+          "activitysim run --config ", config_path, " --data ", data_path,  " --output ", output_path)
   
   return(TRUE)
 }
@@ -80,14 +80,9 @@ make_land_use <- function(se, perdata, hhdata, urbanization, buildings, topo, sc
     ) %>%
     
     # remove zones that are not in the skims. These zones are in Utah County 
-    filter(ZONE %in% c(136:140, 421:422, 1782:1788, 2874:2881)) %>% 
+    filter(!ZONE %in% c(136:140, 421:422, 1782:1788, 2874:2881)) %>% 
     mutate(
-      ZONE = case_when(
-        ZONE < 136 ~ ZONE,
-        ZONE > 140 & ZONE < 421 ~ (ZONE - 5),
-        ZONE > 422 & ZONE < 1782 ~ (ZONE -7),
-        T ~ (ZONE - 14)
-      ),
+      ZONE = renumber_taz(ZONE),
       RESACRE = case_when(
         RESACRE == 0 ~ 1,
         T ~ RESACRE
@@ -384,22 +379,11 @@ make_schools <- function(schoolfile){
 }
 
 
-#' Move households and population to activitysim
+#' Make persons file for activitysim
 #' 
 #' @param popsim_outputs
-#' @param parcelsfile
-#' @param taz
-#' @param popsim_success Only necessary for targets
-#'
-#' @details This function does quite a bit of cleaning to move the populationsim
-#' outputs over and get them ready for activitysim.
 #' 
-move_population <- function(popsim_outputs, addressfile, taz, activitysim_inputs, popsim_success){
-  
-  # create directory
-  dir.create(activitysim_inputs)
-  
-  # copy person file from popsim output to activitysim input =========
+make_asim_persons <- function(popsim_outputs, popsim_success) {
   perfile <- file.path(popsim_outputs, "synthetic_persons.csv")
   persons <- read_csv(perfile, col_types = list(
     PUMA = col_character(),
@@ -436,18 +420,36 @@ move_population <- function(popsim_outputs, addressfile, taz, activitysim_inputs
       ),
       
       # the skims skip several cells, so we need to rename a few of them.
-      TAZ2 = case_when(
-        TAZ < 136 ~ TAZ,
-        TAZ > 140 & TAZ < 421 ~ (TAZ - 5),
-        TAZ > 422 & TAZ < 1782 ~ (TAZ -7),
-        T ~ (TAZ - 14)
-      )
-    ) %>% 
-    select(-TAZ) %>% 
-    rename(TAZ = TAZ2) %>%
-    write_csv(file.path(activitysim_inputs, "synthetic_persons.csv"))
-  
-  # read households file and append random coordinate =================
+      TAZ = renumber_taz(TAZ)
+    ) 
+}
+
+
+#' Adjust TAZ
+#' 
+#' @param original
+#' 
+#' @details The limits of h5 means that the TAZ id must be consecutive in the 
+#' omx skims. But virtually no MPO uses perfectly sequential TAZ numbering systems.
+#' This function re-numbers the TAZ IDs based on the rules we have applied to the 
+#' skims
+#' 
+renumber_taz <- function(TAZ){
+  TAZ <- as.numeric(TAZ)
+  as.character(case_when(
+    TAZ < 136 ~ TAZ,
+    TAZ > 140 & TAZ < 421 ~ (TAZ - 5),
+    TAZ > 422 & TAZ < 1782 ~ (TAZ -7),
+    T ~ (TAZ - 14)
+  ))
+}
+
+
+#' Make Activitysim households file
+#' 
+#' @param popsim_outputs
+#' 
+make_asim_hholds <- function(popsim_outputs, addressfile, taz, popsim_success) {
   hhfile <- file.path(popsim_outputs, "synthetic_households.csv")
   
   # households data table
@@ -502,7 +504,7 @@ move_population <- function(popsim_outputs, addressfile, taz, activitysim_inputs
     mutate(
       points = map(data, slice_sample, n = n_hh, replace = T)
     )
-    
+  
   # bind random points together, join to hh, and write out -----------------
   allpts <- bind_rows(
     random_addresses %>%
@@ -529,15 +531,31 @@ move_population <- function(popsim_outputs, addressfile, taz, activitysim_inputs
   out_hh %>%
     select(-ptTAZ) %>%
     mutate(
-      TAZ = as.numeric(TAZ),
       # the skims skip several cells, so we need to rename a few of them.
-      TAZ = as.character(case_when(
-        TAZ < 136 ~ TAZ,
-        TAZ > 140 & TAZ < 421 ~ (TAZ - 5),
-        TAZ > 422 & TAZ < 1782 ~ (TAZ -7),
-        T ~ (TAZ - 14)
-      ))
-    )  %>%
+      TAZ = renumber_taz(TAZ)
+    )
+}
+
+#' Write households and population to activitysim
+#' 
+#' @param popsim_outputs
+#' @param parcelsfile
+#' @param taz
+#' @param popsim_success Only necessary for targets
+#'
+#' @details This function does quite a bit of cleaning to move the populationsim
+#' outputs over and get them ready for activitysim.
+#' 
+move_population <- function(asim_persons, asim_hholds, activitysim_inputs){
+  
+  # create directory
+  dir.create(activitysim_inputs)
+  
+  asim_persons %>% 
+    write_csv(file.path(activitysim_inputs, "synthetic_persons.csv"))
+  
+  # read households file and append random coordinate =================
+  asim_hholds %>%
     write_csv(file.path(activitysim_inputs, "synthetic_households.csv"))
   
   # return path to the households file

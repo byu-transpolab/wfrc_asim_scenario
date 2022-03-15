@@ -109,8 +109,9 @@ list(
   
   # Build ActivitySim Population ===========================
   tar_target(addressfile, "inputs/AddressCoordinates.csv", format = "file"),
-  tar_target(activitysim_population, move_population(popsim_outputs, addressfile, taz, 
-                                                     activitysim_inputs, popsim_success), 
+  tar_target(asim_persons, make_asim_persons(popsim_outputs, popsim_success)),
+  tar_target(asim_hholds, make_asim_hholds(popsim_outputs, addressfile, taz, popsim_success)),
+  tar_target(activitysim_population, move_population(asim_persons, asim_hholds, activitysim_inputs), 
              format = "file"),
   tar_target(run_asim, run_activitysim(activitysim_inputs, "configs", "output_activitysim", 
                                        activitysim_population, land_use_file))
