@@ -12,6 +12,7 @@ library(targets)
 source("R/populationsim_setup.R")
 source("R/network_setup.R")
 source("R/activitysim_setup.R")
+source("R/skims_setup.R")
 
 
 # debugging
@@ -105,6 +106,20 @@ list(
   tar_target(network, read_wfrcmag(node_file, link_file, 32612)),
   tar_target(write_net, write_linknodes(network, "data/wfrc_network")),
   tar_target(matsim_net, make_matsim_network("data/wfrc_network", matsim_lib, write_net)),
+  
+  
+  # Build Skims ==============================================
+  # The omx files with which we begin this process are converted from MTX files
+  # output from the WFRC model. Those files are stored on BOX, and can be converted
+  # with the script at `sh/convert_cube_omx.s`
+  
+  # OMX files that are small enough to stash on github are here already; the
+  # two that are too large need to be downloaded from Box
+  tar_target(ok_skims_file, get_ok_skims("inputs/skims/skm_auto_Ok.mtx.omx"), format = "file"),
+  tar_target(pk_skims_file, get_pk_skims("inputs/skims/skm_auto_Pk.mtx.omx"), format = "file"),
+  tar_target(manifest, "inputs/skims/skims_manifest.csv", format = "file"),
+  
+  
   
   
   # Build ActivitySim Population ===========================

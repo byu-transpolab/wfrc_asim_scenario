@@ -1,33 +1,58 @@
 # WFRC ActivitySim Scenario
 
-This is a repo of the configs/settings/etc. for the wfrc asim scenario. The actual data (skims, population, etc.) is very large, so is not included in this repo. It is currently hosted on Box. The folders that need to be downloaded from Box are `data` and `scenarios`.
+This repository serves as a scenario builder for the ActivitySim implementation
+in the Wasatch Front / MAG modeling region. This is a research-only 
+implementation to support work in travel modeling at BYU, and should not be used
+for any policy analysis.
 
-Below is the original README.
+> This research is supported by the Utah Department of Transportation, and 
+by US DOT via the T-SCORE University Transportation Center.
 
-<!-- ReadME to instruct how to use the input files on box
-my folder will eventually match -->
+## Environment Setup
 
-# Making sense of the input files to ActivitySim
-The following files are used to run ActivitySim in the
-Salt Lake City Area.
+The scenario builder is an implementation of `targets` library for R. This is
+a make-style system that traces dependencies in a project and only re-builds if 
+required.
 
-* *skims_wfrc.omx* - This is the all of the skims for the Salt
-Lake City Area and includes modifications such as removing
-external zones.
+Users should must install the following R packages:
 
-* *tour_mode_choice_coeffs.csv* and *trip_mode_choice_coeffs.csv* -
-These files contain the adjusted coefficients to match the WFRC
-mode choice distribution by purpose.
+```r
+# only install if necessary
+install.packages(c("targets", "tidyverse", "sf", "tigris", "tidycensus"))
+```
 
-* *tour_mode_choice.csv* and *trip_mode_choice.csv* - These are edited
-so that Ferry is not included in the Salt Lake City Area model.
+Additionally, users should install Java 11, and python with the `anaconda`
+library. Additionally, users must create an `.Renviron` file in the top-level
+folder with the path to java 11 as well as the API key to access the US Census
+bureau API.
 
-* *synthetic_persons* and *synthetic_households* - These contain
-all the attribute information for all of the persons and
-households in the simulation.
+```sh
+JAVA_HOME="<path to java>/jdk-11.0.13.jdk/Contents/Home"
+CENSUS_API_KEY="<your key here>"
+```
 
-* *land_use_taz.csv* - This file contains the land use information
-specific to the Salt Lake City Area.
 
-* *settings.yaml* - This file accounts for the above input files
-and includes the steps for multiprocessing.
+## Input files
+
+Some input files are included in this repository, if they come in under 
+GitHub's 100 MB limit. Otherwise, `targets` will attempt to download the 
+files from public folders on Box. The overall files are at 
+[this link](https://byu.box.com/s/jeqa5akd6h3m2q6c4308wnlam9wizjhm). 
+
+
+### Skims
+
+The skims are derived from the 2019 forecast scenario (calibrated to 2015 data)
+run by WFRC / MAG with model version 8.3. The skims from this model run are stored 
+in [this box folder](https://byu.box.com/s/o4l2e7zdgvjfkoaux739laf90pox2m02). 
+
+Because cube cannot run on Mac/Linux, we used the Cube Voyager 
+script stored in `sh/convert_cube_omx.s` to convert these matrices to OMX and
+begin the targets pipeline with those OMX files, stored
+in a [sister Box folder](https://byu.box.com/s/nszd42o14ubqohnjubrztex5h1od4tal).
+The skims that are small enough to push to GitHub are included, the two skim sets
+that are too large to push are downloaded through targets.
+
+  - `skm_auto_Pk.mtx.omx`
+  - `skm_auto_Ok.mtx.omx`
+
