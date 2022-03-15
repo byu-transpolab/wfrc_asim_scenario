@@ -7,6 +7,7 @@ run_populationsim <- function(write_result, data_path, out_path){
           "To do this, run the following shell commands:\n \t", 
           "conda activate popsim\n \t",
           "python py/runpopsim.py --config configs_popsim --data ", data_path,  " --output ", out_path)
+  file.path(out_path, "synthetic_persons.csv")
 }
 
 
@@ -53,14 +54,15 @@ get_tracts <- function(st_fips, puma_tract){
 #' 
 #' 
 get_taz <- function(taz_geo, ivt0, tr){
+  
   taz <- st_read(taz_geo) %>% 
-    mutate(
-      TAZ = as.character(TAZID),
-    ) %>%
     # remove external stations
-    filter(CO_FIPS > 0) %>%
-    select(
-      TAZ, 
+    filter(!EXTERNAL == 1) %>%
+    arrange(TAZID) %>%
+    transmute(
+      TAZ = TAZID, 
+      wfrc_taz = TAZ,
+      asim_taz = row_number(),  # renumber TAZ for activitysim
       DISTRICT = DISTLRG,
       SD = DISTSML
     ) %>%

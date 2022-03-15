@@ -74,7 +74,8 @@ list(
   
   tar_target(write_popsim, write_files(meta, tract_controls, taz_control, seed, 
                                 crosswalk, path = "data_popsim")),
-  tar_target(popsim_success, run_populationsim(write_popsim, "data_popsim", popsim_outputs)),
+  tar_target(popsim_success, run_populationsim(write_popsim, "data_popsim", popsim_outputs),
+             format = "file"),
   
   
   # Build land use dataset =================================
@@ -124,7 +125,7 @@ list(
   
   # Build ActivitySim Population ===========================
   tar_target(addressfile, "inputs/AddressCoordinates.csv", format = "file"),
-  tar_target(asim_persons, make_asim_persons(popsim_outputs, popsim_success)),
+  tar_target(asim_persons, make_asim_persons(popsim_outputs, popsim_success, taz)),
   tar_target(asim_hholds, make_asim_hholds(popsim_outputs, addressfile, taz, popsim_success)),
   tar_target(activitysim_population, move_population(asim_persons, asim_hholds, activitysim_inputs), 
              format = "file"),

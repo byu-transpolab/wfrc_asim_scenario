@@ -58,37 +58,31 @@ run_activitysim <- function(data_path, config_path, output_path, ...){
 #' 
 make_land_use <- function(se, perdata, hhdata, urbanization, buildings, topo, schools, taz){
   se %>%
+    inner_join(taz %>% mutate(zone_id = as.character(TAZ)), 
+               by = "zone_id")  %>%
     left_join(perdata, by = "zone_id") %>%
     left_join(hhdata, by = "zone_id") %>%
     left_join(urbanization, by = "zone_id") %>%
     left_join(buildings, by = "zone_id") %>%
     left_join(topo, by = "zone_id") %>%
     left_join(schools, by = "zone_id") %>%
-    left_join(taz, by = c("zone_id" = "TAZ")) %>%
     # relocate columns for my own sanity
     transmute(
-      ZONE = as.numeric(zone_id),
+      zone_id = asim_taz,
+      wfrc_taz,
+      DISTRICT, SD,
       TOTHH, HHPOP, TOTPOP,
       EMPRES, SFDU, MFDU, HHINCQ1, HHINCQ2, HHINCQ3, HHINCQ4, 
-      TOTACRE, RESACRE, CIACRE, SHPOP62P,
-      TOTEMP, AGE0004, AGE0519, AGE2044, AGE4564, AGE65P, RETEMPN, FPSEMPN, HEREMPN,
-      OTHEMPN, AGREMPN, MWTEMPN, PRKCST, OPRKCST, area_type, HSENROLL, COLLFTE,
-      COLLPTE, TOPOLOGY, TERMINAL, gqpop = 0, geometry
-    )  %>%
-    mutate(
-      across(c(TOTHH:HHINCQ4, SHPOP62P:MWTEMPN, HSENROLL, COLLFTE, COLLPTE), na_int)
-    ) %>%
-    
-    # remove zones that are not in the skims. 
-    filter(!ZONE %in% c(136:140, 421:422, 1782:1788, 2874:2881)) %>% 
-    mutate(
-      ZONE = renumber_taz(ZONE),
+      TOTACRE, CIACRE, 
       RESACRE = case_when(
         RESACRE == 0 ~ 1,
         T ~ RESACRE
-      )
-    ) %>%
-    rename(zone_id = ZONE)
+      ), SHPOP62P,
+      TOTEMP, AGE0004, AGE0519, AGE2044, AGE4564, AGE65P, RETEMPN, FPSEMPN, HEREMPN,
+      OTHEMPN, AGREMPN, MWTEMPN, PRKCST, OPRKCST, area_type, HSENROLL, COLLFTE,
+      COLLPTE, TOPOLOGY, TERMINAL, gqpop = 0, geometry
+    )  
+    
 
     
 }
@@ -383,7 +377,7 @@ make_schools <- function(schoolfile){
 #' 
 #' @param popsim_outputs
 #' 
-make_asim_persons <- function(popsim_outputs, popsim_success) {
+make_asim_persons <- function(popsim_outputs, popsim_success, taz) {
   perfile <- file.path(popsim_outputs, "synthetic_persons.csv")
   persons <- read_csv(perfile, col_types = list(
     PUMA = col_character(),
@@ -391,6 +385,8 @@ make_asim_persons <- function(popsim_outputs, popsim_success) {
   )) 
   
   persons %>%
+    
+    # ActivitySim really wants to have sequential person numbers.
     mutate(person_id = row_number(),
            PNUM = person_id)%>%
     rename(age = AGEP) %>%
@@ -418,37 +414,24 @@ make_asim_persons <- function(popsim_outputs, popsim_success) {
         age >= 16 & ESR == 3 | age >= 16 & ESR == 6 ~ 3,
         T ~ 4
       ),
-      
-      # the skims skip several cells, so we need to rename a few of them.
-      TAZ = renumber_taz(TAZ)
-    ) 
+    )  
 }
 
 
-#' Adjust TAZ
-#' 
-#' @param original
-#' 
-#' @details The limits of h5 means that the TAZ id must be consecutive in the 
-#' omx skims. But virtually no MPO uses perfectly sequential TAZ numbering systems.
-#' This function re-numbers the TAZ IDs based on the rules we have applied to the 
-#' skims
-#' 
-renumber_taz <- function(TAZ){
-  TAZ <- as.numeric(TAZ)
-  as.character(case_when(
-    TAZ < 136 ~ TAZ,
-    TAZ > 140 & TAZ < 421 ~ (TAZ - 5),
-    TAZ > 422 & TAZ < 1782 ~ (TAZ -7),
-    T ~ (TAZ - 14)
-  ))
-}
 
 
 #' Make Activitysim households file
 #' 
-#' @param popsim_outputs
+#' @param popsim_outputs Folder with popsim outputs
+#' @param addressfile Path to address points file from WFRC
+#' @param taz SF boundary file for TAZ numbering
+#' @param popsim_success 
 #' 
+#' @details 
+#'  ActivitySim requires sequential zone numbering beginning at 1. We have 
+#'  kept the zone numbers from the WFRC zones up to this point, with the `taz`
+#'  input file holding a list of all WFRC / ASIM ids. It was necessary to keep the
+#'  WFRC id's up to this point because 
 make_asim_hholds <- function(popsim_outputs, addressfile, taz, popsim_success) {
   hhfile <- file.path(popsim_outputs, "synthetic_households.csv")
   
@@ -484,6 +467,7 @@ make_asim_hholds <- function(popsim_outputs, addressfile, taz, popsim_success) {
   # Generate random points in polygon for zones without addresses -------------
   # which zones have households but no addresses?
   random_points <- taz %>%
+    mutate(TAZ = as.character(TAZ)) %>%
     group_by(TAZ) %>%
     nest() %>%
     left_join(n_hh) %>%
@@ -529,10 +513,9 @@ make_asim_hholds <- function(popsim_outputs, addressfile, taz, popsim_success) {
   
   
   out_hh %>%
-    select(-ptTAZ) %>%
-    mutate(
-      # the skims skip several cells, so we need to rename a few of them.
-      TAZ = renumber_taz(TAZ)
+    select(-ptTAZ)  %>%
+    left_join(
+      taz %>% transmute(TAZ = as.character(TAZ), wfrc_taz, asim_taz) %>% st_set_geometry(NULL)
     )
 }
 
