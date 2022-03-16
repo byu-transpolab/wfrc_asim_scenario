@@ -1,8 +1,15 @@
 #' Prepare skims file
 #' 
 #' 
-prepare_skims <- function(){
+prepare_skims <- function(ok_skims_file, pk_skims_file, manifest){
+  # TODO: I couldn't figure out a way to run the python scripts directly from targets.
+  # We'll have to work on this later.
+  message("You are ready to run activitysim.",  
+          "To do this, run the following shell commands:\n \t", 
+          "conda activate ASIM_DEV\n \t",
+          "py/build_omx.py ", dirname(manifest), " data_activitysim")
   
+  return("data_activitysim/skims.omx")
 }
 
 

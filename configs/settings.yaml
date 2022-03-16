@@ -39,6 +39,9 @@ input_table_list:
     rename_columns:
       ZONE: zone_id
     keep_columns:
+      - DISTRICT
+      - SD
+      - wfrc_zone
       - TOTHH
       - TOTPOP
       - TOTACRE
@@ -161,7 +164,7 @@ models:
 
 
 output_tables:
-  h5_store: False
+  h5_store: True
   action: include
   prefix: final_
   tables:

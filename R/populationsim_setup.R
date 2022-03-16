@@ -55,33 +55,63 @@ get_tracts <- function(st_fips, puma_tract){
 #' 
 get_taz <- function(taz_geo, ivt0, tr){
   
-  taz <- st_read(taz_geo) %>% 
+  # WFRC has 2,881 zones, including zones that are uninhabited and zones
+  # that are external to the region.
+  taz <- st_read(taz_geo)
+  
+  # explicitly removing external zones gets us down to 2,858
+  interntaz <- taz %>%
     # remove external stations
     filter(!EXTERNAL == 1) %>%
     arrange(TAZID) %>%
     transmute(
       TAZ = TAZID, 
-      wfrc_taz = TAZ,
-      asim_taz = row_number(),  # renumber TAZ for activitysim
+      ACRES, DEVACRES,
       DISTRICT = DISTLRG,
       SD = DISTSML
-    ) %>%
+    ) 
+  
+  
+  # each taz needs to belong to at least one tract / PUMA
+  tigris_taz <- interntaz %>%
     
     # remove taz that do not map to a tract
-    st_join(tr) %>% filter(!is.na(PUMA)) %>%
-    
+    st_join(tr) %>% 
+    filter(!is.na(PUMA)) %>%
     # remove duplicates of TAZ that map to many tracts
-    group_by(TAZ) %>% slice(1) %>% ungroup()
+    group_by(TAZ) %>% slice(1) %>%  ungroup()
   
-  # remove TAZs with IVT = 0
+  # Additionally, some tazs should be excluded  because they are 
+  # not connected to the highway network in 2019 (Utah Lake, Eagle Mountain)
+  # These were put into a list by Christian Hunter.
   IVT0 <- read_csv(ivt0)
   IVT0$TAZ <- as.character(IVT0$TAZ)
-  taz <- taz %>% 
-    filter(!TAZ %in% IVT0$TAZ)
   
-  taz
+  
+  # after removing these TAZ, we have 2,817 TAZs left
+  finaltaz <- tigris_taz %>% 
+    filter(!TAZ %in% IVT0$TAZ) %>%
+    arrange(TAZ) %>%
+    mutate(
+      asim_taz = row_number()
+    )
+    
+  finaltaz
 }
 
+write_taz_map <- function(taz) {
+  mapfile <- "inputs/skims/skim_taz_map.csv"
+  
+  m <- tibble(
+    wfrc_taz = 1:2881
+  ) %>%
+    left_join(
+      taz %>% st_set_geometry(NULL) %>% select(TAZ, asim_taz),
+      by = c("wfrc_taz" = "TAZ")) 
+  
+  write_csv(m, mapfile)
+  return(mapfile)
+}
 
 #' Get taz / puma/ tract crosswalk
 #' 
