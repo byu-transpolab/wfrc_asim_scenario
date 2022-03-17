@@ -81,6 +81,9 @@ make_land_use <- function(se, perdata, hhdata, urbanization, buildings, topo, sc
       TOTEMP, AGE0004, AGE0519, AGE2044, AGE4564, AGE65P, RETEMPN, FPSEMPN, HEREMPN,
       OTHEMPN, AGREMPN, MWTEMPN, PRKCST, OPRKCST, area_type, HSENROLL, COLLFTE,
       COLLPTE, TOPOLOGY, TERMINAL, gqpop = 0, geometry
+    ) %>%
+    mutate(
+      across(TOTHH:COLLPTE, na_int)
     )
 }
 
