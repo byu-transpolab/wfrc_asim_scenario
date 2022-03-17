@@ -4,7 +4,7 @@
 
 logging:
   version: 1
-  disable_existing_loggers: True
+  disable_existing_loggers: true
 
 
   # Configuring the default (root) logger is highly recommended
@@ -17,12 +17,12 @@ logging:
     activitysim:
       level: INFO
       handlers: [console, logfile]
-      propagate: False
+      propagate: false
 
     orca:
       level: WARN
       handlers: [console, logfile]
-      propagate: False
+      propagate: false
 
   handlers:
 
