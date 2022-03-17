@@ -76,12 +76,11 @@ def build_omx(manifest_dir, source_data_dir, dest_data_dir):
               data = source_omx[row.source_key]
   
               if dest_key in dest_omx.list_matrices():
-                  print("deleting existing dest key '%s'" % (dest_key,))
-                  dest_omx.removeNode(dest_omx.root.data, dest_key)
-                  
-              data = np.delete(data, np.r_[delete_zones], axis = 0)
-              data = np.delete(data, np.r_[delete_zones], axis = 1)
-              dest_omx[dest_key] = data
+                  print("Matrix '%s' already exists" % (dest_key,))
+              else: 
+                data = np.delete(data, np.r_[delete_zones], axis = 0)
+                data = np.delete(data, np.r_[delete_zones], axis = 1)
+                dest_omx[dest_key] = data
   
 
 

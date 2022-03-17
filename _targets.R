@@ -16,7 +16,7 @@ source("R/skims_setup.R")
 
 
 # debugging
-tar_option_set(debug = "land_use")
+#tar_option_set(debug = "land_use")
 
 # Set target-specific options such as packages.
 tar_option_set(packages = c("tidyverse", "sf", "tigris", "tidycensus"))
@@ -119,7 +119,7 @@ list(
   # two that are too large need to be downloaded from Box
   tar_target(ok_skims_file, get_ok_skims("inputs/skims/skm_auto_Ok.mtx.omx"), format = "file"),
   tar_target(pk_skims_file, get_pk_skims("inputs/skims/skm_auto_Pk.mtx.omx"), format = "file"),
-  tar_target(manifest, "inputs/skims/skims_manifest.csv", format = "file"),
+  tar_target(manifest, "inputs/skims/skim_manifest.csv", format = "file"),
   tar_target(skims_file, prepare_skims(ok_skims_file, pk_skims_file, manifest), format = "file"),
   
   
