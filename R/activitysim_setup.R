@@ -69,7 +69,7 @@ make_land_use <- function(se, perdata, hhdata, urbanization, buildings, topo, sc
     # relocate columns for my own sanity
     transmute(
       zone_id = asim_taz,
-      wfrc_taz,
+      wfrc_taz = TAZ,
       DISTRICT, SD,
       TOTHH, HHPOP, TOTPOP,
       EMPRES, SFDU, MFDU, HHINCQ1, HHINCQ2, HHINCQ3, HHINCQ4, 
@@ -81,10 +81,7 @@ make_land_use <- function(se, perdata, hhdata, urbanization, buildings, topo, sc
       TOTEMP, AGE0004, AGE0519, AGE2044, AGE4564, AGE65P, RETEMPN, FPSEMPN, HEREMPN,
       OTHEMPN, AGREMPN, MWTEMPN, PRKCST, OPRKCST, area_type, HSENROLL, COLLFTE,
       COLLPTE, TOPOLOGY, TERMINAL, gqpop = 0, geometry
-    )  
-    
-
-    
+    )
 }
 
 #' Turn NA values to zeros, make integer
@@ -414,7 +411,12 @@ make_asim_persons <- function(popsim_outputs, popsim_success, taz) {
         age >= 16 & ESR == 3 | age >= 16 & ESR == 6 ~ 3,
         T ~ 4
       ),
-    )  
+    )  %>%
+    left_join(
+      taz %>% transmute(TAZ = TAZ, asim_taz) %>% st_set_geometry(NULL)
+    ) %>%
+    rename(zone_id = asim_taz, wfrc_taz = TAZ) %>%
+    relocate(zone_id, .before = wfrc_taz)
 }
 
 
@@ -515,8 +517,10 @@ make_asim_hholds <- function(popsim_outputs, addressfile, taz, popsim_success) {
   out_hh %>%
     select(-ptTAZ)  %>%
     left_join(
-      taz %>% transmute(TAZ = as.character(TAZ), wfrc_taz, asim_taz) %>% st_set_geometry(NULL)
-    )
+      taz %>% transmute(TAZ = as.character(TAZ), asim_taz) %>% st_set_geometry(NULL)
+    ) %>%
+    rename(zone_id = asim_taz, wfrc_taz = TAZ) %>%
+    relocate(zone_id, .before = wfrc_taz)
 }
 
 #' Write households and population to activitysim

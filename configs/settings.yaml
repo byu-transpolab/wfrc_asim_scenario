@@ -5,10 +5,9 @@ input_table_list:
     index_col: household_id
     rename_columns:
       NP: hhsize
-      TAZ: zone_id
       WIF: num_workers
       VEH: auto_ownership
-      HHINCADJ: income 
+      HHINCADJ: income
     keep_columns:
       - hhsize
       - zone_id
@@ -22,12 +21,11 @@ input_table_list:
     filename: synthetic_persons.csv
     index_col: person_id
     rename_columns:
-      AGEP: age
-      TAZ: zone_id
       SEX: sex
     keep_columns:
       - household_id
       - age
+      - zone_id
       - PNUM
       - sex
       - pemploy
@@ -36,12 +34,10 @@ input_table_list:
   - tablename: land_use
     filename: land_use.csv
     index_col: zone_id
-    rename_columns:
-      ZONE: zone_id
     keep_columns:
+      - wfrc_taz
       - DISTRICT
       - SD
-      - wfrc_zone
       - TOTHH
       - TOTPOP
       - TOTACRE
@@ -71,11 +67,11 @@ input_table_list:
 #input_store: ../output/input_data.h5
 
 # number of households to simulate
-households_sample_size: 15
+households_sample_size: 200
 # simulate all households
 # households_sample_size: 0
 
-multiprocess: True
+multiprocess: False
 strict: False   # this is a warning filter
 mem_tick: 30  # I think its a helper for tracking memory usage.
 
