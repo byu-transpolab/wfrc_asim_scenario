@@ -79,7 +79,7 @@ make_land_use <- function(se, perdata, hhdata, urbanization, buildings, topo, sc
         T ~ RESACRE
       ), SHPOP62P,
       TOTEMP, AGE0004, AGE0519, AGE2044, AGE4564, AGE65P, RETEMPN, FPSEMPN, HEREMPN,
-      OTHEMPN, AGREMPN, MWTEMPN, PRKCST, OPRKCST, area_type, HSENROLL, COLLFTE,
+      OTHEMPN, AGREMPN, MWTEMPN, PRKCST, OPRKCST, area_type, HSENROLL, GRADEENROLL, COLLFTE,
       COLLPTE, TOPOLOGY, TERMINAL, gqpop = 0, geometry
     ) %>%
     mutate(
@@ -136,9 +136,11 @@ read_sedata <- function(se_wfrc, se_boxelder){
   wfrc <- read_csv(se_wfrc) %>%
     rename(zone_id = `;TAZID`, TOTEMP = ALLEMP, HSENROLL = Enrol_High)
   
-  boxelder <- read_csv(se_boxelder) %>%
+  boxelder <- read_csv(se_boxelder,) %>%
     rename(zone_id = Index, TOTEMP = ALLEMP, HSENROLL = Enrol_High) %>%
-    filter(! (zone_id %in% wfrc$zone_id))
+    filter(DISTLRG == 1) %>%
+    mutate(zone_id = `;CO_TAZID` - 30000)
+  
   
   bind_rows(boxelder, wfrc) %>%
     mutate(zone_id = as.character(zone_id)) %>%
@@ -164,7 +166,7 @@ read_sedata <- function(se_wfrc, se_boxelder){
       OTHEMPN = OTHR + HBJ + FM_CONS,
       AGREMPN = FM_AGRI + FM_MING,
       MWTEMPN = MANU + WSLE,
-      HSENROLL,
+      HSENROLL, GRADEENROLL = Enrol_Elem + Enrol_Midl
     ) %>%
     mutate(
       across(-zone_id, na_int)
