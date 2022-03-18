@@ -37,6 +37,7 @@ input_table_list:
     index_col: zone_id
     keep_columns:
       - wfrc_taz
+      - county_id
       - DISTRICT
       - SD
       - TOTHH

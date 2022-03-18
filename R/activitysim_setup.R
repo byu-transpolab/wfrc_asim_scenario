@@ -70,6 +70,7 @@ make_land_use <- function(se, perdata, hhdata, urbanization, buildings, topo, sc
     transmute(
       zone_id = asim_taz,
       wfrc_taz = TAZ,
+      county_id = substr(GEOID, 1,5),
       DISTRICT, SD,
       TOTHH, HHPOP, TOTPOP,
       EMPRES, SFDU, MFDU, HHINCQ1, HHINCQ2, HHINCQ3, HHINCQ4, 
