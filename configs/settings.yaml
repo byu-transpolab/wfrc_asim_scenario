@@ -55,6 +55,7 @@ input_table_list:
       - PRKCST
       - OPRKCST
       - area_type
+      - GRADEENROLL
       - HSENROLL
       - COLLFTE
       - COLLPTE
