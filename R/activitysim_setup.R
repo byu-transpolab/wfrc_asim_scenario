@@ -404,7 +404,7 @@ make_asim_persons <- function(popsim_outputs, popsim_success, taz) {
     
     # ActivitySim really wants to have sequential person numbers.
     mutate(person_id = row_number(),
-           PNUM = person_id)%>%
+           PNUM = per_num)%>%
     rename(age = AGEP) %>%
     mutate(
       # create person type variables
