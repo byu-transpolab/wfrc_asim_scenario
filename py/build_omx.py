@@ -31,7 +31,7 @@ def read_taz_map(taz_map_name):
     taz_map = pd.read_csv(taz_map_name, header=0, comment='#')
     empty = taz_map[taz_map['asim_taz'].isnull()]
     deleted_zones = empty['wfrc_taz'].tolist()
-    return [x-1170 for x in deleted_zones]
+    return [x-1 for x in deleted_zones]
 
 
 def omx_getMatrix(omx_file_name, omx_key):
