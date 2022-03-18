@@ -79,7 +79,20 @@ make_land_use <- function(se, perdata, hhdata, urbanization, buildings, topo, sc
         T ~ RESACRE
       ), SHPOP62P,
       TOTEMP, AGE0004, AGE0519, AGE2044, AGE4564, AGE65P, RETEMPN, FPSEMPN, HEREMPN,
-      OTHEMPN, AGREMPN, MWTEMPN, PRKCST, OPRKCST, area_type, HSENROLL, GRADEENROLL, COLLFTE,
+      OTHEMPN, AGREMPN, MWTEMPN, PRKCST, OPRKCST, 
+      
+      # the MTC model is set up with area type = 1 means CBD, but in WFRC
+      # it is area_type = 5.
+      area_type = case_when(
+        area_type == 0 ~ 6,
+        area_type == 1 ~ 5,
+        area_type == 2 ~ 4,
+        area_type == 3 ~ 3,
+        area_type == 4 ~ 2,
+        area_type == 5 ~ 1,
+        T ~ 6
+      ),
+      HSENROLL, GRADEENROLL, COLLFTE,
       COLLPTE, TOPOLOGY, TERMINAL, gqpop = 0, geometry
     ) %>%
     mutate(

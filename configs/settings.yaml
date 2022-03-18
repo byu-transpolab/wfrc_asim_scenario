@@ -179,7 +179,7 @@ output_tables:
 # area_types less than this are considered urban
 urban_threshold: 4
 cbd_threshold: 2
-rural_threshold: 6
+rural_threshold: 5
 
 # upperEA	Upper limit on time of day for the Early morning time period		5
 # upperAM	Upper limit on time of day for the AM peak time period		10
