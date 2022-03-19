@@ -12,10 +12,11 @@ library(targets)
 source("R/populationsim_setup.R")
 source("R/network_setup.R")
 source("R/activitysim_setup.R")
+source("R/skims_setup.R")
 
 
 # debugging
-tar_option_set(debug = "land_use")
+#tar_option_set(debug = "land_use")
 
 # Set target-specific options such as packages.
 tar_option_set(packages = c("tidyverse", "sf", "tigris", "tidycensus"))
@@ -39,6 +40,7 @@ list(
   tar_target(taz_geo, "inputs/taz.geojson", format = "file"),
   tar_target(ivt0,    "inputs/IVT0_tazs.csv", format = "file"),
   tar_target(taz, get_taz(taz_geo, ivt0, tr)),
+  tar_target(skim_taz_map, write_taz_map(taz), format = "file"),
   tar_target(crosswalk, get_crosswalk(taz, tr)),
   
   
@@ -73,7 +75,8 @@ list(
   
   tar_target(write_popsim, write_files(meta, tract_controls, taz_control, seed, 
                                 crosswalk, path = "data_popsim")),
-  tar_target(popsim_success, run_populationsim(write_popsim, "data_popsim", popsim_outputs)),
+  tar_target(popsim_success, run_populationsim(write_popsim, "data_popsim", popsim_outputs),
+             format = "file"),
   
   
   # Build land use dataset =================================
@@ -107,10 +110,26 @@ list(
   tar_target(matsim_net, make_matsim_network("data/wfrc_network", matsim_lib, write_net)),
   
   
+  # Build Skims ==============================================
+  # The omx files with which we begin this process are converted from MTX files
+  # output from the WFRC model. Those files are stored on BOX, and can be converted
+  # with the script at `sh/convert_cube_omx.s`
+  
+  # OMX files that are small enough to stash on github are here already; the
+  # two that are too large need to be downloaded from Box
+  tar_target(ok_skims_file, get_ok_skims("inputs/skims/skm_auto_Ok.mtx.omx"), format = "file"),
+  tar_target(pk_skims_file, get_pk_skims("inputs/skims/skm_auto_Pk.mtx.omx"), format = "file"),
+  tar_target(manifest, "inputs/skims/skim_manifest.csv", format = "file"),
+  tar_target(skims_file, prepare_skims(ok_skims_file, pk_skims_file, manifest), format = "file"),
+  
+  
+  
+  
   # Build ActivitySim Population ===========================
   tar_target(addressfile, "inputs/AddressCoordinates.csv", format = "file"),
-  tar_target(activitysim_population, move_population(popsim_outputs, addressfile, taz, 
-                                                     activitysim_inputs, popsim_success), 
+  tar_target(asim_persons, make_asim_persons(popsim_outputs, popsim_success, taz)),
+  tar_target(asim_hholds, make_asim_hholds(popsim_outputs, addressfile, taz, popsim_success)),
+  tar_target(activitysim_population, move_population(asim_persons, asim_hholds, activitysim_inputs), 
              format = "file"),
   tar_target(run_asim, run_activitysim(activitysim_inputs, "configs", "output_activitysim", 
                                        activitysim_population, land_use_file))

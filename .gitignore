@@ -15,10 +15,17 @@ data_activitysim/
 output/
 output_all/
 
+skims.omx
+
 data.zip
 scenarios.zip
 
 __pycache__/
 _targets/
 
-*.sh~
+inputs/skims/skm_auto_Ok.mtx.omx
+
+inputs/skims/skm_auto_Pk.mtx.omx
+
+
+base/

@@ -4,14 +4,14 @@ input_table_list:
     filename: synthetic_households.csv
     index_col: household_id
     rename_columns:
+      zone_id: home_zone_id
       NP: hhsize
-      TAZ: zone_id
       WIF: num_workers
       VEH: auto_ownership
-      HHINCADJ: income 
+      HHINCADJ: income
     keep_columns:
       - hhsize
-      - zone_id
+      - home_zone_id
       - num_workers
       - auto_ownership
       - HHT
@@ -22,12 +22,11 @@ input_table_list:
     filename: synthetic_persons.csv
     index_col: person_id
     rename_columns:
-      AGEP: age
-      TAZ: zone_id
       SEX: sex
     keep_columns:
       - household_id
       - age
+      - zone_id
       - PNUM
       - sex
       - pemploy
@@ -36,9 +35,11 @@ input_table_list:
   - tablename: land_use
     filename: land_use_taz_geom.csv
     index_col: zone_id
-    rename_columns:
-      ZONE: zone_id
     keep_columns:
+      - wfrc_taz
+      - county_id
+      - DISTRICT
+      - SD
       - TOTHH
       - TOTPOP
       - TOTACRE
@@ -55,6 +56,7 @@ input_table_list:
       - PRKCST
       - OPRKCST
       - area_type
+      - GRADEENROLL
       - HSENROLL
       - COLLFTE
       - COLLPTE
@@ -68,11 +70,11 @@ input_table_list:
 #input_store: ../output/input_data.h5
 
 # number of households to simulate
-households_sample_size: 15
+households_sample_size: 200
 # simulate all households
 # households_sample_size: 0
 
-multiprocess: True
+multiprocess: False
 strict: False   # this is a warning filter
 mem_tick: 30  # I think its a helper for tracking memory usage.
 
@@ -161,7 +163,7 @@ models:
 
 
 output_tables:
-  h5_store: False
+  h5_store: True
   action: include
   prefix: final_
   tables:
@@ -179,7 +181,7 @@ output_tables:
 # area_types less than this are considered urban
 urban_threshold: 4
 cbd_threshold: 2
-rural_threshold: 6
+rural_threshold: 5
 
 # upperEA	Upper limit on time of day for the Early morning time period		5
 # upperAM	Upper limit on time of day for the AM peak time period		10

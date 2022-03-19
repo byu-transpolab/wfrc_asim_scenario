@@ -10,7 +10,7 @@ run_activitysim <- function(data_path, config_path, output_path, ...){
   message("You are ready to run activitysim.",  
           "To do this, run the following shell commands:\n \t", 
           "conda activate ASIM_DEV\n \t",
-          "activitysim --config ", config_path, " --data ", data_path,  " --output ", output_path)
+          "activitysim run --config ", config_path, " --data ", data_path,  " --output ", output_path)
   
   return(TRUE)
 }
@@ -58,44 +58,47 @@ run_activitysim <- function(data_path, config_path, output_path, ...){
 #' 
 make_land_use <- function(se, perdata, hhdata, urbanization, buildings, topo, schools, taz){
   se %>%
+    inner_join(taz %>% mutate(zone_id = as.character(TAZ)), 
+               by = "zone_id")  %>%
     left_join(perdata, by = "zone_id") %>%
     left_join(hhdata, by = "zone_id") %>%
     left_join(urbanization, by = "zone_id") %>%
     left_join(buildings, by = "zone_id") %>%
     left_join(topo, by = "zone_id") %>%
     left_join(schools, by = "zone_id") %>%
-    left_join(taz, by = c("zone_id" = "TAZ")) %>%
     # relocate columns for my own sanity
     transmute(
-      ZONE = as.numeric(zone_id),
+      zone_id = asim_taz,
+      wfrc_taz = TAZ,
+      county_id = substr(GEOID, 1,5),
+      DISTRICT, SD,
       TOTHH, HHPOP, TOTPOP,
       EMPRES, SFDU, MFDU, HHINCQ1, HHINCQ2, HHINCQ3, HHINCQ4, 
-      TOTACRE, RESACRE, CIACRE, SHPOP62P,
-      TOTEMP, AGE0004, AGE0519, AGE2044, AGE4564, AGE65P, RETEMPN, FPSEMPN, HEREMPN,
-      OTHEMPN, AGREMPN, MWTEMPN, PRKCST, OPRKCST, area_type, HSENROLL, COLLFTE,
-      COLLPTE, TOPOLOGY, TERMINAL, gqpop = 0, geometry
-    )  %>%
-    mutate(
-      across(c(TOTHH:HHINCQ4, SHPOP62P:MWTEMPN, HSENROLL, COLLFTE, COLLPTE), na_int)
-    ) %>%
-    
-    # remove zones that are not in the skims. These zones are in Utah County 
-    filter(ZONE %in% c(136:140, 421:422, 1782:1788, 2874:2881)) %>% 
-    mutate(
-      ZONE = case_when(
-        ZONE < 136 ~ ZONE,
-        ZONE > 140 & ZONE < 421 ~ (ZONE - 5),
-        ZONE > 422 & ZONE < 1782 ~ (ZONE -7),
-        T ~ (ZONE - 14)
-      ),
+      TOTACRE, CIACRE, 
       RESACRE = case_when(
         RESACRE == 0 ~ 1,
         T ~ RESACRE
-      )
+      ), SHPOP62P,
+      TOTEMP, AGE0004, AGE0519, AGE2044, AGE4564, AGE65P, RETEMPN, FPSEMPN, HEREMPN,
+      OTHEMPN, AGREMPN, MWTEMPN, PRKCST, OPRKCST, 
+      
+      # the MTC model is set up with area type = 1 means CBD, but in WFRC
+      # it is area_type = 5.
+      area_type = case_when(
+        area_type == 0 ~ 6,
+        area_type == 1 ~ 5,
+        area_type == 2 ~ 4,
+        area_type == 3 ~ 3,
+        area_type == 4 ~ 2,
+        area_type == 5 ~ 1,
+        T ~ 6
+      ),
+      HSENROLL, GRADEENROLL, COLLFTE,
+      COLLPTE, TOPOLOGY, TERMINAL, gqpop = 0, geometry
     ) %>%
-    rename(zone_id = ZONE)
-
-    
+    mutate(
+      across(TOTHH:COLLPTE, na_int)
+    )
 }
 
 #' Turn NA values to zeros, make integer
@@ -147,9 +150,11 @@ read_sedata <- function(se_wfrc, se_boxelder){
   wfrc <- read_csv(se_wfrc) %>%
     rename(zone_id = `;TAZID`, TOTEMP = ALLEMP, HSENROLL = Enrol_High)
   
-  boxelder <- read_csv(se_boxelder) %>%
+  boxelder <- read_csv(se_boxelder,) %>%
     rename(zone_id = Index, TOTEMP = ALLEMP, HSENROLL = Enrol_High) %>%
-    filter(! (zone_id %in% wfrc$zone_id))
+    filter(DISTLRG == 1) %>%
+    mutate(zone_id = `;CO_TAZID` - 30000)
+  
   
   bind_rows(boxelder, wfrc) %>%
     mutate(zone_id = as.character(zone_id)) %>%
@@ -175,7 +180,7 @@ read_sedata <- function(se_wfrc, se_boxelder){
       OTHEMPN = OTHR + HBJ + FM_CONS,
       AGREMPN = FM_AGRI + FM_MING,
       MWTEMPN = MANU + WSLE,
-      HSENROLL,
+      HSENROLL, GRADEENROLL = Enrol_Elem + Enrol_Midl
     ) %>%
     mutate(
       across(-zone_id, na_int)
@@ -384,22 +389,11 @@ make_schools <- function(schoolfile){
 }
 
 
-#' Move households and population to activitysim
+#' Make persons file for activitysim
 #' 
 #' @param popsim_outputs
-#' @param parcelsfile
-#' @param taz
-#' @param popsim_success Only necessary for targets
-#'
-#' @details This function does quite a bit of cleaning to move the populationsim
-#' outputs over and get them ready for activitysim.
 #' 
-move_population <- function(popsim_outputs, addressfile, taz, activitysim_inputs, popsim_success){
-  
-  # create directory
-  dir.create(activitysim_inputs)
-  
-  # copy person file from popsim output to activitysim input =========
+make_asim_persons <- function(popsim_outputs, popsim_success, taz) {
   perfile <- file.path(popsim_outputs, "synthetic_persons.csv")
   persons <- read_csv(perfile, col_types = list(
     PUMA = col_character(),
@@ -407,8 +401,10 @@ move_population <- function(popsim_outputs, addressfile, taz, activitysim_inputs
   )) 
   
   persons %>%
+    
+    # ActivitySim really wants to have sequential person numbers.
     mutate(person_id = row_number(),
-           PNUM = person_id)%>%
+           PNUM = per_num)%>%
     rename(age = AGEP) %>%
     mutate(
       # create person type variables
@@ -434,20 +430,30 @@ move_population <- function(popsim_outputs, addressfile, taz, activitysim_inputs
         age >= 16 & ESR == 3 | age >= 16 & ESR == 6 ~ 3,
         T ~ 4
       ),
-      
-      # the skims skip several cells, so we need to rename a few of them.
-      TAZ2 = case_when(
-        TAZ < 136 ~ TAZ,
-        TAZ > 140 & TAZ < 421 ~ (TAZ - 5),
-        TAZ > 422 & TAZ < 1782 ~ (TAZ -7),
-        T ~ (TAZ - 14)
-      )
-    ) %>% 
-    select(-TAZ) %>% 
-    rename(TAZ = TAZ2) %>%
-    write_csv(file.path(activitysim_inputs, "synthetic_persons.csv"))
-  
-  # read households file and append random coordinate =================
+    )  %>%
+    left_join(
+      taz %>% transmute(TAZ = TAZ, asim_taz) %>% st_set_geometry(NULL)
+    ) %>%
+    rename(zone_id = asim_taz, wfrc_taz = TAZ) %>%
+    relocate(zone_id, .before = wfrc_taz)
+}
+
+
+
+
+#' Make Activitysim households file
+#' 
+#' @param popsim_outputs Folder with popsim outputs
+#' @param addressfile Path to address points file from WFRC
+#' @param taz SF boundary file for TAZ numbering
+#' @param popsim_success 
+#' 
+#' @details 
+#'  ActivitySim requires sequential zone numbering beginning at 1. We have 
+#'  kept the zone numbers from the WFRC zones up to this point, with the `taz`
+#'  input file holding a list of all WFRC / ASIM ids. It was necessary to keep the
+#'  WFRC id's up to this point because 
+make_asim_hholds <- function(popsim_outputs, addressfile, taz, popsim_success) {
   hhfile <- file.path(popsim_outputs, "synthetic_households.csv")
   
   # households data table
@@ -482,6 +488,7 @@ move_population <- function(popsim_outputs, addressfile, taz, activitysim_inputs
   # Generate random points in polygon for zones without addresses -------------
   # which zones have households but no addresses?
   random_points <- taz %>%
+    mutate(TAZ = as.character(TAZ)) %>%
     group_by(TAZ) %>%
     nest() %>%
     left_join(n_hh) %>%
@@ -502,7 +509,7 @@ move_population <- function(popsim_outputs, addressfile, taz, activitysim_inputs
     mutate(
       points = map(data, slice_sample, n = n_hh, replace = T)
     )
-    
+  
   # bind random points together, join to hh, and write out -----------------
   allpts <- bind_rows(
     random_addresses %>%
@@ -527,17 +534,34 @@ move_population <- function(popsim_outputs, addressfile, taz, activitysim_inputs
   
   
   out_hh %>%
-    select(-ptTAZ) %>%
-    mutate(
-      TAZ = as.numeric(TAZ),
-      # the skims skip several cells, so we need to rename a few of them.
-      TAZ = as.character(case_when(
-        TAZ < 136 ~ TAZ,
-        TAZ > 140 & TAZ < 421 ~ (TAZ - 5),
-        TAZ > 422 & TAZ < 1782 ~ (TAZ -7),
-        T ~ (TAZ - 14)
-      ))
-    )  %>%
+    select(-ptTAZ)  %>%
+    left_join(
+      taz %>% transmute(TAZ = as.character(TAZ), asim_taz) %>% st_set_geometry(NULL)
+    ) %>%
+    rename(zone_id = asim_taz, wfrc_taz = TAZ) %>%
+    relocate(zone_id, .before = wfrc_taz)
+}
+
+#' Write households and population to activitysim
+#' 
+#' @param popsim_outputs
+#' @param parcelsfile
+#' @param taz
+#' @param popsim_success Only necessary for targets
+#'
+#' @details This function does quite a bit of cleaning to move the populationsim
+#' outputs over and get them ready for activitysim.
+#' 
+move_population <- function(asim_persons, asim_hholds, activitysim_inputs){
+  
+  # create directory
+  dir.create(activitysim_inputs)
+  
+  asim_persons %>% 
+    write_csv(file.path(activitysim_inputs, "synthetic_persons.csv"))
+  
+  # read households file and append random coordinate =================
+  asim_hholds %>%
     write_csv(file.path(activitysim_inputs, "synthetic_households.csv"))
   
   # return path to the households file

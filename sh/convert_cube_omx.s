@@ -1,0 +1,27 @@
+;Converts existing skims to OMX formatting 
+CONVERTMAT FROM='skm_auto_Pk.mtx' TO='skm_auto_Pk.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_auto_Ok.mtx' TO='skm_auto_Ok.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_w4_Pk.mtx' TO='skm_w4_Pk.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_w5_Pk.mtx' TO='skm_w5_Pk.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_w6_Pk.mtx' TO='skm_w6_Pk.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_w7_Pk.mtx' TO='skm_w7_Pk.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_w8_Pk.mtx' TO='skm_w8_Pk.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_w9_Pk.mtx' TO='skm_w9_Pk.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_w4_Ok.mtx' TO='skm_w4_Ok.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_w5_Ok.mtx' TO='skm_w5_Ok.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_w6_Ok.mtx' TO='skm_w6_Ok.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_w7_Ok.mtx' TO='skm_w7_Ok.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_w8_Ok.mtx' TO='skm_w8_Ok.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_w9_Ok.mtx' TO='skm_w9_Ok.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_d4_Pk.mtx' TO='skm_d4_Pk.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_d5_Pk.mtx' TO='skm_d5_Pk.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_d6_Pk.mtx' TO='skm_d6_Pk.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_d7_Pk.mtx' TO='skm_d7_Pk.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_d8_Pk.mtx' TO='skm_d8_Pk.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_d9_Pk.mtx' TO='skm_d9_Pk.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_d4_Ok.mtx' TO='skm_d4_Ok.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_d5_Ok.mtx' TO='skm_d5_Ok.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_d6_Ok.mtx' TO='skm_d6_Ok.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_d7_Ok.mtx' TO='skm_d7_Ok.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_d8_Ok.mtx' TO='skm_d8_Ok.mtx.omx' FORMAT=OMX COMPRESSION=7
+CONVERTMAT FROM='skm_d9_Ok.mtx' TO='skm_d9_Ok.mtx.omx' FORMAT=OMX COMPRESSION=7
