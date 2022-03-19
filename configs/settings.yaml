@@ -33,7 +33,7 @@ input_table_list:
       - pstudent
       - ptype
   - tablename: land_use
-    filename: land_use_taz_geom.csv
+    filename: land_use.csv
     index_col: zone_id
     keep_columns:
       - wfrc_taz
@@ -104,6 +104,9 @@ check_for_variability: False
 # shadow pricing is deprecated for less than full samples
 # see shadow_pricing.yaml for additional settings
 use_shadow_pricing: True
+
+#fail_fast is required for shadow pricing
+fail_fast: True
 
 # turn writing of sample_tables on and off for all models
 # want_dest_choice_sample_tables: False
