@@ -7,4 +7,4 @@ pacman::p_load(targets, tidyverse, sf, tigris, tidycensus)
 
 tar_make()
 
-quit("yes")
+quit("no")
