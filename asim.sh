@@ -14,11 +14,10 @@
 export OMP_NUM_THREADS=$SLURM_CPUS_ON_NODE
 SCNAME="base"
 
-
 module load miniconda3
 echo "Loaded Modules"
 module list
 
 conda activate asim
 
-python -m wfrc_asim_scenario.simulation -w wfrc_asim_scenario -m
+python -m simulation --config activitysim_inputs --data data --output activitysim_outputs -m
