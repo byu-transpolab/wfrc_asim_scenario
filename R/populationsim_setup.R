@@ -136,9 +136,12 @@ get_crosswalk <- function(taz, tr){
 #' @param taz_control_file
 #'
 #'
-get_taz_control <- function(taz_control_file, crosswalk){
-  read_csv(taz_control_file) %>% 
-    transmute(TAZ = as.character(TAZ2), HHBASE = as.integer(ceiling(YEAR2020))) %>% 
+get_taz_control <- function(se, crosswalk){
+  se %>%
+    transmute(
+      TAZ = as.character(zone_id), 
+      HHBASE = as.integer(TOTHH)
+    ) %>% 
     filter(TAZ %in% crosswalk$TAZ)
 }
 
