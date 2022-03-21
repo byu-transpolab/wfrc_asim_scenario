@@ -61,7 +61,7 @@ make_land_use <- function(se, perdata, hhdata, urbanization, buildings, topo, sc
     inner_join(taz %>% mutate(zone_id = as.character(TAZ)), 
                by = "zone_id")  %>%
     left_join(perdata, by = "zone_id") %>%
-    left_join(hhdata, by = "zone_id") %>%
+    left_join(hhdata %>% rename(synhh = TOTHH), by = "zone_id") %>%
     left_join(urbanization, by = "zone_id") %>%
     left_join(buildings, by = "zone_id") %>%
     left_join(topo, by = "zone_id") %>%
@@ -73,12 +73,25 @@ make_land_use <- function(se, perdata, hhdata, urbanization, buildings, topo, sc
       county_id = substr(GEOID, 1,5),
       DISTRICT, SD,
       TOTHH, HHPOP, TOTPOP,
-      EMPRES, SFDU, MFDU, HHINCQ1, HHINCQ2, HHINCQ3, HHINCQ4, 
-      TOTACRE, CIACRE, 
-      RESACRE = case_when(
-        RESACRE == 0 ~ 1,
-        T ~ RESACRE
-      ), SHPOP62P,
+      EMPRES, 
+      # There is an issue where some zones have no dwelling units
+      # even though there are households living there. This 
+      # fixes this issue, but it really just a band-aid.
+      SFDU = ifelse(
+        SFDU + MFDU == 0 & HHPOP > 0,
+        TOTHH, SFDU
+      ),
+      MFDU, HHINCQ1, HHINCQ2, HHINCQ3, HHINCQ4, 
+      # The urbanization file's developed acreages make no sense. So
+      # instead, we will use the values from the TAZ file, scaled against
+      # the employment and population in the zones
+      TOTACRE = ACRES, 
+      DEVACRES, 
+      # commercial / industrial acreage
+      CIACRE = ((TOTEMP) /(TOTEMP + TOTPOP)) * DEVACRES ,
+      # residential acreage
+      RESACRE = ((TOTPOP) /(TOTEMP + TOTPOP)) * DEVACRES ,
+      SHPOP62P,
       TOTEMP, AGE0004, AGE0519, AGE2044, AGE4564, AGE65P, RETEMPN, FPSEMPN, HEREMPN,
       OTHEMPN, AGREMPN, MWTEMPN, PRKCST, OPRKCST, 
       
@@ -161,6 +174,7 @@ read_sedata <- function(se_wfrc, se_boxelder){
     transmute(
       zone_id,
       TOTPOP,
+      TOTHH,
       TOTEMP,
       # RETL,retail jobs
       # FOOD,food/accommodation jobs
