@@ -70,7 +70,7 @@ input_table_list:
 #input_store: ../output/input_data.h5
 
 # number of households to simulate
-households_sample_size: 200
+households_sample_size: 0
 # simulate all households
 # households_sample_size: 0
 
@@ -104,6 +104,8 @@ check_for_variability: False
 # shadow pricing is deprecated for less than full samples
 # see shadow_pricing.yaml for additional settings
 use_shadow_pricing: True
+# if shadow pricing is on in multiprocessing, must turn on fail_fast
+fail_fast: True
 
 # turn writing of sample_tables on and off for all models
 # want_dest_choice_sample_tables: False
