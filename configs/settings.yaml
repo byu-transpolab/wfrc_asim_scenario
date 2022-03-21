@@ -104,6 +104,8 @@ check_for_variability: False
 # shadow pricing is deprecated for less than full samples
 # see shadow_pricing.yaml for additional settings
 use_shadow_pricing: True
+# if shadow pricing is on in multiprocessing, must turn on fail_fast
+fail_fast: True
 
 #fail_fast is required for shadow pricing
 fail_fast: True

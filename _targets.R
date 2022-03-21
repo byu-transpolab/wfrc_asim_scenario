@@ -46,13 +46,8 @@ list(
   
   # Controls
   # The only TAZ-level control we get from WFRC is the number of households in each
-  # TAZ. Therefore, this will be the only control in this file. The MAG data is only
-  # available for 2020, so that's what we will be using even if 2017 or 2018 might
-  # be more appropriate. We filter the list of controls to the TAZ that we are
-  # getting in the crosswalk. We need to ensure that the TAZ code is a character
-  # string and the household target is an integer. 
-  tar_target(taz_control_file, "inputs/Household_Projections_(TAZ).csv", format = "file"),
-  tar_target(taz_control, get_taz_control(taz_control_file, crosswalk)),
+  # TAZ.  We actually get this from the travel model SE file (below)
+  tar_target(taz_control, get_taz_control(se, crosswalk)),
   # The attributes available from the ACS include the following:
   # - Household size, derived from Table `B08202: HOUSEHOLD SIZE BY NUMBER OF WORKERS IN HOUSEHOLD`
   # - Household workers, derived from the same table
