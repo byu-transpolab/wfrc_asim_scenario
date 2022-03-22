@@ -10,6 +10,7 @@ AS_package/
 scenarios/
 data/
 data_popsim/
+data_beam/
 output_popsim/
 data_activitysim/
 output_activitysim/
