@@ -47,6 +47,11 @@ plans %<>%
 
 #### Households ####################################################
 
+#create hh attribute file
+hhattr <- hh %>% 
+  select(householdId, locationX, locationY) %>% 
+  mutate(housingType = hType)
+
 #add auto_work_ratio variable to hh
 hh %<>%
   select(householdId, TAZ, incomeValue, hhsize, auto_ownership, num_workers) %>% 
@@ -60,11 +65,6 @@ hh %<>%
 
 #convert WGS84 coords to UTM 12N
 ###TODO###
-
-#create hh attribute file
-hhattr <- hh %>% 
-  select(householdId, locationX, locationY) %>% 
-  mutate(housingType = hType)
 
 
 #### Persons #########################################################
