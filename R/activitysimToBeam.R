@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 if(!require(pacman)) install.packages("pacman")
 pacman::p_load(tidyverse, magrittr, sf)
 
