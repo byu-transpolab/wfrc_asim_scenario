@@ -76,6 +76,13 @@ persons %<>%
 
 #### Plans #########################################################
 
+#fix person ids
+plans$personId %<>% as.integer()
+
+#planIndex is needed for BEAM, but only applies if there are multiple
+#potential plans. Our plans file only has one potential plan.
+plans %<>% mutate(planIndex = 0)
+
 #add primary_purpose from trips to plans
 trips %<>% select(trip_id, primary_purpose)
 plans %<>%
@@ -92,12 +99,6 @@ plans %<>%
   mutate(primary_purpose = ifelse(is.na(primary_purpose), lag(primary_purpose),
                                   primary_purpose))
 
-#fix person ids
-plans$personId %<>% as.integer()
-
-#planIndex is needed for BEAM, but only applies if there are multiple
-#potential plans. Our plans file only has one potential plan.
-plans %<>% mutate(planIndex = 0)
 
 ####fix modes
 #list of modes that BEAM accepts
