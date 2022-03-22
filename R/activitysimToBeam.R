@@ -29,7 +29,8 @@ hh %<>%
   rename(householdId = household_id,
          incomeValue = income,
          locationX = home_x,
-         locationY = home_y)
+         locationY = home_y, 
+         TAZ = home_zone_id)
 
 plans %<>% 
   rename(personId = person_id,
