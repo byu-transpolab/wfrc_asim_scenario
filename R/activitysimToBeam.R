@@ -6,7 +6,7 @@ pacman::p_load(tidyverse, magrittr, sf)
 ###################################################################
 
 activitysim_output_dir <- "output_activitysim"
-beam_files_dir <- "input_beam"
+beam_files_dir <- "data_beam"
 
 # Read in csvs
 persons <- read_csv(paste0(activitysim_output_dir, "/final_persons.csv"))
