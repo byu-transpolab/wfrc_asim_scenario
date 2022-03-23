@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #SBATCH --time=20:00:00   # walltime
 #SBATCH --ntasks=8
 #SBATCH --nodes=1   # number of nodes
