@@ -52,15 +52,15 @@ hh %<>%
   select(householdId, TAZ, incomeValue, hhsize, auto_ownership, num_workers,
          locationX, locationY) %>% 
   #convert WGS84 coords to UTM 12N
-  st_as_sf(coords = c("locationX", "locationY")) %>% 
-  `st_crs<-`(4326) %>% #WGS84
-  st_transform(26912) %>% #UTM 12N
-  {mutate(.,
-          locationX = unlist(map(.$geometry,1)),
-          locationY = unlist(map(.$geometry,2))
-  )} %>% 
-  as_tibble() %>%
-  select(-geometry) %>%
+  # st_as_sf(coords = c("locationX", "locationY")) %>% 
+  # `st_crs<-`(4326) %>% #WGS84
+  # st_transform(26912) %>% #UTM 12N
+  # {mutate(.,
+  #         locationX = unlist(map(.$geometry,1)),
+  #         locationY = unlist(map(.$geometry,2))
+  # )} %>% 
+  # as_tibble() %>%
+  # select(-geometry) %>%
   #add auto_work_ratio
   mutate(num_workers = ifelse(num_workers == -8, 0, num_workers),
          autoWorkRatio =
