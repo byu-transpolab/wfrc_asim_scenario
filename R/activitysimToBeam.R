@@ -47,10 +47,10 @@ plans %<>%
 
 #### Households ####################################################
 
-#create hh attribute file
-hhattr <- hh %>% 
-  select(householdId, locationX, locationY) %>% 
-  mutate(housingType = hType) %>% 
+#convert coords and add auto_work_ratio variable to hh
+hh %<>%
+  select(householdId, TAZ, incomeValue, hhsize, auto_ownership, num_workers,
+         locationX, locationY) %>% 
   #convert WGS84 coords to UTM 12N
   st_as_sf(coords = c("locationX", "locationY")) %>% 
   `st_crs<-`(4326) %>% #WGS84
@@ -60,11 +60,8 @@ hhattr <- hh %>%
           locationY = unlist(map(.$geometry,2))
   )} %>% 
   as_tibble() %>%
-  select(-geometry)
-
-#add auto_work_ratio variable to hh
-hh %<>%
-  select(householdId, TAZ, incomeValue, hhsize, auto_ownership, num_workers) %>% 
+  select(-geometry) %>%
+  #add auto_work_ratio
   mutate(num_workers = ifelse(num_workers == -8, 0, num_workers),
          autoWorkRatio =
            case_when(auto_ownership == 0 ~ "no_auto",
@@ -72,6 +69,11 @@ hh %<>%
                      auto_ownership / num_workers >= 1 ~ "auto_sufficient",
                      #if num_workers is 0, R will return 'Inf', which is > 1
                      T ~ "we messed up, check asim to beam script"))
+
+#create hh attribute file
+hhattr <- hh %>% 
+  select(householdId, locationX, locationY) %>% 
+  mutate(housingType = hType)
 
 
 
@@ -155,11 +157,11 @@ vehicles <- tibble(vehicleId = 1:nveh,
 
 #### Write files #################################################
 
-write_csv(hh, paste0(beam_files_dir, "/households.csv", na = ""))
-write_csv(hhattr, paste0(beam_files_dir, "/household_attributes.csv", na = ""))
-write_csv(persons, paste0(beam_files_dir, "/persons.csv", na = ""))
-write_csv(plans, paste0(beam_files_dir, "/plans.csv", na = ""))
-write_csv(vehicles, paste0(beam_files_dir, "/vehicles.csv", na = ""))
+write_csv(hh, paste0(beam_files_dir, "/households.csv"), na = "")
+write_csv(hhattr, paste0(beam_files_dir, "/household_attributes.csv"), na = "")
+write_csv(persons, paste0(beam_files_dir, "/persons.csv"), na = "")
+write_csv(plans, paste0(beam_files_dir, "/plans.csv"), na = "")
+write_csv(vehicles, paste0(beam_files_dir, "/vehicles.csv"), na = "")
 
 ##############################################################
 
