@@ -50,12 +50,21 @@ plans %<>%
 #create hh attribute file
 hhattr <- hh %>% 
   select(householdId, locationX, locationY) %>% 
-  mutate(housingType = hType)
+  mutate(housingType = hType) %>% 
+  #convert WGS84 coords to UTM 12N
+  st_as_sf(coords = c("locationX", "locationY")) %>% 
+  `st_crs<-`(4326) %>% #WGS84
+  st_transform(26912) %>% #UTM 12N
+  {mutate(.,
+          locationX = unlist(map(.$geometry,1)),
+          locationY = unlist(map(.$geometry,2))
+  )} %>% 
+  as_tibble() %>%
+  select(-geometry)
 
 #add auto_work_ratio variable to hh
 hh %<>%
-  select(householdId, TAZ, incomeValue, hhsize, auto_ownership, num_workers,
-         locationX, locationY) %>% 
+  select(householdId, TAZ, incomeValue, hhsize, auto_ownership, num_workers) %>% 
   mutate(num_workers = ifelse(num_workers == -8, 0, num_workers),
          autoWorkRatio =
            #if num_workers is 0, R will return 'Inf', which is > 1
@@ -64,17 +73,6 @@ hh %<>%
                      auto_ownership / num_workers >= 1 ~ "auto_sufficient",
                      T ~ "we messed up, check asim to beam script"))
 
-#convert WGS84 coords to UTM 12N
-hh %<>%
-  st_as_sf(coords = c("locationX", "locationY")) %>% 
-  `st_crs<-`(4326) %>% #WGS84
-  st_transform(26912) %>% #UTM 12N
-  {mutate(.,
-          locationX = unlist(map(.$geometry,1)),
-          locationY = unlist(map(.$geometry,2))
-          )} %>% 
-  as_tibble() %>%
-  select(-geometry)
 
 
 #### Persons #########################################################
