@@ -81,7 +81,8 @@ hhattr <- hh %>%
 
 persons %<>% 
   select(personId, householdId, age, sex, isFemale, valueOfTime) %>% 
-  left_join(hh, by = "householdId")
+  left_join(hh, by = "householdId") %>% 
+  rename(income = incomeValue) #needs to be `incomeValue` in hh, but `income` in persons
 
 
 #### Plans #########################################################
