@@ -44,6 +44,9 @@ plans %<>%
          activityEndTime = departure_time,
          legMode = trip_mode)
 
+trips %<>%
+  rename(primaryPurpose = primary_purpose)
+
 
 #### Households ####################################################
 
@@ -94,21 +97,21 @@ plans$personId %<>% as.integer()
 #potential plans. Our plans file only has one potential plan.
 plans %<>% mutate(planIndex = 0)
 
-#add primary_purpose from trips to plans
-trips %<>% select(trip_id, primary_purpose)
+#add primaryPurpose from trips to plans
+trips %<>% select(trip_id, primaryPurpose)
 plans %<>%
   left_join(trips, by = "trip_id") %>% 
   select(personId, legMode, planIndex, planElementIndex, planElementType,
          activityType, activityLocationX, activityLocationY, activityEndTime,
-         primary_purpose) %>% 
+         primaryPurpose) %>% 
   left_join(select(persons, personId, householdId), by = "personId") %>% 
-  #copy primary_purpose to non-trip (non-leg) elements (possibly not necessary)
+  #copy primaryPurpose to non-trip (non-leg) elements (possibly not necessary)
   #all plans alternate activity->leg (starting w/activity), so copy from below
-  mutate(primary_purpose = ifelse(is.na(primary_purpose), lead(primary_purpose),
-                                  primary_purpose)) %>% 
+  mutate(primaryPurpose = ifelse(is.na(primaryPurpose), lead(primaryPurpose),
+                                  primaryPurpose)) %>% 
   #plans also end with an activity, so now copy from above
-  mutate(primary_purpose = ifelse(is.na(primary_purpose), lag(primary_purpose),
-                                  primary_purpose))
+  mutate(primaryPurpose = ifelse(is.na(primaryPurpose), lag(primaryPurpose),
+                                  primaryPurpose))
 
 
 ####fix modes
