@@ -37,6 +37,7 @@ slurm*
 old_slurm_files/
 
 
+beam.sh
 *.jar
 reference_beam/r5/physsim-network.xml
 reference_beam/r5/osm.mapdb
