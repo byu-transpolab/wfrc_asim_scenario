@@ -67,10 +67,10 @@ hh %<>%
   select(householdId, TAZ, incomeValue, hhsize, auto_ownership, num_workers) %>% 
   mutate(num_workers = ifelse(num_workers == -8, 0, num_workers),
          autoWorkRatio =
-           #if num_workers is 0, R will return 'Inf', which is > 1
            case_when(auto_ownership == 0 ~ "no_auto",
                      auto_ownership / num_workers < 1 ~ "auto_deficient",
                      auto_ownership / num_workers >= 1 ~ "auto_sufficient",
+                     #if num_workers is 0, R will return 'Inf', which is > 1
                      T ~ "we messed up, check asim to beam script"))
 
 
