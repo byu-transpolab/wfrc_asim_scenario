@@ -55,15 +55,15 @@ hh %<>%
   select(householdId, TAZ, incomeValue, hhsize, auto_ownership, num_workers,
          locationX, locationY) %>% 
   #convert WGS84 coords to UTM 12N
-  # st_as_sf(coords = c("locationX", "locationY")) %>% 
-  # `st_crs<-`(4326) %>% #WGS84
-  # st_transform(26912) %>% #UTM 12N
-  # {mutate(.,
-  #         locationX = unlist(map(.$geometry,1)),
-  #         locationY = unlist(map(.$geometry,2))
-  # )} %>% 
-  # as_tibble() %>%
-  # select(-geometry) %>%
+  st_as_sf(coords = c("locationX", "locationY")) %>%
+  `st_crs<-`(4326) %>% #WGS84
+  st_transform(26912) %>% #UTM 12N
+  {mutate(.,
+          locationX = unlist(map(.$geometry,1)),
+          locationY = unlist(map(.$geometry,2))
+  )} %>%
+  as_tibble() %>%
+  select(-geometry) %>%
   #add auto_work_ratio
   mutate(num_workers = ifelse(num_workers == -8, 0, num_workers),
          autoWorkRatio =
@@ -113,6 +113,22 @@ plans %<>%
   mutate(primaryPurpose = ifelse(is.na(primaryPurpose), lag(primaryPurpose),
                                   primaryPurpose))
 
+#convert from wgs to utm
+activities <- plans %>%
+  filter(planElementType == "activity") %>% 
+  st_as_sf(coords = c("activityLocationX", "activityLocationY")) %>%
+  `st_crs<-`(4326) %>% #WGS84
+  st_transform(26912) %>% #UTM 12N
+  {mutate(.,
+          activityLocationX = unlist(map(.$geometry,1)),
+          activityLocationY = unlist(map(.$geometry,2))
+  )} %>%
+  as_tibble() %>%
+  select(personId, planElementIndex, activityLocationX, activityLocationY)
+
+plans %<>%
+  select(-activityLocationX, -activityLocationY) %>% 
+  left_join(activities, by = c("personId", "planElementIndex"))
 
 ####fix modes
 #list of modes that BEAM accepts
