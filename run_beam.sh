@@ -14,8 +14,9 @@
 export OMP_NUM_THREADS=$SLURM_CPUS_ON_NODE
 SCNAME="base"
 
-module load java/1.8
+module purge
+module load jdk/1.8
 echo "Loaded Modules"
 module list
 
-java -jar BEAM.jar --config configs_beam/full/full.conf
+java -Xmx525G -jar BEAM.jar --config configs_beam/full/full.conf
