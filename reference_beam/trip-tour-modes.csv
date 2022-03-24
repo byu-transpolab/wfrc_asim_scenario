@@ -1,0 +1,8 @@
+TourMode,TripModes
+CAR,"car,walk"
+HOV2,"car,hov2,walk"
+HOV3,"car,hov3,walk"
+WALK,walk
+BIKE,"walk,bike"
+WALK_TRANSIT,"hov2,hov3,walk_transit,walk"
+DRIVE_TRANSIT,drive_transit

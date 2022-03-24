@@ -44,34 +44,48 @@ plans %<>%
          activityEndTime = departure_time,
          legMode = trip_mode)
 
+trips %<>%
+  rename(primaryPurpose = primary_purpose)
+
 
 #### Households ####################################################
+
+#convert coords and add auto_work_ratio variable to hh
+hh %<>%
+  select(householdId, TAZ, incomeValue, hhsize, auto_ownership, num_workers,
+         locationX, locationY) %>% 
+  #convert WGS84 coords to UTM 12N
+  st_as_sf(coords = c("locationX", "locationY")) %>%
+  `st_crs<-`(4326) %>% #WGS84
+  st_transform(26912) %>% #UTM 12N
+  {mutate(.,
+          locationX = unlist(map(.$geometry,1)),
+          locationY = unlist(map(.$geometry,2))
+  )} %>%
+  as_tibble() %>%
+  select(-geometry) %>%
+  #add auto_work_ratio
+  mutate(num_workers = ifelse(num_workers == -8, 0, num_workers),
+         autoWorkRatio =
+           case_when(auto_ownership == 0 ~ "no_auto",
+                     auto_ownership / num_workers < 1 ~ "auto_deficient",
+                     auto_ownership / num_workers >= 1 ~ "auto_sufficient",
+                     #if num_workers is 0, R will return 'Inf', which is > 1
+                     T ~ "we messed up, check asim to beam script"))
 
 #create hh attribute file
 hhattr <- hh %>% 
   select(householdId, locationX, locationY) %>% 
   mutate(housingType = hType)
 
-#add auto_work_ratio variable to hh
-hh %<>%
-  select(householdId, TAZ, incomeValue, hhsize, auto_ownership, num_workers) %>% 
-  mutate(num_workers = ifelse(num_workers == -8, 0, num_workers),
-         autoWorkRatio =
-           #if num_workers is 0, R will return 'Inf', which is > 1
-           case_when(auto_ownership == 0 ~ "no_auto",
-                     auto_ownership / num_workers < 1 ~ "auto_deficient",
-                     auto_ownership / num_workers >= 1 ~ "auto_sufficient",
-                     T ~ "we messed up, check asim to beam script"))
-
-#convert WGS84 coords to UTM 12N
-###TODO###
 
 
 #### Persons #########################################################
 
 persons %<>% 
   select(personId, householdId, age, sex, isFemale, valueOfTime) %>% 
-  left_join(hh, by = "householdId")
+  left_join(hh, by = "householdId") %>% 
+  rename(income = incomeValue) #needs to be `incomeValue` in hh, but `income` in persons
 
 
 #### Plans #########################################################
@@ -83,22 +97,38 @@ plans$personId %<>% as.integer()
 #potential plans. Our plans file only has one potential plan.
 plans %<>% mutate(planIndex = 0)
 
-#add primary_purpose from trips to plans
-trips %<>% select(trip_id, primary_purpose)
+#add primaryPurpose from trips to plans
+trips %<>% select(trip_id, primaryPurpose)
 plans %<>%
   left_join(trips, by = "trip_id") %>% 
   select(personId, legMode, planIndex, planElementIndex, planElementType,
          activityType, activityLocationX, activityLocationY, activityEndTime,
-         primary_purpose) %>% 
+         primaryPurpose) %>% 
   left_join(select(persons, personId, householdId), by = "personId") %>% 
-  #copy primary_purpose to non-trip (non-leg) elements (possibly not necessary)
+  #copy primaryPurpose to non-trip (non-leg) elements (possibly not necessary)
   #all plans alternate activity->leg (starting w/activity), so copy from below
-  mutate(primary_purpose = ifelse(is.na(primary_purpose), lead(primary_purpose),
-                                  primary_purpose)) %>% 
+  mutate(primaryPurpose = ifelse(is.na(primaryPurpose), lead(primaryPurpose),
+                                  primaryPurpose)) %>% 
   #plans also end with an activity, so now copy from above
-  mutate(primary_purpose = ifelse(is.na(primary_purpose), lag(primary_purpose),
-                                  primary_purpose))
+  mutate(primaryPurpose = ifelse(is.na(primaryPurpose), lag(primaryPurpose),
+                                  primaryPurpose))
 
+#convert from wgs to utm
+activities <- plans %>%
+  filter(planElementType == "activity") %>% 
+  st_as_sf(coords = c("activityLocationX", "activityLocationY")) %>%
+  `st_crs<-`(4326) %>% #WGS84
+  st_transform(26912) %>% #UTM 12N
+  {mutate(.,
+          activityLocationX = unlist(map(.$geometry,1)),
+          activityLocationY = unlist(map(.$geometry,2))
+  )} %>%
+  as_tibble() %>%
+  select(personId, planElementIndex, activityLocationX, activityLocationY)
+
+plans %<>%
+  select(-activityLocationX, -activityLocationY) %>% 
+  left_join(activities, by = c("personId", "planElementIndex"))
 
 ####fix modes
 #list of modes that BEAM accepts
@@ -147,11 +177,11 @@ vehicles <- tibble(vehicleId = 1:nveh,
 
 #### Write files #################################################
 
-write_csv(hh, paste0(beam_files_dir, "/households.csv", na = ""))
-write_csv(hhattr, paste0(beam_files_dir, "/household_attributes.csv", na = ""))
-write_csv(persons, paste0(beam_files_dir, "/persons.csv", na = ""))
-write_csv(plans, paste0(beam_files_dir, "/plans.csv", na = ""))
-write_csv(vehicles, paste0(beam_files_dir, "/vehicles.csv", na = ""))
+write_csv(hh, paste0(beam_files_dir, "/households.csv"), na = "")
+write_csv(hhattr, paste0(beam_files_dir, "/household_attributes.csv"), na = "")
+write_csv(persons, paste0(beam_files_dir, "/persons.csv"), na = "")
+write_csv(plans, paste0(beam_files_dir, "/plans.csv"), na = "")
+write_csv(vehicles, paste0(beam_files_dir, "/vehicles.csv"), na = "")
 
 ##############################################################
 
