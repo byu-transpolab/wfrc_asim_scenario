@@ -13,6 +13,7 @@ source("R/populationsim_setup.R")
 source("R/network_setup.R")
 source("R/activitysim_setup.R")
 source("R/skims_setup.R")
+source("R/beam_setup.R")
 
 
 # debugging
@@ -127,9 +128,13 @@ list(
   tar_target(activitysim_population, move_population(asim_persons, asim_hholds, activitysim_inputs), 
              format = "file"),
   tar_target(run_asim, run_activitysim(activitysim_inputs, "configs", "output_activitysim", 
-                                       activitysim_population, land_use_file))
+                                       activitysim_population, land_use_file)),
   
   
+  
+  # Build BEAM Inputs ========================
+  tar_target(beam_lu, build_beam_lu(land_use), format = "file"),
+  tar_target(beam_centroids, build_beam_centroids(land_use, network), format = "file")
   
   
 )
