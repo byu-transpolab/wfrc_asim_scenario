@@ -46,7 +46,7 @@ areasALL %<>%
 
 #reorder columns
 areasALL %<>%
-  relocate(id, fleetId, ridehailManagerId, vehicleType,
+  relocate(id, fleetId, rideHailManagerId, vehicleType,
            initialLocationX, initialLocationY, shifts,
            geofencePolygon)
 

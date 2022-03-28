@@ -1,4 +1,4 @@
-Area,fleetSize,shifts,vehicleType,ridehailManagerId
+Area,fleetSize,shifts,vehicleType,rideHailManagerId
 Westside SLC,8,{14400:87300},micro,GlobalRHM
 South SL Co,17,{14400:87300},micro,GlobalRHM
 South SL Co: East,7,{14400:87300},micro,GlobalRHM
