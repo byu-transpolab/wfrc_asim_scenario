@@ -134,7 +134,8 @@ list(
   
   # Build BEAM Inputs ========================
   tar_target(beam_lu, build_beam_lu(land_use), format = "file"),
-  tar_target(beam_centroids, build_beam_centroids(land_use, network), format = "file")
+  tar_target(beam_centroids, build_beam_centroids(land_use, network), format = "file"),
+  tar_target(gtfs, get_gtfs(), format = "file")
   
   
 )

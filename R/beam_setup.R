@@ -50,3 +50,11 @@ build_beam_centroids <- function(land_use, network){
   return(path)
   
 }
+
+get_gtfs <- function(){
+  file <- "reference_beam/r5/SLC.zip"
+  download.file("https://gtfsfeed.rideuta.com/gtfs.zip", 
+                destfile = file)
+  
+  return(file)
+}
