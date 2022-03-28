@@ -142,7 +142,7 @@ write_linknodes <- function(linknodeset, folder){
   if(!dir.exists(folder)) dir.create(folder, recursive = TRUE)
   
   # write links as a geojson for mapping
-  sf::st_write(linknodeset$links, file.path(folder, "network.geojson"), 
+  sf::st_write(linknodeset$links %>% st_transform(4326), file.path(folder, "network.geojson"), 
                delete_dsn = TRUE)
   
   # write links as CSV file
@@ -152,6 +152,7 @@ write_linknodes <- function(linknodeset, folder){
   
   # write nodes file
   linknodeset$nodes %>%
+    st_transform(4326) %>%
     dplyr::mutate(
       x = sf::st_coordinates(.)[, 1],
       y = sf::st_coordinates(.)[, 2]
@@ -162,6 +163,7 @@ write_linknodes <- function(linknodeset, folder){
   # if there is a centroid frame, write it out also
   if(!is.null(linknodeset$centroids)) {
     linknodeset$nodes %>%
+      st_transform(4326) %>%
       dplyr::mutate(
         x = sf::st_coordinates(.)[, 1],
         y = sf::st_coordinates(.)[, 2]

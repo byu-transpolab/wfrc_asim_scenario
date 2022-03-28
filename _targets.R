@@ -101,7 +101,7 @@ list(
   tar_target(link_file, "inputs/wfrc_links.dbf", format = "file"),
   tar_target(node_file, "inputs/wfrc_nodes.dbf", format = "file"),
   tar_target(network, read_wfrcmag(node_file, link_file, 32612)),
-  tar_target(write_net, write_linknodes(network, "data/wfrc_network")),
+  tar_target(write_net, write_linknodes(network, "data/wfrc_network"), format = "file"),
   tar_target(matsim_net, make_matsim_network("data/wfrc_network", matsim_lib, write_net)),
   
   
