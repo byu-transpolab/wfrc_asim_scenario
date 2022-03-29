@@ -1,7 +1,0 @@
-Name,ExistingService,FleetSize,FleetShifts,VehicleType,RideHailManager,Description
-SLCSouth,yes,,,micro,GlobalRHM,Original pilot area in south Salt Lake County
-Airport,yes,,,micro,GlobalRHM,Service area near SLC Int'l Airport
-Davis,no,,,micro,GlobalRHM,"South Davis County, see VIA report"
-Lehi,no,,,micro,GlobalRHM,"Lehi, see VIA report"
-SLCSE,no,,,micro,GlobalRHM,Eastern part of SLCSouth (split)
-SLCSW,no,,,micro,GlobalRHM,Western part of SLCSouth (split)

@@ -1,7 +1,0 @@
-Scenario,Zones
-Existing,"SLCSouth, Airport"
-Split,"SLCSE, SLCSW, Airport"
-A,"SLCSouth, Airport, Davis"
-B,"SLCSouth, Airport, Lehi"
-C,"SLCSouth, Airport, Davis, Lehi"
-D,"SLCSE, SLCSW, Airport, Davis, Lehi"

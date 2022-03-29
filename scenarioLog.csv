@@ -1,3 +1,0 @@
-﻿ID,Name,Date,Cores,MemoryPerCore,Walltime,Data,Sample,Network,RidehailFleet,Runtime,Result,Notes
-1000,example,1/1/2022,16,20,30,wfrc100k,1,new_network.pbf,SLCSouth,3,failed,notes
-47296701,wfrc_100k_100,2/24/2022,12,20,20,wfrc_100k,1,new_network.pbf,SLCSouth,14,completed,notes
