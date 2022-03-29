@@ -41,7 +41,6 @@ list(
   tar_target(taz_geo, "inputs/taz.geojson", format = "file"),
   tar_target(ivt0,    "inputs/IVT0_tazs.csv", format = "file"),
   tar_target(taz, get_taz(taz_geo, ivt0, tr)),
-  tar_target(skim_taz_map, write_taz_map(taz), format = "file"),
   tar_target(crosswalk, get_crosswalk(taz, tr)),
   
   
@@ -119,8 +118,10 @@ list(
   # two that are too large need to be downloaded from Box
   tar_target(ok_skims_file, get_ok_skims("inputs/skims/skm_auto_Ok.mtx.omx"), format = "file"),
   tar_target(pk_skims_file, get_pk_skims("inputs/skims/skm_auto_Pk.mtx.omx"), format = "file"),
+  tar_target(skim_taz_map, write_taz_map(taz), format = "file"),
   tar_target(manifest, "inputs/skims/skim_manifest.csv", format = "file"),
-  tar_target(skims_file, prepare_skims(ok_skims_file, pk_skims_file, manifest), format = "file"),
+  tar_target(skims_file, prepare_skims(ok_skims_file, pk_skims_file, manifest, skim_taz_map), 
+             format = "file"),
   
   
   
