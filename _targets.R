@@ -69,8 +69,10 @@ list(
   tar_target(pp_seed_file, "inputs/psam_p49.csv.zip", format = "file"),
   tar_target(seed, make_seed(hh_seed_file, pp_seed_file, crosswalk)),
   
-  tar_target(write_popsim, write_files(meta, tract_controls, taz_control, seed, 
-                                crosswalk, path = "data_popsim")),
+  tar_target(write_popsim, write_popsim_files(meta, tract_controls, taz_control, seed, 
+                                crosswalk, path = "data_popsim"), 
+             format = "file"),
+  tar_target(popsim_sh, "sh/runpopsim.sh", format = "file"),
   tar_target(popsim_success, run_populationsim(write_popsim, "data_popsim", popsim_outputs),
              format = "file"),
   

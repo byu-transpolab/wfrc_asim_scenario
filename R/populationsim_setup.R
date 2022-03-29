@@ -1,13 +1,14 @@
 #' Run populationsim
 #' 
 run_populationsim <- function(write_result, data_path, out_path){
-  # TODO: I couldn't figure out a way to run the python scripts directly from targets.
-  # We'll have to work on this later.
-  message("You are ready to run populationsim.",  
-          "To do this, run the following shell commands:\n \t", 
-          "conda activate popsim\n \t",
-          "python py/runpopsim.py --config configs_popsim --data ", data_path,  " --output ", out_path)
-  file.path(out_path, "synthetic_persons.csv")
+  out <- system2("sh/runpopsim.sh")
+  if(out != 0){
+    stop("Error running popsim")
+  } else {
+    p_file <- file.path(out_path, "synthetic_persons.csv")
+    return(p_file)
+  }
+ 
 }
 
 
@@ -352,7 +353,7 @@ make_seed <- function(hh_seed_file, pp_seed_file, crosswalk){
 #' @param crosswalk
 #' @param path Path to output folder
 #'
-write_files <- function(meta, tract_controls, taz_control, seed, crosswalk, path){
+write_popsim_files <- function(meta, tract_controls, taz_control, seed, crosswalk, path){
   dir.create(path)
   
   # Controls
@@ -366,4 +367,7 @@ write_files <- function(meta, tract_controls, taz_control, seed, crosswalk, path
  
   # Crosswalk
   write_csv(crosswalk, file.path(path, "geo_cross_walk.csv"))
+  
+  # return path to persons so it will run every time 
+  file.path(path, "seed_persons.csv")
 }
