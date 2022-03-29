@@ -73,6 +73,23 @@ read_wfrcmag <- function(node_file, link_file, crs = 32612){
       # speed in meters per second
       speed = FF_SPD * 0.44704,
       ftype = FT,
+      # append osm highway types
+      # motorway,
+      # trunk,
+      # primary,
+      # secondary,
+      # tertiary,
+      # residential
+      type = case_when(
+        ftype >= 30 & ftype < 40 ~ "motorway", # all freeways
+        ftype == 2 ~ "trunk",
+        ftype == 3 ~ "primary",
+        ftype == 4 ~ "secondary",
+        ftype %in% c(5, 6, 7) ~ "tertiary",
+        ftype > 10 & ftype < 20 ~ "trunk", # this includes bangerter highway and US-89 between towns
+        ftype >= 40 ~ "motorway-link", #ramps
+        TRUE ~ "residential"
+      ), 
       lanes = LANES,
       capacity = CAP1HR1LN * LANES
     )
