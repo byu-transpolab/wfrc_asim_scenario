@@ -10,16 +10,29 @@ make_matsim_network <- function(path, matsim_lib, write_net){
     "org.matsim.project.LinkTablesReader",
     file.path(path, "nodes.csv"),
     file.path(path, "links.csv"),
-    file.path(path, "."),
+    file.path(path, "highway_network.xml"),
     "EPSG:26912"))
   
   if(r != 0){
     stop("MATsim network converter failed to run")
   } else {
     message("Converted network to matsim")
-    file.path(path, "highway_network.xml.gz")
+    file.path(path, "highway_network.xml")
   }
   
+}
+
+#' Make BEAM network
+#' 
+#' @param matim_network
+#' 
+#' 
+make_beam_network <- function(beam_net_cleaner, matsim_net){
+  
+  dir <- dirname(matsim_net)
+  system2(beam_net_cleaner)
+  
+  file.path(dir, "highway_network_for_beam.xml")
 }
 
 
