@@ -2,9 +2,6 @@
 
 module load miniconda3 python/3.8
 
-#install requirements.txt
-pip install -r requirements.txt
-
 #init shells, maybe unnecessary
 conda init --all
 
@@ -23,3 +20,5 @@ conda activate popsim
 conda install -y pytables
 pip install scipy
 pip install populationsim
+
+conda activate base
