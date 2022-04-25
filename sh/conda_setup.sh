@@ -9,10 +9,6 @@ conda init --all
 cat conda_setup/bashrc > ~/.bashrc
 cat conda_setup/bash_profile > ~/.bash_profile
 
-#remove old environments
-conda env remove -n ASIM_DEV
-conda env remove -n popsim
-
 #create activitysim conda environment
 conda env create --file=../conda-environments/activitysim-dev.yml --name ASIM_DEV
 conda activate ASIM_DEV
