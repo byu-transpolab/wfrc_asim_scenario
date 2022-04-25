@@ -16,6 +16,7 @@ python py/runpopsim.py --config configs_popsim --data data_popsim --output outpu
 ./R/buildSkims.R
 
 #build skims
+[ ! -d "data_activitysim" ] && mkdir data_activitysim
 conda activate ASIM_DEV
 python py/build_omx.py inputs/skims data_activitysim
 
