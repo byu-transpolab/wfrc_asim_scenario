@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-args = commandArgs(trailingOnly=TRUE)
+args = commandArgs()
 library(tidyverse)
 
 args <- as.numeric(args)
