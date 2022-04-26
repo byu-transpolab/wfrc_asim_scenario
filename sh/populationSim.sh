@@ -2,7 +2,7 @@
 
 module load r gcc udunits spack/release gdal geos miniconda3 python/3.8
 
-#NOTE: All the instances of `./populationSim.R` essentially just run `tar_make()`. Sourcing some of these scripts from within the targets file has proven to be difficult, so we just run the commands manually. We need to re-run `tar_make()` between each of these steps, hence the repitition of `./populationSim.R`.
+#NOTE: The targets need to be run in a specific order, with shell commands in between (to run popsim and build the skims). Sourcing these shell commands from within the targets pipeline has proven to be difficult, so we run the commands directly from this script, in between R scripts that build the appropriate targets.
 
 #tar_make for popsim
 ./R/populationSim.R
@@ -25,4 +25,3 @@ python py/build_omx.py inputs/skims data_activitysim
 
 #make output directory for activitysim
 [ ! -d "output_activitysim" ] && mkdir output_activitysim
-
