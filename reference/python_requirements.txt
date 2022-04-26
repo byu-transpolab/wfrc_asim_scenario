@@ -1,7 +1,7 @@
 future
 setuptools
 pandas
-numpy>=1.18.5
+numpy<1.22,>=1.18
 tables
 toolz
 PyYAML
