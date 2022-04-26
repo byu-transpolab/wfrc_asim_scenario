@@ -66,7 +66,7 @@ for(i in 1:length(pct)){
 
 #write output files
 for(i in length(households)){
-  dir.create(out_dir[i])
+  if(!dir.exists(out_dir[i])) dir.create(out_dir[i])
   
   write_csv(persons[[i]], paste0(out_dir[i], "/persons.csv"))
   write_csv(plans[[i]], paste0(out_dir[i], "/plans.csv"))
