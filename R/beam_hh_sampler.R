@@ -2,9 +2,9 @@
 args = commandArgs(trailingOnly = TRUE)
 library(tidyverse)
 
-print(args)
-
 args <- as.numeric(args)
+
+print(args)
 
 #check args
 if(length(args)==0){
