@@ -2,6 +2,8 @@
 args = commandArgs()
 library(tidyverse)
 
+print(args)
+
 args <- as.numeric(args)
 
 #check args
