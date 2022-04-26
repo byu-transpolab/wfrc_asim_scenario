@@ -2,6 +2,9 @@
 
 module load miniconda3 python/3.8
 
+#install requirements
+pip install -r reference/python_requirements.txt
+
 #init shells, maybe unnecessary
 conda init --all
 
