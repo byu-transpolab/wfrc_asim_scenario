@@ -37,6 +37,13 @@ veh <- read_csv("data_beam/vehicles.csv")
 pct <- round(args,3)
 out_dir <- paste0("sample_beam_", pct)
 
+#create empty lists
+households <- list()
+hh_attributes <- list()
+persons <- list()
+plans <- list()
+vehicles <- list()
+
 #take samples
 for(i in 1:length(pct)){
   rows <- sample(nrow(hh), nrow(hh)*pct[i])
