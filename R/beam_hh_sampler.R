@@ -7,7 +7,9 @@ args <- as.numeric(args)
 #check args
 if(length(args)==0){
   stop("Please indicate the fraction(s) to sample")
-} else if(any(!is.numeric(args) | args <= 0 | args >= 1)){
+} else if(any(!is.numeric(args))){
+  stop("All arguments must be a number between 0 and 1")
+} else if(any(args <= 0 | args >= 1)){
   stop("All arguments must be a number between 0 and 1")
 }
 
