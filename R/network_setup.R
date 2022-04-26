@@ -4,7 +4,7 @@
 #'
 make_matsim_network <- function(path, matsim_lib, write_net){
   
-  system2("java", "--version")
+  system2("java", "-version")
   r <- system2("java", args = c(
     str_c('-cp ', matsim_lib, '', sep = '"'), 
     "org.matsim.project.LinkTablesReader",
