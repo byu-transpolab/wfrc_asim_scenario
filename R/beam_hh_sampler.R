@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-args = commandArgs()
+args = commandArgs(trailingOnly = TRUE)
 library(tidyverse)
 
 print(args)
