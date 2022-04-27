@@ -39,7 +39,7 @@ veh <- read_csv("data_beam/vehicles.csv")
 
 #set sample sizes and out_dirs
 pct <- round(args,3)
-out_dir <- paste0("sample_beam_", pct)
+out_dir <- paste0("data_beam/sample_", pct)
 
 #create empty lists
 households <- list()
