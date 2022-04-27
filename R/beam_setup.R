@@ -17,6 +17,10 @@ build_beam_lu <- function(land_use){
   path <- "reference_beam/utah-tpcm-loc.csv"
   write_csv(x, path)
   
+  #copy to `for_beam` folder
+  if(!dir.exists("for_beam")) dir.create("for_beam")
+  file.copy(path, "for_beam/utah-tpcm-loc.csv", overwrite = T)
+  
   return(path)
 }
 
@@ -47,6 +51,10 @@ build_beam_centroids <- function(land_use, network){
   path <- "reference_beam/parking_and_TAZ/utah-taz-centers.csv"
   write_csv(x, path)
   
+  #copy to `for_beam` folder
+  if(!dir.exists("for_beam")) dir.create("for_beam")
+  file.copy(path, "for_beam/utah-taz-centers.csv", overwrite = T)
+  
   return(path)
   
 }
@@ -55,6 +63,10 @@ get_gtfs <- function(){
   file <- "reference_beam/r5/SLC.zip"
   download.file("https://gtfsfeed.rideuta.com/gtfs.zip", 
                 destfile = file)
+  
+  #copy to `for_beam` folder
+  if(!dir.exists("for_beam/r5")) dir.create("for_beam/r5", recursive = T)
+  file.copy(file, "for_beam/r5/SLCgtfs.csv", overwrite = T)
   
   return(file)
 }
