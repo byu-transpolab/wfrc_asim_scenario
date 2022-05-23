@@ -51,3 +51,5 @@ referencec_beam/r5/SLC.zip
 log-path_IS_UNDEFINED/
 
 base_beam_asimtables.7z
+
+*.DS_store
