@@ -1,12 +1,18 @@
 #' Run populationsim
 #' 
 run_populationsim <- function(write_result, data_path, out_path){
-  # TODO: I couldn't figure out a way to run the python scripts directly from targets.
-  # We'll have to work on this later.
-  message("You are ready to run populationsim.",  
-          "To do this, run the following shell commands:\n \t", 
-          "conda activate popsim\n \t",
-          "python py/runpopsim.py --config configs_popsim --data ", data_path,  " --output ", out_path)
+  popsimStatus <- system2(
+    command = "source",
+    args = c("sh/run_popsim.sh"),
+    env = c(paste0("POPSIM_DATA_PATH=", data_path),
+            paste0("POPSIM_OUTPUT_PATH=", out_path))
+  )
+  
+  if(popsimStatus != 0){
+    writeLines("\n")
+    stop("PopulationSim failed. Check console and/or log(s) for details.")
+  }
+  
   file.path(out_path, "synthetic_persons.csv")
 }
 

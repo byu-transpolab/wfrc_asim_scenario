@@ -5,13 +5,18 @@
 #' @param output_path
 #' 
 run_activitysim <- function(data_path, config_path, output_path, ...){
-  # TODO: I couldn't figure out a way to run the python scripts directly from targets.
-  # We'll have to work on this later.
-  message("You are ready to run activitysim.",  
-          "To do this, run the following shell commands:\n \t", 
-          "conda activate ASIM_DEV\n \t",
-          "activitysim run --config ", config_path, " --data ", data_path,  " --output ", output_path)
+  activitysimStatus <- system2(
+    command = "source",
+    args = c("sh/run_activitysim.sh"),
+    env = c(paste0("ASIM_CONFIG_PATH=", config_path),
+            paste0("ASIM_DATA_PATH=", data_path),
+            paste0("ASIM_OUTPUT_PATH=", output_path))
+  )
   
+  if(activitysimStatus != 0){
+    writeLines("\n")
+    stop("ActivitySim failed. Check console and/or log(s) for details.")
+  }
   return(TRUE)
 }
 
