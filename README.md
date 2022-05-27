@@ -1,6 +1,6 @@
 # WFRC ActivitySim Scenario
 
->This repository is included as a submodule in `(byu-transpolab/activitysim)[https://github.com/byu-transpolab-activitysim]`.
+>This repository is included as a submodule in [byu-transpolab/activitysim](https://github.com/byu-transpolab-activitysim).
 In order to fully utilize this repository, activitysim must be cloned with
 `git clone --recurse-submodules` (or if previously cloned without this tag,
 run `git submodule update --init` and possibly `git pull --recurse-submodules`.)
