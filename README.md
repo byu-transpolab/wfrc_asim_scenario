@@ -15,11 +15,11 @@ by US DOT via the T-SCORE University Transportation Center.
 
 ## Environment Setup
 
-The scenario builder is an implementation of `targets` library for R. This is
+The scenario builder is an implementation of the `targets` library for R. This is
 a make-style system that traces dependencies in a project and only re-builds if 
 required.
 
-Users should must install the following R packages:
+Users should install the following R packages:
 
 ```r
 # only install if necessary
