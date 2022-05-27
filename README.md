@@ -1,5 +1,10 @@
 # WFRC ActivitySim Scenario
 
+>This repository is included as a submodule in `[byu-transpolab/activitysim](https://github.com/byu-transpolab-activitysim)`.
+In order to fully utilize this repository, activitysim must be cloned with
+`git clone --recurse-submodules` (or if previously cloned without this tag,
+run `git submodule update --init` and possibly `git pull --recurse-submodules`.)
+
 This repository serves as a scenario builder for the ActivitySim implementation
 in the Wasatch Front / MAG modeling region. This is a research-only 
 implementation to support work in travel modeling at BYU, and should not be used
