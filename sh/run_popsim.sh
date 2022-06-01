@@ -12,7 +12,7 @@ else
 	exit 1
 fi
 
-conda activate ASIM_DEV
+conda activate popsim
 conda info
 
-python py/build_omx.py $SKIMS_MANIFEST_DIR $ASIM_DATA_DIR || exit 1
+python py/runpopsim.py --config configs_popsim --data $POPSIM_DATA_PATH --output $POPSIM_OUTPUT_PATH || exit 1

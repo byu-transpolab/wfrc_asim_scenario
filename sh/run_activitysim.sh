@@ -15,4 +15,4 @@ fi
 conda activate ASIM_DEV
 conda info
 
-python py/build_omx.py $SKIMS_MANIFEST_DIR $ASIM_DATA_DIR || exit 1
+activitysim run --config $ASIM_CONFIG_PATH --data $ASIM_DATA_PATH --output $ASIM_OUTPUT_PATH || exit 1

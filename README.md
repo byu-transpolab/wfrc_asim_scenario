@@ -1,5 +1,13 @@
 # WFRC ActivitySim Scenario
 
+>This repository is included as a submodule in [byu-transpolab/activitysim](https://github.com/byu-transpolab/activitysim).
+In order to fully utilize this repository, activitysim must be cloned with
+`git clone --recurse-submodules` (or if previously cloned without this tag,
+run `git submodule update --init` and possibly `git pull --recurse-submodules`.)
+
+**Instructions on how to run this scenario on the BYU supercomputer are given
+[here](https://github.com/byu-transpolab/wfrc_asim_scenario/wiki/Running-the-scenario-on-the-BYU-Supercomputer).**
+
 This repository serves as a scenario builder for the ActivitySim implementation
 in the Wasatch Front / MAG modeling region. This is a research-only 
 implementation to support work in travel modeling at BYU, and should not be used
@@ -10,11 +18,11 @@ by US DOT via the T-SCORE University Transportation Center.
 
 ## Environment Setup
 
-The scenario builder is an implementation of `targets` library for R. This is
+The scenario builder is an implementation of the `targets` library for R. This is
 a make-style system that traces dependencies in a project and only re-builds if 
 required.
 
-Users should must install the following R packages:
+Users should install the following R packages:
 
 ```r
 # only install if necessary

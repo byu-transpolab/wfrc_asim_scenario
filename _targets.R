@@ -23,8 +23,17 @@ source("R/beam_setup.R")
 tar_option_set(packages = c("tidyverse", "sf", "tigris", "tidycensus", "xml2"))
 
 
+popsim_data <- "data_popsim"
 popsim_outputs <- "output_popsim"
 activitysim_inputs <- "data_activitysim"
+activitysim_configs <- "configs"
+activitysim_outputs <- "output_activitysim"
+
+dir.create(popsim_data)
+dir.create(popsim_outputs)
+dir.create(activitysim_inputs)
+dir.create(activitysim_configs)
+dir.create(activitysim_outputs)
 
 
 # End this file with a list of target objects.
@@ -68,11 +77,9 @@ list(
   tar_target(pp_seed_file, "inputs/psam_p49.csv.zip", format = "file"),
   tar_target(seed, make_seed(hh_seed_file, pp_seed_file, crosswalk)),
   
-  tar_target(write_popsim, write_popsim_files(meta, tract_controls, taz_control, seed, 
-                                crosswalk, path = "data_popsim"), 
-             format = "file"),
-  tar_target(popsim_sh, "sh/runpopsim.sh", format = "file"),
-  tar_target(popsim_success, run_populationsim(write_popsim, "data_popsim", popsim_outputs),
+  tar_target(write_popsim, write_files(meta, tract_controls, taz_control, seed, 
+                                crosswalk, path = popsim_data)),
+  tar_target(popsim_success, run_populationsim(write_popsim, popsim_data, popsim_outputs),
              format = "file"),
   
   
@@ -130,7 +137,7 @@ list(
   tar_target(asim_hholds, make_asim_hholds(popsim_outputs, addressfile, taz, popsim_success)),
   tar_target(activitysim_population, move_population(asim_persons, asim_hholds, activitysim_inputs), 
              format = "file"),
-  tar_target(run_asim, run_activitysim(activitysim_inputs, "configs", "output_activitysim", 
+  tar_target(run_asim, run_activitysim(activitysim_inputs, activitysim_configs, activitysim_outputs, 
                                        activitysim_population, land_use_file)),
   
   

@@ -17,6 +17,10 @@ build_beam_lu <- function(land_use){
   path <- "reference_beam/utah-tpcm-loc.csv"
   write_csv(x, path)
   
+  #copy to `for_beam` folder
+  if(!dir.exists("for_beam")) dir.create("for_beam")
+  file.copy(path, "for_beam/utah-tpcm-loc.csv", overwrite = T)
+  
   return(path)
 }
 
@@ -46,6 +50,10 @@ build_beam_centroids <- function(land_use, network){
   
   path <- "reference_beam/parking_and_TAZ/utah-taz-centers.csv"
   write_csv(x, path)
+  
+  #copy to `for_beam` folder
+  if(!dir.exists("for_beam")) dir.create("for_beam")
+  file.copy(path, "for_beam/utah-taz-centers.csv", overwrite = T)
   
   return(path)
   

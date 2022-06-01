@@ -1,16 +1,18 @@
 #' Prepare skims file
 #' 
 #' 
-prepare_skims <- function(ok_skims_file, pk_skims_file, manifest, skim_taz_map){
-  # TODO: I couldn't figure out a way to run the python scripts directly from targets.
-  # We'll have to work on this later.
+prepare_skims <- function(ok_skims_file, pk_skims_file, manifest, asim_data_dir){
+  skimsStatus <- system2(
+  command = "source",
+  args = c("sh/build_skims.sh"),
+  env = c(paste0("SKIMS_MANIFEST_DIR=", dirname(manifest)),
+          paste0("ASIM_DTA_DIR=", asim_data_dir))
+  )
   
-  system2("sh/build_skims.sh",
-          args = c(
-            "-m", dirname(manifest),
-            "-t", skim_taz_map,
-            "-o", "data_activitysim"
-          ))
+  if(skimsStatus != 0){
+    writeLines("\n")
+    stop("Building the skims failed. Check console and/or log(s) for details.")
+  }
   
   return("data_activitysim/skims.omx")
 }

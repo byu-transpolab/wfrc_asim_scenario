@@ -1,14 +1,19 @@
 #' Run populationsim
 #' 
 run_populationsim <- function(write_result, data_path, out_path){
-  out <- system2("sh/runpopsim.sh")
-  if(out != 0){
-    stop("Error running popsim")
-  } else {
-    p_file <- file.path(out_path, "synthetic_persons.csv")
-    return(p_file)
+  popsimStatus <- system2(
+    command = "source",
+    args = c("sh/run_popsim.sh"),
+    env = c(paste0("POPSIM_DATA_PATH=", data_path),
+            paste0("POPSIM_OUTPUT_PATH=", out_path))
+  )
+  
+  if(popsimStatus != 0){
+    writeLines("\n")
+    stop("PopulationSim failed. Check console and/or log(s) for details.")
   }
- 
+  
+  file.path(out_path, "synthetic_persons.csv")
 }
 
 
@@ -353,7 +358,7 @@ make_seed <- function(hh_seed_file, pp_seed_file, crosswalk){
 #' @param crosswalk
 #' @param path Path to output folder
 #'
-write_popsim_files <- function(meta, tract_controls, taz_control, seed, crosswalk, path){
+write_files <- function(meta, tract_controls, taz_control, seed, crosswalk, path){
   dir.create(path)
   
   # Controls
@@ -367,7 +372,4 @@ write_popsim_files <- function(meta, tract_controls, taz_control, seed, crosswal
  
   # Crosswalk
   write_csv(crosswalk, file.path(path, "geo_cross_walk.csv"))
-  
-  # return path to persons so it will run every time 
-  file.path(path, "seed_persons.csv")
 }

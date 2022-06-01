@@ -78,7 +78,13 @@ make_beam_network <- function(beam_net_cleaner, matsim_net){
   dir <- dirname(matsim_net)
   system2(beam_net_cleaner)
   
-  file.path(dir, "highway_network_for_beam.xml")
+  path <- file.path(dir, "highway_network_for_beam.xml")
+  
+  #copy to `for_beam` folder
+  if(!dir.exists("for_beam/r5")) dir.create("for_beam/r5", recursive = T)
+  file.copy(path, "for_beam/r5/targets_pipeline_network.xml")
+  
+  path
 }
 
 
