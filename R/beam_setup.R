@@ -52,9 +52,10 @@ build_beam_centroids <- function(land_use, network){
 }
 
 get_gtfs <- function(){
-  file <- "reference_beam/r5/SLC.zip"
-  download.file("https://gtfsfeed.rideuta.com/gtfs.zip", 
-                destfile = file)
-  
+  file <- "data_beam/r5/SLC.zip"
+  if(!file.exists(file)){
+    download.file("https://gtfsfeed.rideuta.com/gtfs.zip", 
+                  destfile = file)
+  }
   return(file)
 }
