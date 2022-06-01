@@ -111,7 +111,9 @@ plans %<>%
                                   primaryPurpose)) %>% 
   #plans also end with an activity, so now copy from above
   mutate(primaryPurpose = ifelse(is.na(primaryPurpose), lag(primaryPurpose),
-                                  primaryPurpose))
+                                  primaryPurpose)) %>%
+  # activitysim end times are in hours, but  beam expects them in seconds
+  mutate(activityEndTime = activityEndTime * 3600)
 
 #convert from wgs to utm
 activities <- plans %>%
