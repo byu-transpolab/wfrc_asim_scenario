@@ -9,25 +9,25 @@ make_matsim_network <- function(network, path){
   
   # Transform nodes tibble into a list of lists of lists ========
   # The XML2 library really only works with lists. But that's a possibility!
-  nodes_nestdf <- network$nodes |> 
-    sf::st_transform(4326) |> 
+  nodes_nestdf <- network$nodes %>% 
+    sf::st_transform(4326) %>% 
     dplyr::mutate(
       x = sf::st_coordinates(geometry)[, 1],
       y = sf::st_coordinates(geometry)[, 2]
-    )  |> 
-    st_set_geometry(NULL) |>
-    mutate(name = row_number()) |>
+    )  %>% 
+    st_set_geometry(NULL) %>%
+    mutate(name = row_number()) %>%
     nest(data = !name)
   
   nodes_list <- lapply(nodes_nestdf$data, function(node){
     node = structure(list(), id = node$id, x = node$x, y = node$y)
-  }) |>
+  }) %>%
     setNames(rep("node", nrow(nodes_nestdf)))
    
   # Do the same think with links  ==========
-  links_nestdf <- network$links|> 
-    st_set_geometry(NULL) |>
-    mutate(name = row_number()) |>
+  links_nestdf <- network$links%>% 
+    st_set_geometry(NULL) %>%
+    mutate(name = row_number()) %>%
     nest(data = !name)
   
   links_list <- lapply(links_nestdf$data, function(link){
@@ -40,7 +40,7 @@ make_matsim_network <- function(network, path){
       permlanes = link$lanes,
       type = link$type
     )
-  }) |>
+  }) %>%
       setNames(rep("link", nrow(links_nestdf)))
   
   
@@ -122,13 +122,13 @@ get_matsim_lib <- function(matsim_lib){
 read_wfrcmag <- function(node_file, link_file, crs = 32612){
   
   # Read links table and filter ===================
-  links <- foreign::read.dbf(link_file, as.is = TRUE) |>
+  links <- foreign::read.dbf(link_file, as.is = TRUE) %>%
     tibble::as_tibble()
   
-  my_links <- links |>
+  my_links <- links %>%
     # filter out centroid connectors and roads with no lanes (under construction)
-    dplyr::filter(FT != 1) |>
-    dplyr::filter(LANES > 0) |>
+    dplyr::filter(FT != 1) %>%
+    dplyr::filter(LANES > 0) %>%
     # select the columns we want
     dplyr::transmute(
       link_id = row_number(), 
@@ -160,40 +160,40 @@ read_wfrcmag <- function(node_file, link_file, crs = 32612){
     )
   
   # Read nodes table =====================
-  nodes <- foreign::read.dbf(node_file) |>
+  nodes <- foreign::read.dbf(node_file) %>%
     tibble::as_tibble()
   
   # turn into sf
-  my_nodes <- nodes |>
-    dplyr::select( id = N,  x = X, y = Y ) |>
+  my_nodes <- nodes %>%
+    dplyr::select( id = N,  x = X, y = Y ) %>%
     sf::st_as_sf(coords = c('x', 'y'), crs = crs)
   
   # get centroids as separate file
   taz_ids <- unique(nodes$TAZID)
   
-  centroids <- my_nodes |>
+  centroids <- my_nodes %>%
     dplyr::filter(id %in% taz_ids)
   
   # Append node coords to links ====================
   link_geom <- bind_rows(
-    my_links |>
-      transmute(link_id, end = 1, id = a) |>
+    my_links %>%
+      transmute(link_id, end = 1, id = a) %>%
       left_join(my_nodes),
-    my_links |>
-      transmute(link_id, end = 2, id = b) |>
+    my_links %>%
+      transmute(link_id, end = 2, id = b) %>%
       left_join(my_nodes)
-  )|>
-    select(-id) |>
-    st_as_sf(crs = crs) |>
-    group_by(link_id) |>
-    arrange(end, .by_group = TRUE) |>
-    select(-end) |>
-    summarise(do_union = FALSE) |>
+  )%>%
+    select(-id) %>%
+    st_as_sf(crs = crs) %>%
+    group_by(link_id) %>%
+    arrange(end, .by_group = TRUE) %>%
+    select(-end) %>%
+    summarise(do_union = FALSE) %>%
     st_cast("MULTILINESTRING")
   
   
-  mylinks <- my_links |>
-    left_join(link_geom, by = "link_id") |>
+  mylinks <- my_links %>%
+    left_join(link_geom, by = "link_id") %>%
     st_as_sf()
   
   
@@ -224,11 +224,11 @@ write_linknodes <- function(linknodeset, folder){
   if(!dir.exists(folder)) dir.create(folder, recursive = TRUE)
   
   # write links as a geojson for mapping
-  sf::st_write(linknodeset$links |> st_transform(4326), file.path(folder, "network.geojson"), 
+  sf::st_write(linknodeset$links %>% st_transform(4326), file.path(folder, "network.geojson"), 
                delete_dsn = TRUE)
   
   # write links as CSV file
-  readr::write_csv(linknodeset$links |> sf::st_set_geometry(NULL), file.path(folder, "links.csv"))
+  readr::write_csv(linknodeset$links %>% sf::st_set_geometry(NULL), file.path(folder, "links.csv"))
   
   
   
