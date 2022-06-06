@@ -28,13 +28,14 @@ popsim_outputs <- "output_popsim"
 activitysim_inputs <- "data_activitysim"
 activitysim_configs <- "configs"
 activitysim_outputs <- "output_activitysim"
+beam_data <- "beam_data"
 
 dir.create(popsim_data)
 dir.create(popsim_outputs)
 dir.create(activitysim_inputs)
 dir.create(activitysim_configs)
 dir.create(activitysim_outputs)
-
+dir.create(beam_data)
 
 # End this file with a list of target objects.
 list(
