@@ -233,24 +233,24 @@ write_linknodes <- function(linknodeset, folder){
   
   
   # write nodes file
-  linknodeset$nodes |>
-    st_transform(4326) |>
+  linknodeset$nodes %>% # Native R pipe does not work with dot (.) syntax
+    st_transform(4326) %>%
     dplyr::mutate(
       x = sf::st_coordinates(.)[, 1],
       y = sf::st_coordinates(.)[, 2]
-    ) |>
-    sf::st_set_geometry(NULL) |>
+    ) %>%
+    sf::st_set_geometry(NULL) %>%
     readr::write_csv(file.path(folder, "nodes.csv"))
   
   # if there is a centroid frame, write it out also
   if(!is.null(linknodeset$centroids)) {
-    linknodeset$nodes |>
-      st_transform(4326) |>
+    linknodeset$nodes %>%
+      st_transform(4326) %>%
       dplyr::mutate(
         x = sf::st_coordinates(.)[, 1],
         y = sf::st_coordinates(.)[, 2]
-      ) |>
-      sf::st_set_geometry(NULL) |>
+      ) %>%
+      sf::st_set_geometry(NULL) %>%
       readr::write_csv(file.path(folder, "centroids.csv"))
   }
   
