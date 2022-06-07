@@ -10,8 +10,7 @@ prepare_skims <- function(ok_skims_file, pk_skims_file, manifest, asim_data_dir)
   )
   
   if(skimsStatus != 0){
-    writeLines("\n")
-    stop("Building the skims failed. Check console and/or log(s) for details.")
+    stop("\n\nBuilding the skims failed. Check console and/or log(s) for details.\n")
   }
   
   return("data_activitysim/skims.omx")

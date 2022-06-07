@@ -9,8 +9,7 @@ run_populationsim <- function(write_result, data_path, out_path){
   )
   
   if(popsimStatus != 0){
-    writeLines("\n")
-    stop("PopulationSim failed. Check console and/or log(s) for details.")
+    stop("\n\nPopulationSim failed. Check console and/or log(s) for details.\n")
   }
   
   file.path(out_path, "synthetic_persons.csv")

@@ -14,8 +14,7 @@ run_activitysim <- function(data_path, config_path, output_path, ...){
   )
   
   if(activitysimStatus != 0){
-    writeLines("\n")
-    stop("ActivitySim failed. Check console and/or log(s) for details.")
+    stop("\n\nActivitySim failed. Check console and/or log(s) for details.\n")
   }
   return(TRUE)
 }
