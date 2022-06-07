@@ -28,14 +28,16 @@ popsim_outputs <- "output_popsim"
 activitysim_inputs <- "data_activitysim"
 activitysim_configs <- "configs"
 activitysim_outputs <- "output_activitysim"
-beam_data <- "beam_data"
+beam_data <- "data_beam"
+beam_r5 <- "data_beam/r5"
 
-dir.create(popsim_data)
-dir.create(popsim_outputs)
-dir.create(activitysim_inputs)
-dir.create(activitysim_configs)
-dir.create(activitysim_outputs)
-dir.create(beam_data)
+dir.create(showWarnings= F, popsim_data)
+dir.create(showWarnings= F, popsim_outputs)
+dir.create(showWarnings= F, activitysim_inputs)
+dir.create(showWarnings= F, activitysim_configs)
+dir.create(showWarnings= F, activitysim_outputs)
+dir.create(showWarnings= F, beam_data)
+dir.create(showWarnings= F, beam_r5)
 
 # End this file with a list of target objects.
 list(
@@ -112,7 +114,7 @@ list(
   tar_target(node_file, "inputs/wfrc_nodes.dbf", format = "file"),
   tar_target(network, read_wfrcmag(node_file, link_file, 32612)),
   tar_target(write_net, write_linknodes(network, "data/wfrc_network"), format = "file"),
-  tar_target(matsim_net, make_matsim_network(network, "data/wfrc_network/highways_network.xml"), format = "file"),
+#  tar_target(matsim_net, make_matsim_network(network, "data/wfrc_network/highways_network.xml"), format = "file"),
   
   
   # Build Skims ==============================================
@@ -126,8 +128,8 @@ list(
   tar_target(pk_skims_file, get_pk_skims("inputs/skims/skm_auto_Pk.mtx.omx"), format = "file"),
   tar_target(skim_taz_map, write_taz_map(taz), format = "file"),
   tar_target(manifest, "inputs/skims/skim_manifest.csv", format = "file"),
-  tar_target(skims_file, prepare_skims(ok_skims_file, pk_skims_file, manifest, skim_taz_map), 
-             format = "file"),
+#  tar_target(skims_file, prepare_skims(ok_skims_file, pk_skims_file, manifest, skim_taz_map), 
+#             format = "file"),
   
   
   
