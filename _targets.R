@@ -79,8 +79,8 @@ list(
   tar_target(seed, make_seed(hh_seed_file, pp_seed_file, crosswalk)),
   
   tar_target(write_popsim, write_files(meta, tract_controls, taz_control, seed, 
-                                crosswalk, path = popsim_data)),
-  tar_target(popsim_success, run_populationsim(write_popsim, popsim_data, popsim_outputs),
+                                crosswalk, path = dirs['popsim_data'])),
+  tar_target(popsim_success, run_populationsim(write_popsim, dirs['popsim_data'], dirs['popsim_outputs']),
              format = "file"),
   
   
@@ -88,8 +88,8 @@ list(
   tar_target(se_boxelder, "inputs/SE_Box_Elder_2018.csv", format = "file"),
   tar_target(se_wfrc,     "inputs/SE_WF_2018.csv", format = "file"),
   tar_target(se, read_sedata(se_wfrc, se_boxelder)),
-  tar_target(perdata, read_perdata(popsim_outputs, popsim_success)),
-  tar_target(hhdata,  read_hhdata(popsim_outputs, popsim_success)),
+  tar_target(perdata, read_perdata(dirs['popsim_outputs'], popsim_success)),
+  tar_target(hhdata,  read_hhdata(dirs['popsim_outputs'], popsim_success)),
   tar_target(urbanfile, "inputs/other/urbanization.csv", format = "file"),
   tar_target(urbanization, read_urbanization(urbanfile)),
   tar_target(buildfile, "inputs/other/buildings.csv", format = "file" ),
@@ -101,7 +101,7 @@ list(
   tar_target(topo, make_topo(topofile)), 
   tar_target(land_use, make_land_use(se, perdata, hhdata, urbanization, buildings, 
                                      topo, schools, taz)),
-  tar_target(land_use_file, write_land_use(land_use, file.path(activitysim_inputs, 
+  tar_target(land_use_file, write_land_use(land_use, file.path(dirs['activitysim_inputs'], 
                                                                "land_use.csv")), format = "file"),
   
   
@@ -134,11 +134,11 @@ list(
   
   # Build ActivitySim Population ===========================
   tar_target(addressfile, "inputs/AddressCoordinates.csv", format = "file"),
-  tar_target(asim_persons, make_asim_persons(popsim_outputs, popsim_success, taz)),
-  tar_target(asim_hholds, make_asim_hholds(popsim_outputs, addressfile, taz, popsim_success)),
-  tar_target(activitysim_population, move_population(asim_persons, asim_hholds, activitysim_inputs), 
+  tar_target(asim_persons, make_asim_persons(dirs['popsim_outputs'], popsim_success, taz)),
+  tar_target(asim_hholds, make_asim_hholds(dirs['popsim_outputs'], addressfile, taz, popsim_success)),
+  tar_target(activitysim_population, move_population(asim_persons, asim_hholds, dirs['activitysim_inputs']), 
              format = "file"),
-  tar_target(run_asim, run_activitysim(activitysim_inputs, activitysim_configs, activitysim_outputs, 
+  tar_target(run_asim, run_activitysim(dirs['activitysim_inputs'], dirs['activitysim_configs'], dirs['activitysim_outputs'], 
                                        activitysim_population, land_use_file)),
   
   
