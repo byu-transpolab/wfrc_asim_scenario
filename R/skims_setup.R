@@ -1,10 +1,10 @@
 #' Prepare skims file
 #' 
 #' 
-prepare_skims <- function(ok_skims_file, pk_skims_file, manifest, asim_data_dir){
+prepare_skims <- function(ok_skims_file, pk_skims_file, manifest, skim_taz_map){
   skimsStatus <- system2(
   command = "bash",
-  args = c("./sh/build_skims.sh", dirname(manifest), asim_data_dir),
+  args = c("./sh/build_skims.sh", dirname(manifest), dirname(skim_taz_map)),
   )
   
   if(skimsStatus != 0){

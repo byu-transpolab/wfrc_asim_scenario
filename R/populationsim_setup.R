@@ -357,7 +357,6 @@ make_seed <- function(hh_seed_file, pp_seed_file, crosswalk){
 #' @param path Path to output folder
 #'
 write_files <- function(meta, tract_controls, taz_control, seed, crosswalk, path){
-  dir.create(path)
   
   # Controls
   write_csv(meta, file.path(path, "control_totals_meta.csv"))

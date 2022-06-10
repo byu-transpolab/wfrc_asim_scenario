@@ -132,7 +132,6 @@ na_int <- function(x){
 #' required by activitysim's output file writer.
 #' 
 write_land_use <- function(land_use, file){
-  dir.create(dirname(file))
   
   land_use %>%
     mutate(geometry = st_as_text(geometry)) %>% 
@@ -568,10 +567,7 @@ make_asim_hholds <- function(popsim_outputs, addressfile, taz, popsim_success) {
 #' outputs over and get them ready for activitysim.
 #' 
 move_population <- function(asim_persons, asim_hholds, activitysim_inputs){
-  
-  # create directory
-  dir.create(activitysim_inputs)
-  
+
   asim_persons %>% 
     write_csv(file.path(activitysim_inputs, "synthetic_persons.csv"))
   
