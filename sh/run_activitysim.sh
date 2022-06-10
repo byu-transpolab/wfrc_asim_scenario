@@ -12,7 +12,11 @@ else
 	exit 1
 fi
 
+echo "Config path: $1"
+echo "Data path: $2"
+echo "Output path: $3"
+
 conda activate ASIM_DEV
 conda info
 
-activitysim run --config $ASIM_CONFIG_PATH --data $ASIM_DATA_PATH --output $ASIM_OUTPUT_PATH || exit 1
+activitysim run --config "$1" --data "$2" --output "$3" || exit 1

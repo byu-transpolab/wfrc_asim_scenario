@@ -2,11 +2,10 @@
 #' 
 run_populationsim <- function(write_result, data_path, out_path){
   popsimStatus <- system2(
-    command = "source",
-    args = c("sh/run_popsim.sh"),
-    env = c(paste0("POPSIM_DATA_PATH=", data_path),
-            paste0("POPSIM_OUTPUT_PATH=", out_path))
+    command = "bash",
+    args = c("./sh/run_popsim.sh", data_path, out_path)
   )
+
   
   if(popsimStatus != 0){
     stop("\n\nPopulationSim failed. Check console and/or log(s) for details.\n")

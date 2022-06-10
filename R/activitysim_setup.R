@@ -6,11 +6,8 @@
 #' 
 run_activitysim <- function(data_path, config_path, output_path, ...){
   activitysimStatus <- system2(
-    command = "source",
-    args = c("sh/run_activitysim.sh"),
-    env = c(paste0("ASIM_CONFIG_PATH=", config_path),
-            paste0("ASIM_DATA_PATH=", data_path),
-            paste0("ASIM_OUTPUT_PATH=", output_path))
+    command = "bash",
+    args = c("sh/run_activitysim.sh", config_path, data_path, output_path),
   )
   
   if(activitysimStatus != 0){

@@ -12,7 +12,10 @@ else
 	exit 1
 fi
 
+echo "Manifest path: $1"
+echo "Data path: $2"
+
 conda activate ASIM_DEV
 conda info
 
-python py/build_omx.py $SKIMS_MANIFEST_DIR $ASIM_DATA_DIR || exit 1
+python py/build_omx.py "$1" "$2" || exit 1

@@ -3,10 +3,8 @@
 #' 
 prepare_skims <- function(ok_skims_file, pk_skims_file, manifest, asim_data_dir){
   skimsStatus <- system2(
-  command = "source",
-  args = c("sh/build_skims.sh"),
-  env = c(paste0("SKIMS_MANIFEST_DIR=", dirname(manifest)),
-          paste0("ASIM_DTA_DIR=", asim_data_dir))
+  command = "bash",
+  args = c("./sh/build_skims.sh", dirname(manifest), asim_data_dir),
   )
   
   if(skimsStatus != 0){

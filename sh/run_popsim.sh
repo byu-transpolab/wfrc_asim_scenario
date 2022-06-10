@@ -12,7 +12,10 @@ else
 	exit 1
 fi
 
+echo "Data path: $1"
+echo "Output path: $2"
+
 conda activate popsim
 conda info
 
-python py/runpopsim.py --config configs_popsim --data $POPSIM_DATA_PATH --output $POPSIM_OUTPUT_PATH || exit 1
+python py/runpopsim.py --config configs_popsim --data "$1" --output "$2" || exit 1
