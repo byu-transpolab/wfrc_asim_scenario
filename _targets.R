@@ -22,22 +22,20 @@ source("R/beam_setup.R")
 # Set target-specific options such as packages.
 tar_option_set(packages = c("tidyverse", "sf", "tigris", "tidycensus", "xml2"))
 
+dirs <- c(
+  popsim_data = "data_popsim",
+  popsim_outputs = "output_popsim",
+  activitysim_inputs = "data_activitysim",
+  activitysim_configs = "configs",
+  activitysim_outputs = "output_activitysim",
+  beam_data = "data_beam",
+  beam_r5 = "data_beam/r5",
+  parking_dir = "reference_beam/parking_and_TAZ"
+)
 
-popsim_data <- "data_popsim"
-popsim_outputs <- "output_popsim"
-activitysim_inputs <- "data_activitysim"
-activitysim_configs <- "configs"
-activitysim_outputs <- "output_activitysim"
-beam_data <- "data_beam"
-beam_r5 <- "data_beam/r5"
-
-dir.create(showWarnings= F, popsim_data)
-dir.create(showWarnings= F, popsim_outputs)
-dir.create(showWarnings= F, activitysim_inputs)
-dir.create(showWarnings= F, activitysim_configs)
-dir.create(showWarnings= F, activitysim_outputs)
-dir.create(showWarnings= F, beam_data)
-dir.create(showWarnings= F, beam_r5)
+for(dir in dirs){
+  if(!dir.exists(dir)) dir.create(dir, recursive = T)
+}
 
 # End this file with a list of target objects.
 list(
