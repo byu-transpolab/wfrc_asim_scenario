@@ -14,6 +14,7 @@ source("R/network_setup.R")
 source("R/activitysim_setup.R")
 source("R/skims_setup.R")
 source("R/beam_setup.R")
+source("R/helpers.R")
 
 
 # debugging
@@ -22,23 +23,22 @@ source("R/beam_setup.R")
 # Set target-specific options such as packages.
 tar_option_set(packages = c("tidyverse", "sf", "tigris", "tidycensus", "xml2"))
 
-dirs <- c(
-  popsim_data = "data_popsim",
-  popsim_outputs = "output_popsim",
-  activitysim_inputs = "data_activitysim",
-  activitysim_configs = "configs",
-  activitysim_outputs = "output_activitysim",
-  beam_data = "data_beam",
-  beam_r5 = "data_beam/r5",
-  parking_dir = "reference_beam/parking_and_TAZ"
-)
-
-for(dir in dirs){
-  if(!dir.exists(dir)) dir.create(dir, recursive = T)
-}
-
 # End this file with a list of target objects.
 list(
+  
+  # Create needed directories ===========================
+  tar_target(dirs_list, c(
+    popsim_data = "data_popsim",
+    popsim_outputs = "output_popsim",
+    activitysim_inputs = "data_activitysim",
+    activitysim_configs = "configs_100",
+    activitysim_outputs = "output_activitysim",
+    beam_data = "data_beam",
+    beam_r5 = "data_beam/r5",
+    parking_dir = "reference_beam/parking_and_TAZ",
+    skim_omx_dir = "data_activitysim"
+  )),
+  tar_target(dirs, create_dirs(dirs_list), pattern = map(dirs_list), iteration = "vector"),
   
   # Build populationsim files ===========================
   # pumas and tracts in populationsim
@@ -79,8 +79,8 @@ list(
   tar_target(seed, make_seed(hh_seed_file, pp_seed_file, crosswalk)),
   
   tar_target(write_popsim, write_files(meta, tract_controls, taz_control, seed, 
-                                crosswalk, path = dirs['popsim_data'])),
-  tar_target(popsim_success, run_populationsim(write_popsim, dirs['popsim_data'], dirs['popsim_outputs']),
+                                crosswalk, path = dirget(dirs, 'popsim_data'))),
+  tar_target(popsim_success, run_populationsim(write_popsim, dirget(dirs, 'popsim_data'), dirget(dirs, 'popsim_outputs')),
              format = "file"),
   
   
@@ -88,8 +88,8 @@ list(
   tar_target(se_boxelder, "inputs/SE_Box_Elder_2018.csv", format = "file"),
   tar_target(se_wfrc,     "inputs/SE_WF_2018.csv", format = "file"),
   tar_target(se, read_sedata(se_wfrc, se_boxelder)),
-  tar_target(perdata, read_perdata(dirs['popsim_outputs'], popsim_success)),
-  tar_target(hhdata,  read_hhdata(dirs['popsim_outputs'], popsim_success)),
+  tar_target(perdata, read_perdata(dirget(dirs, 'popsim_outputs'), popsim_success)),
+  tar_target(hhdata,  read_hhdata(dirget(dirs, 'popsim_outputs'), popsim_success)),
   tar_target(urbanfile, "inputs/other/urbanization.csv", format = "file"),
   tar_target(urbanization, read_urbanization(urbanfile)),
   tar_target(buildfile, "inputs/other/buildings.csv", format = "file" ),
@@ -101,7 +101,7 @@ list(
   tar_target(topo, make_topo(topofile)), 
   tar_target(land_use, make_land_use(se, perdata, hhdata, urbanization, buildings, 
                                      topo, schools, taz)),
-  tar_target(land_use_file, write_land_use(land_use, file.path(dirs['activitysim_inputs'], 
+  tar_target(land_use_file, write_land_use(land_use, file.path(dirget(dirs, 'activitysim_inputs'), 
                                                                "land_use.csv")), format = "file"),
   
   
@@ -112,7 +112,10 @@ list(
   tar_target(node_file, "inputs/wfrc_nodes.dbf", format = "file"),
   tar_target(network, read_wfrcmag(node_file, link_file, 32612)),
   tar_target(write_net, write_linknodes(network, "data/wfrc_network"), format = "file"),
-#  tar_target(matsim_net, make_matsim_network(network, "data/wfrc_network/highways_network.xml"), format = "file"),
+  # I don't believe matsim_net is necessary since we're writing the pbf directly.
+  # Maybe we should have that done here instead?
+  # TODO
+  #tar_target(matsim_net, make_matsim_network(network, "data/wfrc_network/highways_network.xml"), format = "file"),
   
   
   # Build Skims ==============================================
@@ -126,7 +129,7 @@ list(
   tar_target(pk_skims_file, get_pk_skims("inputs/skims/skm_auto_Pk.mtx.omx"), format = "file"),
   tar_target(skim_taz_map, write_taz_map(taz), format = "file"),
   tar_target(manifest, "inputs/skims/skim_manifest.csv", format = "file"),
-  tar_target(skims_file, prepare_skims(ok_skims_file, pk_skims_file, manifest, skim_taz_map), 
+  tar_target(skims_file, prepare_skims(ok_skims_file, pk_skims_file, manifest, skim_taz_map, dirget(dirs, 'skim_omx_dir')), 
              format = "file"),
   
   
@@ -134,12 +137,13 @@ list(
   
   # Build ActivitySim Population ===========================
   tar_target(addressfile, "inputs/AddressCoordinates.csv", format = "file"),
-  tar_target(asim_persons, make_asim_persons(dirs['popsim_outputs'], popsim_success, taz)),
-  tar_target(asim_hholds, make_asim_hholds(dirs['popsim_outputs'], addressfile, taz, popsim_success)),
-  tar_target(activitysim_population, move_population(asim_persons, asim_hholds, dirs['activitysim_inputs']), 
+  tar_target(asim_persons, make_asim_persons(dirget(dirs, 'popsim_outputs'), popsim_success, taz)),
+  tar_target(asim_hholds, make_asim_hholds(dirget(dirs, 'popsim_outputs'), addressfile, taz, popsim_success)),
+  tar_target(activitysim_population, move_population(asim_persons, asim_hholds, dirget(dirs, 'activitysim_inputs')), 
              format = "file"),
-  tar_target(run_asim, run_activitysim(dirs['activitysim_inputs'], dirs['activitysim_configs'], dirs['activitysim_outputs'], 
-                                       activitysim_population, land_use_file)),
+  tar_target(run_asim, run_activitysim(dirget(dirs, 'activitysim_inputs'), dirget(dirs, 'activitysim_configs'), dirget(dirs, 'activitysim_outputs'), 
+                                       activitysim_population, land_use_file, gtfs,
+                                       skims_file)),
   
   
   
