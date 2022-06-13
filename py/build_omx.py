@@ -52,6 +52,10 @@ def build_omx(manifest_dir, source_data_dir, dest_data_dir):
   taz_map_name = os.path.join(manifest_dir, "skim_taz_map.csv")
   dest_file_name = os.path.join(dest_data_dir, 'skims.omx')
   
+  print("Manifest file: ", manifest_file_name)
+  print("Taz map: ", taz_map_name)
+  print("Dest file: ", dest_file_name)
+  
   with omx.open_file(dest_file_name, 'a') as dest_omx:
       manifest = read_manifest(manifest_file_name)
       delete_zones = read_taz_map(taz_map_name) 
@@ -89,4 +93,4 @@ if __name__=='__main__':
   for i, arg in enumerate(sys.argv):
     print(f"Argument {i:>6}: {arg}")
   
-  build_omx(sys.argv[1], sys.argv[1], sys.argv[2])
+  build_omx(sys.argv[1], sys.argv[2], sys.argv[3])
