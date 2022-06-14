@@ -14,7 +14,7 @@ build_beam_lu <- function(land_use){
       cbd = ifelse(area_type < 2, 1, 0)
     ) 
   
-  path <- "reference_beam/utah-tpcm-loc.csv"
+  path <- "reference/utah-tpcm-loc.csv"
   write_csv(x, path)
 
   return(path)
@@ -44,15 +44,15 @@ build_beam_centroids <- function(land_use, network){
     st_set_geometry(NULL)
   
   
-  path <- "reference_beam/parking_and_TAZ/utah-taz-centers.csv"
+  path <- "reference/utah-taz-centers.csv"
   write_csv(x, path)
   
   return(path)
   
 }
 
-get_gtfs <- function(){
-  file <- "data_beam/r5/SLC.zip"
+get_gtfs <- function(gtfs_dir, ...){
+  file <- paste0(gtfs_dir, "/SLC_gtfs.zip")
   if(!file.exists(file)){
     download.file("https://gtfsfeed.rideuta.com/gtfs.zip", 
                   destfile = file)
