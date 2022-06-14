@@ -30,7 +30,7 @@ list(
   tar_target(config_tour_mc, "configs_20pct/tour_mode_choice.csv", format = "file"),
   
   # Create needed directories ===========================
-  tar_target(activitysim_configs, "configs/20pct"),
+  tar_target(activitysim_configs, "configs_activitysim/20pct"),
   tar_target(activitysim_outputs, "output_activitysim/20pct"),
   
   #these don't change
