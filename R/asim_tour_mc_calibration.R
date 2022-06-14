@@ -21,7 +21,7 @@
 #' @author Chris Day
 #' 
 #' @export
-calibrate_asim_tours <- function(asim_out_dir, asim_config_dir, targets, iter){
+calibrate_asim_tours <- function(asim_out_dir, asim_config_dir, calib_dir, iter){
 
 #' Start up -------------------------------------------------------------------------------------#
 #' Below are the libraries and files needed to run this script. Only two of the files need to be
@@ -29,16 +29,19 @@ calibrate_asim_tours <- function(asim_out_dir, asim_config_dir, targets, iter){
 
 # libraries needed
 # library(tidyverse)
+  
+  if(!dir.exists(paste0(calib_dir, "/output"))) dir.create(paste0(calib_dir, "/output"))
 
 # permanent files
 asim_households <- read_csv(asim_out_dir, "/final_households.csv")
-asim_tour_targets <- read_csv(targets)
+asim_tour_targets <- read_csv(paste0(calib_dir, "/asimtourtargets.csv"))
 
 # CHANGE THESE FILES AFTER EACH ACTIVITYSIM RUN
 # this file is the output of the ActivitySim tours of the run just completed
 asim_final_tours <- read_csv(paste0(asim_out_dir, "/final_tours.csv"))
+file.copy(paste0(asim_out_dir, "/final_tours.csv"), paste0(calib_dir, "/output/final_tours_run", i-1, ".csv"))
 # this file is the tour mode choice coefficients used for the run just completed
-asim_tour_coeffs <- read_csv(paste0("calibration/tour_mc/tour_mode_choice_coefficients_run", iter-1, ".csv"))
+asim_tour_coeffs <- read_csv(paste0(calib_dir, "/tour_mode_choice_coefficients_run", iter-1, ".csv"))
 
 
 #' Calibration -------------------------------------------------------------------------------------#
@@ -62,7 +65,7 @@ basic_tour_shares <- get_basic_tour_shares(tour_upper_modes)
 newasc <- determine_new_asc(asim_tour_targets,basic_tour_shares,asim_tour_coeffs)
 
 #' write the new tour mode choice coefficient file to be used in the next run of ActivitySim
-write_csv(newasc, paste0("calibration/tour_mc/tour_mode_choice_coefficients_run", iter, ".csv"))
+write_csv(newasc, paste0(calib_dir, "/tour_mode_choice_coefficients_run", iter, ".csv"))
 # overwrite the config for asim
 write_csv(newasc, paste0(asim_config_dir, "/tour_mode_choice_coefficients.csv"))
 }
