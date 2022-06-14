@@ -21,24 +21,24 @@
 #' @author Chris Day
 #' 
 #' @export
-
+calibrate_asim_tours <- function(asim_out_dir, targets, iter){
 
 #' Start up -------------------------------------------------------------------------------------#
 #' Below are the libraries and files needed to run this script. Only two of the files need to be
 #' changed after each iteration (see comments). 
 
 # libraries needed
-library(tidyverse)
+# library(tidyverse)
 
 # permanent files
-asim_households <- read_csv("output_activitysim_20/final_households.csv")
-asim_tour_targets <- read_csv("reference/asimtourtargets.csv")
+asim_households <- read_csv(asim_out_dir, "/final_households.csv")
+asim_tour_targets <- read_csv(targets)
 
 # CHANGE THESE FILES AFTER EACH ACTIVITYSIM RUN
 # this file is the output of the ActivitySim tours of the run just completed
-asim_final_tours <- read_csv("output_activitysim_20/final_tours.csv")
+asim_final_tours <- read_csv(paste0(asim_out_dir, "/final_tours.csv"))
 # this file is the tour mode choice coefficients used for the run just completed
-asim_tour_coeffs <- read_csv("calibration/tour_mc/tour_mode_choice_coefficients.csv")
+asim_tour_coeffs <- read_csv(paste0("calibration/tour_mc/tour_mode_choice_coefficients_run", iter-1, ".csv"))
 
 
 #' Calibration -------------------------------------------------------------------------------------#
@@ -62,9 +62,10 @@ basic_tour_shares <- get_basic_tour_shares(tour_upper_modes)
 newasc <- determine_new_asc(asim_tour_targets,basic_tour_shares,asim_tour_coeffs)
 
 #' write the new tour mode choice coefficient file to be used in the next run of ActivitySim
-write_csv(newasc, "calibration/tour_mc/tour_mode_choice_coefficients_run3.csv")
+write_csv(newasc, paste0("calibration/tour_mc/tour_mode_choice_coefficients_run", iter, ".csv"))
 # overwrite the config for asim
-write_csv(newasc, "configs_20pct/tour_mode_choice_coefficients.csv")
+write_csv(newasc, paste0(asim_out_dir, "/tour_mode_choice_coefficients.csv"))
+}
 
 
 # Functions -------------------------------------------------------------------------------------#
