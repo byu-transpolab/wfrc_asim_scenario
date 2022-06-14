@@ -21,7 +21,7 @@
 #' @author Chris Day
 #' 
 #' @export
-calibrate_asim_tours <- function(asim_out_dir, targets, iter){
+calibrate_asim_tours <- function(asim_out_dir, asim_config_dir, targets, iter){
 
 #' Start up -------------------------------------------------------------------------------------#
 #' Below are the libraries and files needed to run this script. Only two of the files need to be
@@ -64,7 +64,7 @@ newasc <- determine_new_asc(asim_tour_targets,basic_tour_shares,asim_tour_coeffs
 #' write the new tour mode choice coefficient file to be used in the next run of ActivitySim
 write_csv(newasc, paste0("calibration/tour_mc/tour_mode_choice_coefficients_run", iter, ".csv"))
 # overwrite the config for asim
-write_csv(newasc, paste0(asim_out_dir, "/tour_mode_choice_coefficients.csv"))
+write_csv(newasc, paste0(asim_config_dir, "/tour_mode_choice_coefficients.csv"))
 }
 
 
