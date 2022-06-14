@@ -7,22 +7,13 @@
 lib/
 
 AS_package/
-scenarios/
 data/
 data_popsim/
-data_beam/
-sample_data_beam/
 output_popsim/
 data_activitysim/
-output_activitysim*/
-output/
-output_all/
-output_beam/
+output_activitysim/
 
-skims.omx
-
-data.zip
-scenarios.zip
+reference/SLC_gtfs.zip
 
 __pycache__/
 _targets/
@@ -31,19 +22,7 @@ inputs/skims/skm_auto_Ok.mtx.omx
 inputs/skims/skm_auto_Pk.mtx.omx
 inputs/skims/skim_taz_map.csv
 
-base/
-
-asim.sh
 slurm*
 old_slurm_files/
-
-
-beam.sh
-*.jar
-reference_beam
-
-log-path_IS_UNDEFINED/
-
-base_beam_asimtables.7z
 
 *.DS_store
