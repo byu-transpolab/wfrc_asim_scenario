@@ -26,13 +26,16 @@ tar_option_set(packages = c("tidyverse", "sf", "tigris", "tidycensus", "xml2"))
 # End this file with a list of target objects.
 list(
   
+  #only needed for calibration
+  tar_target(config_tour_mc, "configs_20pct/tour_mode_choice.csv", format = "file"),
+  
   # Create needed directories ===========================
   tar_target(dirs_list, c(
     popsim_data = "data_popsim",
     popsim_outputs = "output_popsim",
     activitysim_inputs = "data_activitysim",
-    activitysim_configs = "configs_100",
-    activitysim_outputs = "output_activitysim",
+    activitysim_configs = "configs_20pct",
+    activitysim_outputs = "output_activitysim_20",
     beam_data = "data_beam",
     beam_r5 = "data_beam/r5",
     parking_dir = "reference_beam/parking_and_TAZ",
@@ -143,7 +146,7 @@ list(
              format = "file"),
   tar_target(run_asim, run_activitysim(dirget(dirs, 'activitysim_inputs'), dirget(dirs, 'activitysim_configs'), dirget(dirs, 'activitysim_outputs'), 
                                        activitysim_population, land_use_file, gtfs,
-                                       skims_file)),
+                                       skims_file, config_tour_mc)),
   
   
   

@@ -4,7 +4,9 @@
 #' 
 #' @param dir_list List of directories to create
 #' 
-#' @returns The provided list of directories
+#' @return The provided list of directories
+#' 
+#' @export
 create_dirs <- function(dirs_list){
   
   for(dir in dirs_list){
@@ -21,6 +23,10 @@ create_dirs <- function(dirs_list){
 #' 
 #' @param dirs_list Named vector of directories to search in
 #' @param dirname_pattern The string pattern to search for
+#' 
+#' @return Name of directory
+#' 
+#' @export
 dirget <- function(dirs_list, dirname_pattern){
     name <- dirs_list[str_which(names(dirs_list), dirname_pattern)]
     if(length(name) > 1){
