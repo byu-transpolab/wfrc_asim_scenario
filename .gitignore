@@ -14,7 +14,7 @@ data_beam/
 sample_data_beam/
 output_popsim/
 data_activitysim/
-output_activitysim/
+output_activitysim*/
 output/
 output_all/
 output_beam/
