@@ -21,7 +21,7 @@
 #' @author Chris Day
 #' 
 #' @export
-calibrate_asim_tours <- function(asim_out_dir, asim_config_dir, calib_dir, iter){
+calibrate_asim_tours <- function(asim_out_dir, asim_config_dir, calib_dir, i){
 
 #' Start up -------------------------------------------------------------------------------------#
 #' Below are the libraries and files needed to run this script. Only two of the files need to be
@@ -44,7 +44,7 @@ file.copy(paste0(asim_out_dir, "/final_tours.csv"),
           paste0(calib_dir, "/output/final_tours_run", i-1, ".csv"),
           overwrite = TRUE)
 # this file is the tour mode choice coefficients used for the run just completed
-asim_tour_coeffs <- read_csv(paste0(calib_dir, "/tour_mode_choice_coefficients_run", iter-1, ".csv"))
+asim_tour_coeffs <- read_csv(paste0(calib_dir, "/tour_mode_choice_coefficients_run", i-1, ".csv"))
 
 
 #' Calibration -------------------------------------------------------------------------------------#

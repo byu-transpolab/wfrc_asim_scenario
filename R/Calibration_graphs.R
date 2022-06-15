@@ -1,8 +1,17 @@
 library(tidyverse)
 
-last_run <- 4
+last_run <- 7
 
-targets <- read_csv("calibration/tour_mc/asimtourtargets.csv")
+targets <- read_csv("calibration/tour_mc/asimtourtargets.csv") %>% 
+  mutate(mode = str_replace(coefficient_name, "_ASC_.+", ""),
+         auto_own = case_when(
+           str_detect(coefficient_name, "auto_deficient") ~ "auto_deficient",
+           str_detect(coefficient_name, "auto_sufficient") ~ "auto_sufficient",
+           T ~ "no_auto"
+         ),
+         purpose = str_replace(coefficient_name, ".+ASC_.+_.+_", "")) %>% 
+  filter(purpose != "all")
+
 hh <- read_csv("output_activitysim/20pct/final_households.csv")
 
 source("R/asim_tour_mc_calibration.R")
@@ -26,5 +35,23 @@ for (i in 1:last_run){
     ) %>% 
     convert_to_basic_modes() %>% 
     get_basic_tour_shares() %>% 
-    mutate(mode = str_replace(coefficient_name, "_ASC_.+", ""))
+    mutate(mode = str_replace(coefficient_name, "_ASC_.+", ""),
+           auto_own = case_when(
+             str_detect(coefficient_name, "auto_deficient") ~ "auto_deficient",
+             str_detect(coefficient_name, "auto_sufficient") ~ "auto_sufficient",
+             T ~ "no_auto"
+           ),
+           purpose = str_replace(coefficient_name, ".+ASC_.+_.+_", "")) %>%
+    filter(mode %in% (targets$mode %>% unique()),
+           purpose != "all")
+
 }
+
+calibration_shares <- bind_rows(mode_shares, .id = "iteration")
+calibration_shares$iteration <- as.integer(calibration_shares$iteration)
+
+calibration_shares %>% 
+  ggplot() +
+  geom_line(aes(x = iteration, y = model, color = mode)) +
+  geom_hline(data = targets, aes(yintercept = target, color = mode), lty = "dashed") +
+  facet_grid(auto_own ~ purpose)
