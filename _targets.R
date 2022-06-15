@@ -31,7 +31,8 @@ directories <- tar_plan(
 )
 
 calibration <- tar_plan(
-	config_tour_mc = paste0(activitysim_configs, "/tour_mode_choice.csv")
+	tar_target(config_tour_mc, paste0(activitysim_configs, "/tour_mode_choice_coefficients.csv"),
+	           format = "file")
 )
 
 populationsim <- tar_plan(

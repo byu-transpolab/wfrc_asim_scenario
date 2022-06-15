@@ -33,13 +33,16 @@ calibrate_asim_tours <- function(asim_out_dir, asim_config_dir, calib_dir, iter)
   if(!dir.exists(paste0(calib_dir, "/output"))) dir.create(paste0(calib_dir, "/output"))
 
 # permanent files
-asim_households <- read_csv(asim_out_dir, "/final_households.csv")
+asim_households <- read_csv(paste0(asim_out_dir, "/final_households.csv"))
 asim_tour_targets <- read_csv(paste0(calib_dir, "/asimtourtargets.csv"))
 
 # CHANGE THESE FILES AFTER EACH ACTIVITYSIM RUN
 # this file is the output of the ActivitySim tours of the run just completed
 asim_final_tours <- read_csv(paste0(asim_out_dir, "/final_tours.csv"))
-file.copy(paste0(asim_out_dir, "/final_tours.csv"), paste0(calib_dir, "/output/final_tours_run", i-1, ".csv"))
+#copy each run to new file
+file.copy(paste0(asim_out_dir, "/final_tours.csv"),
+          paste0(calib_dir, "/output/final_tours_run", i-1, ".csv"),
+          overwrite = TRUE)
 # this file is the tour mode choice coefficients used for the run just completed
 asim_tour_coeffs <- read_csv(paste0(calib_dir, "/tour_mode_choice_coefficients_run", iter-1, ".csv"))
 
