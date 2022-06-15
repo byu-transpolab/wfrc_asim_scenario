@@ -25,5 +25,6 @@ for (i in 1:last_run){
       )
     ) %>% 
     convert_to_basic_modes() %>% 
-    get_basic_tour_shares()
+    get_basic_tour_shares() %>% 
+    mutate(mode = str_replace(coefficient_name, "_ASC_.+", ""))
 }
