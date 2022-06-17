@@ -6,7 +6,7 @@ module load miniconda3 python/3.8
 pip install -r reference/python_requirements.txt
 
 #create activitysim conda environment
-conda env create --file=../conda-environments/activitysim-dev.yml --name ASIM_DEV
+conda env create --file=activitysim/conda-environments/activitysim-dev.yml --name ASIM_DEV
 conda activate ASIM_DEV
 
 #create populationsim conda environment
