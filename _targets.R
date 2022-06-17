@@ -30,9 +30,10 @@ directories <- tar_plan(
 	asim_out = if(!dir.exists(activitysim_outputs)) dir.create(activitysim_outputs, recursive = T)
 )
 
-calibration <- tar_plan(
+calibration_check <- tar_plan(
 	tar_target(config_tour_mc, paste0(activitysim_configs, "/tour_mode_choice_coefficients.csv"),
-	           format = "file")
+	           format = "file"),
+	tar_target(config_trip_mc, paste0(activitysim_configs, "/trip_mode_choice_coefficients.csv"))
 )
 
 populationsim <- tar_plan(
@@ -152,7 +153,7 @@ build_beam_inputs <- tar_plan(
 # Run all targets
 tar_plan(
   directories,
-  calibration,
+  calibration_check,
   populationsim,
   build_land_use_dataset,
   build_network,
