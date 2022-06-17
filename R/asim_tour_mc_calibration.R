@@ -146,6 +146,9 @@ copy_calibration_files <- function(asim_out_dir, asim_config_dir, calib_dir, i){
   file.copy(paste0(asim_out_dir, "/final_tours.csv"),
             paste0(calib_dir, "/output/final_tours_RUN", i, ".csv"), 
             overwrite = TRUE)
+  file.copy(paste0(asim_out_dir, "/final_trips.csv"),
+            paste0(calib_dir, "/output/final_trips_LATEST.csv"),
+            overwrite = TRUE)
 }
 
 #------------------------------------------------------------------------------------------------#
