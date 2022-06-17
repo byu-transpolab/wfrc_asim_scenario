@@ -29,22 +29,16 @@ calibrate_asim_tours <- function(asim_out_dir, asim_config_dir, calib_dir, i){
 
 # libraries needed
 # library(tidyverse)
-  
-  if(!dir.exists(paste0(calib_dir, "/output"))) dir.create(paste0(calib_dir, "/output"))
 
 # permanent files
 asim_households <- read_csv(paste0(asim_out_dir, "/final_households.csv"))
 asim_tour_targets <- read_csv(paste0(calib_dir, "/asimtourtargets.csv"))
 
-# CHANGE THESE FILES AFTER EACH ACTIVITYSIM RUN
 # this file is the output of the ActivitySim tours of the run just completed
 asim_final_tours <- read_csv(paste0(asim_out_dir, "/final_tours.csv"))
-#copy each run to new file
-file.copy(paste0(asim_out_dir, "/final_tours.csv"),
-          paste0(calib_dir, "/output/final_tours_run", i-1, ".csv"),
-          overwrite = TRUE)
+
 # this file is the tour mode choice coefficients used for the run just completed
-asim_tour_coeffs <- read_csv(paste0(calib_dir, "/tour_mode_choice_coefficients_run", i-1, ".csv"))
+asim_tour_coeffs <- read_csv(paste0(asim_config_dir, "/tour_mode_choice_coefficients.csv"))
 
 
 #' Calibration -------------------------------------------------------------------------------------#
@@ -67,8 +61,6 @@ basic_tour_shares <- get_basic_tour_shares(tour_upper_modes)
 #' calculate the new ASC value
 newasc <- determine_new_asc(asim_tour_targets,basic_tour_shares,asim_tour_coeffs)
 
-#' write the new tour mode choice coefficient file to be used in the next run of ActivitySim
-write_csv(newasc, paste0(calib_dir, "/tour_mode_choice_coefficients_run", iter, ".csv"))
 # overwrite the config for asim
 write_csv(newasc, paste0(asim_config_dir, "/tour_mode_choice_coefficients.csv"))
 }
@@ -143,4 +135,17 @@ determine_new_asc <- function(asim_tour_targets,basic_tour_shares,asim_tour_coef
   
   newasc
 }
+
+#' copy calibration files each run to have a record
+copy_calibration_files <- function(asim_out_dir, asim_config_dir, calib_dir, i){
+  if(!dir.exists(paste0(calib_dir, "/output")))
+    dir.create(paste0(calib_dir, "/output"), recursive = TRUE)
+  file.copy(paste0(asim_config_dir, "/tour_mode_choice_coefficients.csv"),
+            paste0(calib_dir, "/tour_mc_coeffs_RUN", i, ".csv"), 
+            overwrite = TRUE)
+  file.copy(paste0(asim_out_dir, "/final_tours.csv"),
+            paste0(calib_dir, "/output/final_tours_RUN", i, ".csv"), 
+            overwrite = TRUE)
+}
+
 #------------------------------------------------------------------------------------------------#
