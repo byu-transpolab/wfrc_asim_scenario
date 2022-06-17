@@ -13,6 +13,7 @@ output_popsim/
 data_activitysim/
 output_activitysim/
 calibration/**/output/
+.idea/
 
 reference/SLC_gtfs.zip
 
