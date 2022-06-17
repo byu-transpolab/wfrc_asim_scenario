@@ -20,8 +20,8 @@ tar_option_set(packages = c("tidyverse", "sf", "tigris", "tidycensus", "xml2"))
 directories <- tar_plan(
 
 	# Change depending on config
-	activitysim_configs = "configs_activitysim/20pct",
-	activitysim_outputs = "output_activitysim/20pct",
+	activitysim_configs = "configs_activitysim/20pct_no_RH",
+	activitysim_outputs = "output_activitysim/20pct_no_RH",
 
 	# Make non-existent directories
 	dirs = for(dir in c("data_popsim", "output_popsim", "data_activitysim")) if(!dir.exists(dir)) dir.create(dir, recursive = T),
