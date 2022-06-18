@@ -19,5 +19,5 @@ printf "Output path: $3\n"
 conda activate ASIM_DEV
 conda info
 
-#activitysim run --config "$1" --data "$2" --output "$3" || exit 1
-python -m simulation --config "$1" --data "$2" --output "$3" -m || exit 1
+activitysim run --config "$1" --data "$2" --output "$3" || exit 1
+#python -m simulation --config "$1" --data "$2" --output "$3" -m || exit 1
