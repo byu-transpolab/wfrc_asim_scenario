@@ -61,7 +61,7 @@ calibration_shares %>%
 
 
 
-trips_share <- read_csv(paste0(calibration_dir, "/output/final_trips_LATEST.csv")) %>%
+trips <- read_csv(paste0(calibration_dir, "/output/final_trips_LATEST.csv")) %>%
   left_join(hh, by = "household_id") %>%
   mutate(autoown = ifelse(
     auto_ownership == 0,
@@ -79,17 +79,19 @@ trips_share <- read_csv(paste0(calibration_dir, "/output/final_trips_LATEST.csv"
     trip_mode == "TNC_SINGLE" ~ "tnc_single",
     trip_mode == "TNC_SHARED" ~ "tnc_shared",
     trip_mode == "TAXI" ~ "taxi"
-  )) %>%
+  ))
+
+trips_auto_own <- trips %>% 
   group_by(primary_purpose,autoown,upper_trip_mode) %>%
   summarize(n = n()) %>%
   mutate(share = n/ sum(n)) %>%
   ungroup() %>%
-  complete(primary_purpose,autoown,upper_trip_mode, fill = list(n = 0,share = 0)) %>%
-  mutate(coefficient_name = paste(upper_trip_mode,"_ASC_",autoown,"_",primary_purpose,sep = ""),model = share) %>%
-  select(coefficient_name,model) %>%
+  complete(primary_purpose,autoown,upper_trip_mode, fill = list(n = 0,share = 0)) %>% 
+  mutate(coefficient_name = paste(upper_trip_mode,"_ASC_",autoown,"_",primary_purpose,sep = "")) %>%
+  select(coefficient_name,share) %>%
   filter(!grepl("sov",coefficient_name)) %>%
   filter(!grepl("drive_transit_ASC_no_auto",coefficient_name)) %>%
-  rbind(data.frame("coefficient_name"=c("drive_transit_ASC_no_auto_all","sr2_ASC_no_auto_all"),"model"=c(0,0))) %>% 
+  rbind(data.frame("coefficient_name"=c("drive_transit_ASC_no_auto_all","sr2_ASC_no_auto_all"),"share"=c(0,0))) %>% 
   mutate(mode = str_replace(coefficient_name, "_ASC_.+", ""),
          auto_own = case_when(
            str_detect(coefficient_name, "auto_deficient") ~ "auto_deficient",
@@ -98,7 +100,14 @@ trips_share <- read_csv(paste0(calibration_dir, "/output/final_trips_LATEST.csv"
          ),
          purpose = str_replace(coefficient_name, ".+ASC_.+_.+_", "")) %>%
   filter(purpose != "all") %>% 
-  select(-coefficient_name) %>% 
-  relocate(model, .after = purpose) %>% 
-  rename("share" = "model")
+  relocate(share, .after = purpose)
+
+trip_coeff_tar <- read_csv(paste0(calibration_dir, "/trip_targets/asimtriptargets.csv")) %>% 
+  rename("asim_targets" = "target")
+trip_auto_tar <- read_csv(paste0(calibration_dir, "/trip_targets/beamtriptargets.csv")) %>% 
+  select(-tripTotals) %>% 
+  rename("beam_targets" = "tripPercents")
+trip_tot_tar <- read_csv(paste0(calibration_dir, "/trip_targets/beamtriptotalshares.csv")) %>% 
+  rename("tot_targets" = "tripPercents")
+
 
