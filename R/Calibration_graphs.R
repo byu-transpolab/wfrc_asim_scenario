@@ -1,6 +1,6 @@
 library(tidyverse)
 
-last_run <- 10
+last_run <- 1
 
 calibration_dir <- "calibration/tour_mc_no_RH"
 asim_out_dir <- "output_activitysim/20pct_no_RH"
@@ -110,4 +110,11 @@ trip_auto_tar <- read_csv(paste0(calibration_dir, "/trip_targets/beamtriptargets
 trip_tot_tar <- read_csv(paste0(calibration_dir, "/trip_targets/beamtriptotalshares.csv")) %>% 
   rename("tot_targets" = "tripPercents")
 
-
+auto_own_comparison <- trips_auto_own %>% 
+  full_join(trip_auto_tar, by = c("mode", "auto_own" = "autoWorkRatio", "purpose" = "primary_purpose")) %>% 
+  replace_na(list(beam_targets = 0)) %>% 
+  mutate(error = share - beam_targets,
+         error_pct = case_when(
+           error == 0 ~ 0,
+           beam_targets == 0 ~ share,
+           T ~ error/beam_targets))
