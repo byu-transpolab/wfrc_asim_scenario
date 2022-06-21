@@ -119,6 +119,8 @@ auto_own_comparison <- trips_auto_own %>%
            beam_targets == 0 ~ share,
            T ~ error/beam_targets))
 
+##################################################################
+
 tours_old <- read_csv("calibration/tour_mc_no_RH/output/final_tours_RUN10.csv") %>% 
   group_by(tour_type) %>% 
   summarise(n_old = n()) %>% 
