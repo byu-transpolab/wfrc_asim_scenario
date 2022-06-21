@@ -144,7 +144,7 @@ activitysim <- tar_plan(
 
 	run_asim = run_activitysim("data_activitysim", activitysim_configs, activitysim_outputs,
 			activitysim_population, land_use_file, gtfs,
-			skims_file, config_tour_mc, tour_freq),
+			skims_file, config_tour_mc, config_trip_mc, tour_freq),
 )
 
 build_beam_inputs <- tar_plan(

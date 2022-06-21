@@ -70,7 +70,7 @@ trip_shares <- get_basic_trip_shares(trips_upper_modes)
 
 #' using the previous targets calculated from the household survey, and the trip shares just calculated,
 #' calculate the new ASC value
-tripascs <- determine_trip_ascs(asim_trip_targets,trip_shares)
+tripascs <- determine_trip_ascs(asim_trip_targets,trip_shares,asim_trip_coeffs)
 
 #' write the new trip mode choice coefficient file to be used in the next run of ActivitySim
 write_csv(tripascs, paste0(asim_config_dir, "/trip_mode_choice_coefficients.csv"))
@@ -129,7 +129,7 @@ get_basic_trip_shares <- function(trips_upper_modes){
 }
 
 #' this function determines the new asc value by using the formula: NewASC = OldASC + ln(Target/Model)
-determine_trip_ascs <- function(asim_trip_targets,trip_shares){
+determine_trip_ascs <- function(asim_trip_targets,trip_shares,asim_trip_coeffs){
   # join together the target values with the model trip shares
   trip_tarshares <- left_join(asim_trip_targets,trip_shares, by = "coefficient_name") %>%
     # if the model share or target share is zero, estimate a new asc value based on the ratio model or target share
@@ -172,11 +172,11 @@ determine_trip_ascs <- function(asim_trip_targets,trip_shares){
     select(coefficient_name,value,constrain) %>%
     mutate(value = ifelse(is.na(value),"",value),
            constrain = ifelse(is.na(constrain),"",constrain))
-  new_asc_trip
+  newasc_trip
 }
 
 #' copy calibration files each run to have a record
-copy_calibration_files <- function(asim_out_dir, asim_config_dir, calib_dir, i){
+copy_calibration_files_trips <- function(asim_out_dir, asim_config_dir, calib_dir, i){
   if(!dir.exists(paste0(calib_dir, "/output")))
     dir.create(paste0(calib_dir, "/output"), recursive = TRUE)
   file.copy(paste0(asim_config_dir, "/trip_mode_choice_coefficients.csv"),

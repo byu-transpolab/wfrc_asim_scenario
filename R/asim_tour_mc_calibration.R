@@ -137,7 +137,7 @@ determine_new_asc <- function(asim_tour_targets,basic_tour_shares,asim_tour_coef
 }
 
 #' copy calibration files each run to have a record
-copy_calibration_files <- function(asim_out_dir, asim_config_dir, calib_dir, i){
+copy_calibration_files_tours <- function(asim_out_dir, asim_config_dir, calib_dir, i){
   if(!dir.exists(paste0(calib_dir, "/output")))
     dir.create(paste0(calib_dir, "/output"), recursive = TRUE)
   file.copy(paste0(asim_config_dir, "/tour_mode_choice_coefficients.csv"),
