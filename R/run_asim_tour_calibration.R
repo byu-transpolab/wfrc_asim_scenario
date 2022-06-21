@@ -12,5 +12,5 @@ source("R/asim_tour_mc_calibration.R")
 for(i in start_iter:end_iter){
   tar_make()
   copy_calibration_files(asim_out_dir, asim_config_dir, calib_dir, i)
-  if(i != end_iter) calibrate_asim_tours(asim_out_dir, asim_config_dir, calib_dir, i)
+  if(i != end_iter) calibrate_asim_tours(asim_out_dir, asim_config_dir, calib_dir)
 }

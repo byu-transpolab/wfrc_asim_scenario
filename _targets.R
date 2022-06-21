@@ -34,6 +34,8 @@ calibration_check <- tar_plan(
 	tar_target(config_tour_mc, paste0(activitysim_configs, "/tour_mode_choice_coefficients.csv"),
 	           format = "file"),
 	tar_target(config_trip_mc, paste0(activitysim_configs, "/trip_mode_choice_coefficients.csv"),
+	           format = "file"),
+	tar_target(tour_freq, paste0(activitysim_configs, "/joint_tour_frequency_coeffs.csv"),
 	           format = "file")
 )
 
@@ -142,7 +144,7 @@ activitysim <- tar_plan(
 
 	run_asim = run_activitysim("data_activitysim", activitysim_configs, activitysim_outputs,
 			activitysim_population, land_use_file, gtfs,
-			skims_file, config_tour_mc),
+			skims_file, config_tour_mc, tour_freq),
 )
 
 build_beam_inputs <- tar_plan(

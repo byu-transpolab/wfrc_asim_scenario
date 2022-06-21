@@ -102,3 +102,19 @@ trips_share <- read_csv(paste0(calibration_dir, "/output/final_trips_LATEST.csv"
   relocate(model, .after = purpose) %>% 
   rename("share" = "model")
 
+#######################################################
+
+tours_old <- read_csv("calibration/tour_mc_no_RH/output/final_tours_RUN10.csv") %>% 
+  group_by(tour_type) %>% 
+  summarise(n_old = n()) %>% 
+  mutate(pct_old = n_old / sum(n_old))
+tours_new <- read_csv("output_activitysim/20pct_no_RH/final_tours.csv") %>% 
+  group_by(tour_type) %>% 
+  summarise(n_new = n()) %>% 
+  mutate(pct = n_new / sum(n_new))
+
+tours_old %>%
+  left_join(tours_new, by = "tour_type") %>% 
+  mutate(change = n_new - n_old,
+         pct_change = change / n_old)
+
