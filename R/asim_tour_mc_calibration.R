@@ -21,7 +21,7 @@
 #' @author Chris Day
 #' 
 #' @export
-calibrate_asim_tours <- function(asim_out_dir, asim_config_dir, calib_dir, i){
+calibrate_asim_tours <- function(asim_out_dir, asim_config_dir, calib_dir){
 
 #' Start up -------------------------------------------------------------------------------------#
 #' Below are the libraries and files needed to run this script. Only two of the files need to be
@@ -31,7 +31,7 @@ calibrate_asim_tours <- function(asim_out_dir, asim_config_dir, calib_dir, i){
 # library(tidyverse)
 
 # permanent files
-asim_households <- read_csv(paste0(asim_out_dir, "/final_households.csv"))
+asim_households <- read_csv(paste0(calib_dir, "/final_households.csv"))
 asim_tour_targets <- read_csv(paste0(calib_dir, "/asimtourtargets.csv"))
 
 # this file is the output of the ActivitySim tours of the run just completed
@@ -137,7 +137,7 @@ determine_new_asc <- function(asim_tour_targets,basic_tour_shares,asim_tour_coef
 }
 
 #' copy calibration files each run to have a record
-copy_calibration_files <- function(asim_out_dir, asim_config_dir, calib_dir, i){
+copy_calibration_files_tours <- function(asim_out_dir, asim_config_dir, calib_dir, i){
   if(!dir.exists(paste0(calib_dir, "/output")))
     dir.create(paste0(calib_dir, "/output"), recursive = TRUE)
   file.copy(paste0(asim_config_dir, "/tour_mode_choice_coefficients.csv"),
