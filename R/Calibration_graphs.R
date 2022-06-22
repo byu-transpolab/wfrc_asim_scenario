@@ -1,11 +1,11 @@
 library(tidyverse)
 
-last_run <- 1
+last_run <- 10
 
 calibration_dir <- "calibration/tour_mc_no_RH"
 asim_out_dir <- "output_activitysim/20pct_no_RH"
 
-targets <- read_csv(paste0(calibration_dir, "/asimtourtargets.csv")) %>% 
+tour_targets <- read_csv(paste0(calibration_dir, "/asimtourtargets.csv")) %>% 
   mutate(mode = str_replace(coefficient_name, "_ASC_.+", ""),
          auto_own = case_when(
            str_detect(coefficient_name, "auto_deficient") ~ "auto_deficient",
@@ -18,14 +18,15 @@ targets <- read_csv(paste0(calibration_dir, "/asimtourtargets.csv")) %>%
 hh <- read_csv(paste0(asim_out_dir, "/final_households.csv"))
 
 source("R/asim_tour_mc_calibration.R")
+source("R/asim_trip_mc_calibration.R")
 
-coeffs <- list()
-for (i in 1:last_run) {
-  coeffs[[i]] <- read_csv(paste0(
-    paste0(calibration_dir, "/tour_mc_coeffs_RUN", i, ".csv"))) %>%
-    filter(coefficient_name %in% targets$coefficient_name) %>%
-    select(-constrain)
-}
+# coeffs <- list()
+# for (i in 1:last_run) {
+#   coeffs[[i]] <- read_csv(paste0(
+#     paste0(calibration_dir, "/tour_mc_coeffs_RUN", i, ".csv"))) %>%
+#     filter(coefficient_name %in% tour_targets$coefficient_name) %>%
+#     select(-constrain)
+# }
 
 mode_shares <- list()
 for (i in 1:last_run){
@@ -45,7 +46,7 @@ for (i in 1:last_run){
              T ~ "no_auto"
            ),
            purpose = str_replace(coefficient_name, ".+ASC_.+_.+_", "")) %>%
-    filter(mode %in% (targets$mode %>% unique()),
+    filter(mode %in% (tour_targets$mode %>% unique()),
            purpose != "all")
 
 }
@@ -56,10 +57,41 @@ calibration_shares$iteration <- as.integer(calibration_shares$iteration)
 calibration_shares %>% 
   ggplot() +
   geom_line(aes(x = iteration, y = model, color = mode)) +
-  geom_hline(data = targets, aes(yintercept = target, color = mode), lty = "dashed") +
+  geom_hline(data = tour_targets, aes(yintercept = target, color = mode), lty = "dashed") +
   facet_grid(auto_own ~ purpose)
 
+##############################################################################
 
+trip_targets <- read_csv(paste0(calibration_dir, "/trip_targets/asimtriptargets.csv")) %>% 
+  rename("asim_targets" = "target") %>% 
+  mutate(tour_mode = str_replace(coefficient_name, "coef_(.+)_ASC_.+", "\\1"),
+         purpose = str_replace(coefficient_name, ".+_", ""),
+         trip_mode = str_replace(coefficient_name, "coef_.+_ASC_(.+)_\\w+$", "\\1"))
+
+trip_shares <- list()
+for (i in 1:last_run){
+  trip_shares[[i]] <- read_csv(
+    paste0(calibration_dir, "/output/trips/final_trips_RUN", i, ".csv")) %>%
+    left_join(read_csv(paste0(calibration_dir, "/output/trips/final_tours_RUN",
+                              i, ".csv"), by = tour_id)) %>% 
+    convert_to_basic_tour_modes() %>% 
+    convert_to_basic_trip_modes() %>% 
+    get_basic_trip_shares() %>% 
+    mutate(tour_mode = str_replace(coefficient_name, "coef_(.+)_ASC_.+", "\\1"),
+           purpose = str_replace(coefficient_name, ".+_", ""),
+           trip_mode = str_replace(coefficient_name, "coef_.+_ASC_(.+)_\\w+$", "\\1"))
+}
+
+trip_calib_shares <- bind_rows(trip_shares, .id = "iteration")
+trip_calib_shares$iteration <- as.integer(trip_calib_shares$iteration)
+
+trip_calib_shares %>% 
+  ggplot() +
+  geom_line(aes(x = iteration, y = model, color = trip_mode)) +
+  geom_hline(data = trip_targets, aes(yintercept = target, color = trip_mode), lty = "dashed") +
+  facet_grid(purpose ~ tour_mode)
+
+##############################################################################
 
 trips <- read_csv(paste0(calibration_dir, "/output/final_trips_LATEST.csv")) %>%
   left_join(hh, by = "household_id") %>%

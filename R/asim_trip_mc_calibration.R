@@ -52,18 +52,19 @@ asim_trip_coeffs <- read_csv(paste0(asim_config_dir, "/trip_mode_choice_coeffici
 
 # join the household data and create the auto/worker ownership status column
 asimtoursjoin <- left_join(asim_final_tours,asim_households,by = "household_id") %>%
-  mutate(autoown = ifelse(auto_ownership == 0, "no_auto", ifelse(auto_ownership < 
-                                                                   num_workers, "auto_deficient","auto_sufficient"))
-  )
+  mutate(autoown = ifelse(auto_ownership == 0, "no_auto",
+                          ifelse(auto_ownership < num_workers,
+                                 "auto_deficient", "auto_sufficient"))
+  ) %>% select(-primary_purpose)
 
 # convert the ActivitySim tour modes to more broad upper level mode choice options of ActivitySim
-tour_upper_modes <- convert_to_basic_tour_modes(asimtoursjoin) %>% rename("upper_tour_mode" = newcol)
+tour_upper_modes <- convert_to_basic_tour_modes(asimtoursjoin)
 
 # join the tour mode data into the final trips data in order to get tour mode values at the trip level
 asimtripsjoin <- left_join(asim_final_trips,tour_upper_modes,by="tour_id")
 
 # convert the ActivitySim trip modes to more borad upper level mode choice options of ActivitySim
-trips_upper_modes <- convert_to_basic_trip_modes(asimtripsjoin) %>% rename("upper_trip_mode" = newcol)
+trips_upper_modes <- convert_to_basic_trip_modes(asimtripsjoin)
 
 # summarize the trips taken and calculate the percentage of trips by primary purpose and tour mode
 trip_shares <- get_basic_trip_shares(trips_upper_modes)
@@ -82,7 +83,7 @@ write_csv(tripascs, paste0(asim_config_dir, "/trip_mode_choice_coefficients.csv"
 #' easier to compare with target values
 convert_to_basic_tour_modes <- function(asimjoin){
   asimjoin %>%
-    mutate(newcol = case_when(
+    mutate(upper_tour_mode = case_when(
       tour_mode %in% c("DRIVE_COM","DRIVE_EXP","DRIVE_LOC","DRIVE_LRF","DRIVE_HVY") ~ "drive_transit",
       tour_mode %in% c("WALK_COM","WALK_EXP","WALK_LOC","WALK_LRF","WALK_HVY") ~ "walk_transit",
       tour_mode %in% c("DRIVEALONEFREE","DRIVEALONEPAY") ~ "sov",
@@ -100,7 +101,7 @@ convert_to_basic_tour_modes <- function(asimjoin){
 #' easier to compare with target values
 convert_to_basic_trip_modes <- function(asimjoin){
   asimjoin %>%
-    mutate(newcol = case_when(
+    mutate(upper_trip_mode = case_when(
       trip_mode %in% c("DRIVE_COM","DRIVE_EXP","DRIVE_LOC","DRIVE_LRF","DRIVE_HVY") ~ "drive_transit",
       trip_mode %in% c("WALK_COM","WALK_EXP","WALK_LOC","WALK_LRF","WALK_HVY") ~ "walk_transit",
       trip_mode %in% c("DRIVEALONEFREE","DRIVEALONEPAY") ~ "sov",
@@ -119,12 +120,13 @@ convert_to_basic_trip_modes <- function(asimjoin){
 get_basic_trip_shares <- function(trips_upper_modes){
   trips_upper_modes %>%
     # group and summarize by correct groupings
-    group_by(primary_purpose.x,upper_tour_mode,upper_trip_mode) %>%
+    group_by(primary_purpose,upper_tour_mode,upper_trip_mode) %>%
     summarize(n = n()) %>%
     mutate(share = n/ sum(n)) %>%
     ungroup() %>%
     # create matching variable name
-    mutate(coefficient_name = paste("coef_",upper_tour_mode,"_ASC_",upper_trip_mode,"_",primary_purpose.x,sep = ""),model = share) %>%
+    mutate(coefficient_name = paste0("coef_",upper_tour_mode,"_ASC_",upper_trip_mode,"_",primary_purpose),
+           model = share) %>%
     select(coefficient_name,model)
 }
 
@@ -177,13 +179,16 @@ determine_trip_ascs <- function(asim_trip_targets,trip_shares,asim_trip_coeffs){
 
 #' copy calibration files each run to have a record
 copy_calibration_files_trips <- function(asim_out_dir, asim_config_dir, calib_dir, i){
-  if(!dir.exists(paste0(calib_dir, "/output")))
-    dir.create(paste0(calib_dir, "/output"), recursive = TRUE)
+  if(!dir.exists(paste0(calib_dir, "/output/trips")))
+    dir.create(paste0(calib_dir, "/output/trips"), recursive = TRUE)
   file.copy(paste0(asim_config_dir, "/trip_mode_choice_coefficients.csv"),
             paste0(calib_dir, "/trip_mc_coeffs_RUN", i, ".csv"), 
             overwrite = TRUE)
   file.copy(paste0(asim_out_dir, "/final_trips.csv"),
-            paste0(calib_dir, "/output/final_trips_RUN", i, ".csv"), 
+            paste0(calib_dir, "/output/trips/final_trips_RUN", i, ".csv"), 
+            overwrite = TRUE)
+  file.copy(paste0(asim_out_dir, "/final_tours.csv"),
+            paste0(calib_dir, "/output/trips/final_tours_RUN", i, ".csv"), 
             overwrite = TRUE)
 }
 
