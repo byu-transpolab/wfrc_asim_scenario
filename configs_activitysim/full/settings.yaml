@@ -70,7 +70,7 @@ input_table_list:
 #input_store: ../output/input_data.h5
 
 # number of households to simulate
-# households_sample_size: 200
+#households_sample_size: 116000
 # simulate all households
 households_sample_size: 0
 
