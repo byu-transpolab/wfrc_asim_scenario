@@ -43,8 +43,8 @@ get_puma_tr_cwalk <- function(st_fips, puma_list){
 #'
 #'
 get_tracts <- function(st_fips, puma_tract){
-  tracts(st_fips, county = unique(substr(puma_tract$TRACT, 3, 5)), 
-         class = "sf", progress_bar = FALSE) %>%
+  tigris::tracts(st_fips, county = unique(substr(puma_tract$TRACT, 3, 5)), 
+         class = "sf", progress_bar = FALSE, year = 2019) %>%
     st_transform(4326) %>%
     transmute(GEOID) %>%
     left_join(puma_tract, by = c("GEOID" = "TRACT")) %>%
@@ -161,7 +161,8 @@ get_taz_control <- function(se, crosswalk){
 #' 
 get_sizework_controls <- function(acsvars, mycounties){
   swvars <- str_c("B08202_", sprintf("%03d", c(2:5, 6, 9, 13, 18)))
-  raw_sw <- get_acs("tract", variables = swvars, state = "UT", county = mycounties)
+  raw_sw <- get_acs("tract", variables = swvars, state = "UT", county = mycounties, 
+                    year = 2019)
   
   size_work <- raw_sw %>% 
     left_join(acsvars, by = c("variable" = "name")) %>%
@@ -201,7 +202,7 @@ get_sizework_controls <- function(acsvars, mycounties){
 #' 
 get_age_controls <- function(acsvars, mycounties){
   agevars <- str_c("B01001_", sprintf("%03d", c(3:25, 27:49)))
-  raw_ages <- get_acs("tract", variables = agevars, state = "UT", county = mycounties)
+  raw_ages <- get_acs("tract", variables = agevars, state = "UT", county = mycounties, year = 2019)
   
   ages <- raw_ages %>%
     left_join(acsvars, by = c("variable" = "name")) %>%
@@ -240,7 +241,7 @@ get_age_controls <- function(acsvars, mycounties){
 #' 
 get_income_controls <- function(acsvars, mycounties){
   incvars <- str_c("B19001_", sprintf("%03d", c(2:17)))
-  raw_incs <- get_acs("tract", variables = incvars, state = "UT", county = mycounties)
+  raw_incs <- get_acs("tract", variables = incvars, state = "UT", county = mycounties, year = 2019)
   
   incs <- raw_incs %>%
     left_join(acsvars, by = c("variable" = "name")) %>%
