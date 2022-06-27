@@ -46,9 +46,17 @@ CENSUS_API_KEY="<your key here>"
 
 ## Conda Setup
 
-Activitysim and PopulatimSim both use conda environments to run their code. First conda will need to be downloaded and installed (miniconda3 works well), and then a few things must be done in a terminal. The scripts in this particular repository are run in bash, so it is best to run the following commands in a bash shell.
+Activitysim and PopulatimSim both use conda environments to run their code.
+First conda will need to be downloaded and installed (miniconda3 works well),
+and then a few things must be done in a terminal. The scripts in this particular
+repository are run in bash, so it is best to run the following commands in a
+bash shell.
 
-First verify that conda is in $PATH by running `conda` in a terminal. Then run `conda init bash` to initialize conda for a bash shell. This will add code to `~/.bashrc` (or possibly `~/.bash_profile`) that allows conda to work. Following that, restart the shell (or source `~/.bashrc` and/or `~/.bash_profile`) and create the required conda environment by running
+First verify that conda is in $PATH by running `conda` in a terminal. Then run
+`conda init bash` to initialize conda for a bash shell. This will add code to
+`~/.bashrc` (or possibly `~/.bash_profile`) that allows conda to work. Following
+that, restart the shell (or source `~/.bashrc` and/or `~/.bash_profile`) and
+create the required conda environment by running
 
 ```sh
 
@@ -57,7 +65,8 @@ conda env create --file=activitysim/conda-environments/activitysim-dev.yml \
 
 ```
 
-in a bash shell. This process may take quite a while (10-20 minutes). Conda should then be set up to work with this targets pipeline.
+in a bash shell. This process may take quite a while (10-20 minutes). Conda
+should then be set up to work with this targets pipeline.
 
 ## Input files
 
