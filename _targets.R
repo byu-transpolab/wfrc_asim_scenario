@@ -20,8 +20,8 @@ tar_option_set(packages = c("tidyverse", "sf", "tigris", "tidycensus", "xml2"))
 directories <- tar_plan(
 
 	# Change depending on config
-	activitysim_configs = "configs_activitysim/20pct_no_RH",
-	activitysim_outputs = "output_activitysim/20pct_no_RH",
+	activitysim_configs = "configs_activitysim/20pct",
+	activitysim_outputs = "output_activitysim/20pct",
 
 	# Make non-existent directories
 	dirs = for(dir in c("data_popsim", "output_popsim", "data_activitysim")) if(!dir.exists(dir)) dir.create(dir, recursive = T),
@@ -141,10 +141,12 @@ activitysim <- tar_plan(
 	asim_hholds = make_asim_hholds("output_popsim", addressfile, taz, popsim_success),
 	tar_target(activitysim_population, move_population(asim_persons, asim_hholds, "data_activitysim"),
 		format = "file"),
+	
+	asim_setup = list(activitysim_configs, activitysim_outputs,
+	                  activitysim_population, land_use_file, gtfs,
+	                  skims_file, config_tour_mc, config_trip_mc, tour_freq),
 
-	run_asim = run_activitysim("data_activitysim", activitysim_configs, activitysim_outputs,
-			activitysim_population, land_use_file, gtfs,
-			skims_file, config_tour_mc, config_trip_mc, tour_freq),
+	run_asim = run_activitysim("data_activitysim", asim_setup),
 )
 
 build_beam_inputs <- tar_plan(
