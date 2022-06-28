@@ -1,14 +1,14 @@
-#!/bin/bash -v
+# Build skims
 
-if [[ -f ~/.bash_profile ]]; then
-	printf "\nFound ~/.bash_profile. Will use this and not look for ~/.bashrc.\n"
+if [[ -f ~/.bashrc ]]; then
+	printf "\nFound ~/.bashrc. Will use this and not look for ~/.bash_profile.\n"
 	source ~/.bash_profile
-elif [[ -f ~/.bashrc ]]; then
-	printf "\nDid not find ~/.bash_profile. Will use ~/.bashrc.\n"
+elif [[ -f ~/.bash_profile ]]; then
+	printf "\nDid not find ~/.bashrc. Will use ~/.bash_profile.\n"
 	source ~/.bashrc
 else
 	printf "\nERROR: No .bash_profile or .bashrc found in home directory (~/). Conda will not work.\n
-	Run 'conda init' to add the required entry to ~/.bash_profile, then re-run.\n"
+	Run 'conda init bash' to add the required entry to ~/.bashrc and/or ~/.bash_profile, then re-run.\n"
 	exit 1
 fi
 
