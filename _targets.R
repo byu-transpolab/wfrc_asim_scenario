@@ -130,8 +130,12 @@ build_skims <- tar_plan(
 	tar_target(pk_skims_file, get_pk_skims("inputs/skims/skm_auto_Pk.mtx.omx"), format = "file"),
 	tar_target(skim_taz_map, write_taz_map(taz), format = "file"),
 	tar_target(manifest, "inputs/skims/skim_manifest.csv", format = "file"),
-	tar_target(skims_file, prepare_skims(ok_skims_file, pk_skims_file, manifest, skim_taz_map, "data_activitysim", dirs),
-		format = "file"),
+	
+	skims_setup = list(ok_skims_file, pk_skims_file, skim_taz_map, manifest, dirs),
+	tar_target(skims_file,
+	           prepare_skims(ok_skims_file, pk_skims_file, manifest,
+	                         skim_taz_map, "data_activitysim", skims_setup),
+	           format = "file"),
 )
 
 activitysim <- tar_plan(
