@@ -142,7 +142,7 @@ activitysim <- tar_plan(
 	tar_target(activitysim_population, move_population(asim_persons, asim_hholds, "data_activitysim"),
 		format = "file"),
 	
-	asim_setup = list(activitysim_configs, activitysim_outputs,
+	asim_setup = list(activitysim_configs, activitysim_outputs, land_use_file,
 	                  activitysim_population, land_use_file, gtfs,
 	                  skims_file, config_tour_mc, config_trip_mc, tour_freq),
 
