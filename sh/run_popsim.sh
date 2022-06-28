@@ -15,7 +15,7 @@ fi
 printf "Data path: $1\n"
 printf "Output path: $2\n"
 
-conda activate popsim
+conda activate ASIM_DEV
 conda info
 
 python py/runpopsim.py --config configs_popsim --data "$1" --output "$2" || exit 1
