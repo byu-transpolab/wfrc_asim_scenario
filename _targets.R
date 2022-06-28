@@ -161,7 +161,7 @@ tar_plan(
   calibration_check,
   populationsim,
   build_land_use_dataset,
-  build_network,
+  # build_network,
   build_skims,
   activitysim,
   build_beam_inputs
