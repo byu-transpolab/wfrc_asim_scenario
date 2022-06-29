@@ -29,12 +29,9 @@ calibrate_asim_rh <- function(asim_out_dir, asim_config_dir, calib_dir){
 
 # libraries needed
 # library(tidyverse)
-  
+
 # Target RH share
 target_rh_share <- 0.00138
-
-# permanent files
-asim_households <- read_csv(paste0(calib_dir, "/final_households.csv"))
 
 # this file is the output of the ActivitySim trips of the run just completed
 asim_final_trips <- read_csv(paste0(asim_out_dir, "/final_trips.csv"))
@@ -105,7 +102,7 @@ copy_calibration_files_tours <- function(asim_out_dir, asim_config_dir, calib_di
             paste0(calib_dir, "/output/final_tours_RUN", i, ".csv"), 
             overwrite = TRUE)
   file.copy(paste0(asim_out_dir, "/final_trips.csv"),
-            paste0(calib_dir, "/output/final_trips_LATEST.csv"),
+            paste0(calib_dir, "/output/final_trips_RUN", i, ".csv"),
             overwrite = TRUE)
 }
 
