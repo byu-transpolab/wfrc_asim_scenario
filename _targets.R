@@ -32,11 +32,11 @@ directories <- tar_plan(
 
 calibration_check <- tar_plan(
 	tar_target(config_tour_mc, paste0(activitysim_configs, "/tour_mode_choice_coefficients.csv"),
-	           format = "file"),
+		format = "file"),
 	tar_target(config_trip_mc, paste0(activitysim_configs, "/trip_mode_choice_coefficients.csv"),
-	           format = "file"),
+		format = "file"),
 	tar_target(tour_freq, paste0(activitysim_configs, "/joint_tour_frequency_coeffs.csv"),
-	           format = "file")
+		format = "file")
 )
 
 populationsim <- tar_plan(
@@ -78,7 +78,7 @@ populationsim <- tar_plan(
 	seed = make_seed(hh_seed_file, pp_seed_file, crosswalk),
 
 	write_popsim = write_files(meta, tract_controls, taz_control, seed,
-			crosswalk, path = "data_popsim", dirs),
+		crosswalk, path = "data_popsim", dirs),
 	tar_target(popsim_success, run_populationsim(write_popsim, "data_popsim", "output_popsim"),
 		format = "file")
 )
@@ -101,7 +101,7 @@ build_land_use_dataset <- tar_plan(
 	schools = make_schools(schoolfile),
 	topo = make_topo(topofile),
 	land_use = make_land_use(se, perdata, hhdata, urbanization, buildings,
-			topo, schools, taz),
+		topo, schools, taz),
 
 	tar_target(land_use_file, write_land_use(land_use, file.path("data_activitysim",
 				"land_use.csv")), format = "file"),
@@ -130,12 +130,12 @@ build_skims <- tar_plan(
 	tar_target(pk_skims_file, get_pk_skims("inputs/skims/skm_auto_Pk.mtx.omx"), format = "file"),
 	tar_target(skim_taz_map, write_taz_map(taz), format = "file"),
 	tar_target(manifest, "inputs/skims/skim_manifest.csv", format = "file"),
-	
+
 	skims_setup = list(ok_skims_file, pk_skims_file, skim_taz_map, manifest, dirs),
 	tar_target(skims_file,
-	           prepare_skims(ok_skims_file, pk_skims_file, manifest,
-	                         skim_taz_map, "data_activitysim", skims_setup),
-	           format = "file"),
+		prepare_skims(ok_skims_file, pk_skims_file, manifest,
+			skim_taz_map, "data_activitysim", skims_setup),
+		format = "file"),
 )
 
 activitysim <- tar_plan(
@@ -145,10 +145,10 @@ activitysim <- tar_plan(
 	asim_hholds = make_asim_hholds("output_popsim", addressfile, taz, popsim_success),
 	tar_target(activitysim_population, move_population(asim_persons, asim_hholds, "data_activitysim"),
 		format = "file"),
-	
+
 	asim_setup = list(activitysim_configs, activitysim_outputs, land_use_file,
-	                  activitysim_population, land_use_file, gtfs,
-	                  skims_file, config_tour_mc, config_trip_mc, tour_freq),
+		activitysim_population, land_use_file, gtfs,
+		skims_file, config_tour_mc, config_trip_mc, tour_freq),
 
 	run_asim = run_activitysim("data_activitysim", activitysim_configs, activitysim_outputs, asim_setup),
 )
@@ -161,12 +161,12 @@ build_beam_inputs <- tar_plan(
 
 # Run all targets
 tar_plan(
-  directories,
-  calibration_check,
-  populationsim,
-  build_land_use_dataset,
-  # build_network,
-  build_skims,
-  activitysim,
-  build_beam_inputs
+	directories,
+	calibration_check,
+	populationsim,
+	build_land_use_dataset,
+	build_network,
+	build_skims,
+	activitysim,
+	build_beam_inputs
 )
