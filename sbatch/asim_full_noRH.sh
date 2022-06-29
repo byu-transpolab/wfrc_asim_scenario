@@ -1,7 +1,7 @@
 #!/bin/bash -v
 
 #SBATCH --time=20:00:00   # walltime
-#SBATCH --ntasks=6
+#SBATCH --ntasks=8
 #SBATCH --nodes=1   # number of nodes
 #SBATCH --mem-per-cpu=80G   # memory per CPU core
 #SBATCH -J "ASIM_no_rh"   # job name
