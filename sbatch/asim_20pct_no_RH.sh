@@ -4,9 +4,9 @@
 #SBATCH --ntasks=6
 #SBATCH --nodes=1   # number of nodes
 #SBATCH --mem-per-cpu=80G   # memory per CPU core
-#SBATCH -J "ASIM_no_rh"   # job name
+#SBATCH -J "ASIM_20pct_no_rh"   # job name
 #SBATCH --mail-user=shaydenatch@gmail.com   # email address
-#SBATCH --mail-type=BEGIN
+##SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-type=FAIL
 
@@ -32,19 +32,19 @@ else
 	exit 1
 fi
 
-printf "Config path: configs_activitysim/full_no_RH\n"
+printf "Config path: configs_activitysim/20pct_no_RH\n"
 printf "Data path: data_activitysim\n"
-printf "Output path: output_activitysim/full_no_RH\n"
+printf "Output path: output_activitysim/20pct_no_RH\n"
 
-[[ ! -d "output_activitysim/full_no_RH" ]] \
-	&& mkdir -p output_activitysim/full_no_RH
+[[ ! -d "output_activitysim/20pct_no_RH" ]] \
+	&& mkdir -p output_activitysim/20pct_no_RH
 
 conda activate ASIM_DEV
 conda info
 
-#activitysim run --config configs_activitysim/full_no_RH \
-#	--data data_activitysim --output output_activitysim/full_no_RH \
+#activitysim run --config configs_activitysim/20pct_no_RH \
+#	--data data_activitysim --output output_activitysim/20pct_no_RH \
 #	|| exit 1
-python -m simulation --config configs_activitysim/full_no_RH \
-	--data data_activitysim --output output_activitysim/full_no_RH \
+python -m simulation --config configs_activitysim/20pct_no_RH \
+	--data data_activitysim --output output_activitysim/20pct_no_RH \
 	|| exit 1
