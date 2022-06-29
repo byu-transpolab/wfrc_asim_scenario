@@ -20,4 +20,4 @@ echo "Loaded Modules"
 module list
 
 
-source R/byusc_calibration.R
+./R/run_asim_rh_calibration.R
