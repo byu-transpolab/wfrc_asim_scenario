@@ -127,7 +127,7 @@ trace_hh_id:
 trace_od:
 
 # to resume after last successful checkpoint, specify resume_after: _
-resume_after: write_trip_matricies
+# resume_after: write_trip_matricies
 
 models:
   - initialize_landuse
