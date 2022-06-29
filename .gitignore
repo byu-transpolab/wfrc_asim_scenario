@@ -17,6 +17,8 @@ calibration/**/output/
 
 reference/SLC_gtfs.zip
 
+*.swp
+
 __pycache__/
 _targets/
 
