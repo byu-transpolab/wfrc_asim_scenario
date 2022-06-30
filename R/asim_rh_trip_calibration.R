@@ -35,9 +35,9 @@ calibrate_asim_rh_trips <- function(asim_out_dir, asim_config_dir, calib_dir){
 	rh_change <- log(target_rh_share / sum(rh_shares$share))
 
 	fixed_asc <- asim_trip_coeffs %>%
-		filter(!str_detect(coefficient_name, "_ASC_tnc|_ASC_rh"))
+		filter(!str_detect(coefficient_name, "_ASC_tnc|_ASC_rh") | str_detect(coefficient_name, "coef_joint"))
 	changed_asc <- asim_trip_coeffs %>%
-		filter(str_detect(coefficient_name, "_ASC_tnc|_ASC_rh")) %>%
+		filter(str_detect(coefficient_name, "_ASC_tnc|_ASC_rh") & !str_detect(coefficient_name, "coef_joint")) %>%
 		mutate(value = value + rh_change)
 
 	newasc <- bind_rows(fixed_asc, changed_asc)
