@@ -77,7 +77,7 @@ copy_calibration_files <- function(asim_out_dir, asim_config_dir, calib_dir, i){
 		paste0(calib_dir, "/output/final_trips_RUN", i, ".csv"),
 		overwrite = TRUE)
 	file.copy(paste0(asim_config_dir, "trip_mode_choice_coefficients.csv"),
-		paste0(calib_dir, "trip_mc_coeffs_RUN", i, ".csv",
+		paste0(calib_dir, "trip_mc_coeffs_RUN", i, ".csv"),
 			overwrite = TRUE)
 }
 
