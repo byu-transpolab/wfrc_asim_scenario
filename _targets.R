@@ -104,7 +104,7 @@ build_land_use_dataset <- tar_plan(
 		topo, schools, taz),
 
 	tar_target(land_use_file, write_land_use(land_use, file.path("data_activitysim",
-				"land_use.csv")), format = "file"),
+				"land_use.csv")), format = "file")
 )
 
 build_network <- tar_plan(
@@ -112,7 +112,7 @@ build_network <- tar_plan(
 	tar_target(link_file, "inputs/wfrc_links.dbf", format = "file"),
 	tar_target(node_file, "inputs/wfrc_nodes.dbf", format = "file"),
 	tar_target(network, read_wfrcmag(node_file, link_file, 32612)),
-	tar_target(write_net, write_linknodes(network, "data/wfrc_network"), format = "file"),
+	tar_target(write_net, write_linknodes(network, "data/wfrc_network"), format = "file")
 	# I don't believe matsim_net is necessary since we're writing the pbf directly.
 	# Maybe we should do that here instead?
 	# TODO
@@ -131,11 +131,14 @@ build_skims <- tar_plan(
 	tar_target(skim_taz_map, write_taz_map(taz), format = "file"),
 	tar_target(manifest, "inputs/skims/skim_manifest.csv", format = "file"),
 
+	#for staging (`tar_make(skims_setup)`)
 	skims_setup = list(ok_skims_file, pk_skims_file, skim_taz_map, manifest, dirs),
+
 	tar_target(skims_file,
 		prepare_skims(ok_skims_file, pk_skims_file, manifest,
-			skim_taz_map, "data_activitysim", skims_setup),
-		format = "file"),
+			skim_taz_map, "data_activitysim", skims_setup,
+			ok_skims_file, pk_skims_file, skim_taz_map, manifest),
+		format = "file")
 )
 
 activitysim <- tar_plan(
@@ -146,11 +149,13 @@ activitysim <- tar_plan(
 	tar_target(activitysim_population, move_population(asim_persons, asim_hholds, "data_activitysim"),
 		format = "file"),
 
-	asim_setup = list(activitysim_configs, activitysim_outputs, land_use_file,
+	#for staging (`tar_make(asim_setup)`)
+	asim_setup = list(activitysim_configs, activitysim_outputs,
 		activitysim_population, land_use_file, gtfs,
 		skims_file, config_tour_mc, config_trip_mc, tour_freq),
 
-	run_asim = run_activitysim("data_activitysim", activitysim_configs, activitysim_outputs, asim_setup),
+	run_asim = run_activitysim("data_activitysim", activitysim_configs, activitysim_outputs, asim_setup,
+	land_use_file, gtfs, skims_file, config_tour_mc, config_trip_mc, tour_freq)
 )
 
 build_beam_inputs <- tar_plan(
