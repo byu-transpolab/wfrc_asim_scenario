@@ -15,6 +15,7 @@ calibrate_asim_rh_trips <- function(asim_out_dir, asim_config_dir, calib_dir){
 
 	# this file is the tour mode choice coefficients used for the run just completed
 	asim_trip_coeffs <- read_csv(paste0(asim_config_dir, "/trip_mode_choice_coefficients.csv"))
+	asim_trip_coeffs$value <- as.numeric(asim_trip_coeffs$value)
 
 
 	#' Calibration -------------------------------------------------------------------------------------#
