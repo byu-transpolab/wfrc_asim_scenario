@@ -229,9 +229,9 @@ joint_walk_transit_ASC_auto_sufficient_all,-18.264534,FALSE
 joint_drive_transit_ASC_no_auto_all,0,TRUE
 joint_drive_transit_ASC_auto_deficient_all,-5.9632215,FALSE
 joint_drive_transit_ASC_auto_sufficient_all,-8.045285,FALSE
-joint_taxi_ASC_no_auto_all,-50,FALSE
-joint_taxi_ASC_auto_deficient_all,-50,FALSE
-joint_taxi_ASC_auto_sufficient_all,-50,TRUE
+joint_taxi_ASC_no_auto_all,-4.5792,FALSE
+joint_taxi_ASC_auto_deficient_all,-9.8157,FALSE
+joint_taxi_ASC_auto_sufficient_all,-11.7099,TRUE
 joint_tnc_single_ASC_no_auto_all,-4.4917,FALSE
 joint_tnc_single_ASC_auto_deficient_all,-9.8961,FALSE
 joint_tnc_single_ASC_auto_sufficient_all,-14.0159,TRUE
