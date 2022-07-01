@@ -3,8 +3,8 @@
 library(tidyverse)
 library(targets)
 
-start_iter <- 1
-end_iter <- 10
+start_iter <- 0
+end_iter <- 5
 asim_out_dir <- "output_activitysim/20pct"
 asim_config_dir <- "configs_activitysim/20pct"
 calib_dir <- "calibration/tour_mc"
