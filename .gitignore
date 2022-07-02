@@ -12,6 +12,7 @@ data_popsim/
 output_popsim/
 data_activitysim/
 output_activitysim/
+data_beam
 calibration/**/output/
 .idea/
 
