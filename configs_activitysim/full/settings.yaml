@@ -74,7 +74,7 @@ input_table_list:
 # simulate all households
 households_sample_size: 0
 
-multiprocess: False
+multiprocess: True
 strict: False   # this is a warning filter
 mem_tick: 30  # I think its a helper for tracking memory usage.
 
@@ -127,7 +127,7 @@ trace_hh_id:
 trace_od:
 
 # to resume after last successful checkpoint, specify resume_after: _
-# resume_after: mandatory_tour_frequency
+# resume_after: write_trip_matricies
 
 models:
   - initialize_landuse
