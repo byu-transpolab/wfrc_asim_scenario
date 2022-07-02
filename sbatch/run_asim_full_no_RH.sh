@@ -4,9 +4,9 @@
 #SBATCH --ntasks=8
 #SBATCH --nodes=1   # number of nodes
 #SBATCH --mem-per-cpu=80G   # memory per CPU core
-#SBATCH -J "ASIM_no_rh"   # job name
+#SBATCH -J "ASIM_full_no_RH"   # job name
 #SBATCH --mail-user=shaydenatch@gmail.com   # email address
-#SBATCH --mail-type=BEGIN
+##SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-type=FAIL
 
