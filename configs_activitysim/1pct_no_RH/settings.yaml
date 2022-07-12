@@ -70,11 +70,11 @@ input_table_list:
 #input_store: ../output/input_data.h5
 
 # number of households to simulate
-households_sample_size: 20000
+households_sample_size: 2000
 # simulate all households
 #households_sample_size: 0
 
-multiprocess: True
+multiprocess: False
 strict: False   # this is a warning filter
 mem_tick: 30  # I think its a helper for tracking memory usage.
 
@@ -131,8 +131,8 @@ trace_od:
 
 models:
   - initialize_landuse
-  - compute_accessibility
   - initialize_households
+  - compute_accessibility
   - school_location
   - workplace_location
   - auto_ownership_simulate
