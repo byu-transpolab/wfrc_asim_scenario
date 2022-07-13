@@ -103,7 +103,7 @@ check_for_variability: False
 # turn shadow_pricing on and off for all models (e.g. school and work)
 # shadow pricing is deprecated for less than full samples
 # see shadow_pricing.yaml for additional settings
-use_shadow_pricing: True
+use_shadow_pricing: False
 # if shadow pricing is on in multiprocessing, must turn on fail_fast
 fail_fast: True
 
@@ -127,12 +127,12 @@ trace_hh_id:
 trace_od:
 
 # to resume after last successful checkpoint, specify resume_after: _
-# resume_after: write_trip_matricies
+# resume_after: mandatory_tour_frequency
 
 models:
   - initialize_landuse
-  - compute_accessibility
   - initialize_households
+  - compute_accessibility
   - school_location
   - workplace_location
   - auto_ownership_simulate
