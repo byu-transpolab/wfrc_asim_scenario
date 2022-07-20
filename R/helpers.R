@@ -27,17 +27,19 @@ purge_rh <- function(df, check_col_index){
     select(which(!str_detect(colnames(df), "(?i)taxi|tnc")))
 }
 
-for(i in c("tour_mode_choice.csv",
-           "tour_mode_choice_coefficients.csv",
-           "tour_mode_choice_coefficients_template.csv",
-           "trip_mode_choice.csv",
-           "trip_mode_choice_coefficients.csv",
-           "trip_mode_choice_coefficients_template.csv")){
-
-  read_csv(i) %>%
-    write_csv(paste0(i, "_OLD"), na = "")
-  
-  read_csv(i) %>% 
-    purge_rh(1) %>% 
-    write_csv(i, na = "")
+create_old_files <- function(){
+  for(i in c("tour_mode_choice.csv",
+             "tour_mode_choice_coefficients.csv",
+             "tour_mode_choice_coefficients_template.csv",
+             "trip_mode_choice.csv",
+             "trip_mode_choice_coefficients.csv",
+             "trip_mode_choice_coefficients_template.csv")){
+    
+    read_csv(i) %>%
+      write_csv(paste0(i, "_OLD"), na = "")
+    
+    read_csv(i) %>% 
+      purge_rh(1) %>% 
+      write_csv(i, na = "")
+  }
 }
