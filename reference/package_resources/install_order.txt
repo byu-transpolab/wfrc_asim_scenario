@@ -1,0 +1,4 @@
+GDAL
+Fiona
+geopandas
+tables
