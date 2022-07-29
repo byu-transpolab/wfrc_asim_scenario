@@ -9,7 +9,6 @@ coef_nest_NONMOTORIZED,0.72,T
 coef_nest_TRANSIT,0.72,T
 coef_nest_TRANSIT_WALKACCESS,0.5,T
 coef_nest_TRANSIT_DRIVEACCESS,0.5,T
-coef_nest_RIDEHAIL,0.36,T
 #,,
 coef_ivt_othmaint_social,-0.0175,F
 coef_ivt_work,-0.022,F
@@ -116,8 +115,6 @@ coef_drive_transit_ASC_lightrail_shopping_eatout_othmaint_social_othdiscr_atwork
 coef_drive_transit_ASC_lightrail_univ_school,1.4436,
 #duplicates apparently intrduced with TNC mode,,
 #,,
-coef_joint_auto_ASC_rh_shopping_eatout_othmaint_social_othdiscr,-12,
-coef_joint_auto_ASC_rh_work_univ_school_escort_atwork,-5,
 coef_joint_auto_ASC_sr2_eatout_othmaint_social_othdiscr,-0.0634,
 coef_joint_auto_ASC_sr2_work_univ_school_escort_atwork,0,
 coef_joint_auto_ASC_sr2_shopping,0.5875,
@@ -127,8 +124,6 @@ coef_joint_auto_ASC_sr3p_work_univ_school_escort_atwork,0,
 coef_joint_auto_ASC_walk_eatout_othmaint_social_othdiscr,-0.7144,
 coef_joint_auto_ASC_walk_shopping,-23.4688,
 coef_joint_auto_ASC_walk_work_univ_school_escort_atwork,0,
-coef_joint_bike_ASC_rh_shopping_eatout_othmaint_social_othdiscr,-17.35,
-coef_joint_bike_ASC_rh_work_univ_school_escort_atwork,-5,
 coef_joint_bike_ASC_walk_othmaint,-13.5192,
 coef_joint_bike_ASC_walk_othdiscr,-14.444,
 coef_joint_bike_ASC_walk_eatout,-15.5588,
@@ -145,22 +140,6 @@ coef_joint_drive_transit_ASC_heavyrail_work_univ_school_escort_atwork,0,
 coef_joint_drive_transit_ASC_heavyrail_shopping_eatout_othmaint_social_othdiscr,0.5403,
 coef_joint_drive_transit_ASC_lightrail_work_univ_school_escort_atwork,0,
 coef_joint_drive_transit_ASC_lightrail_shopping_eatout_othmaint_social_othdiscr,0.5392,
-coef_joint_drive_transit_ASC_rh_work_univ_school_escort_atwork,-5,
-coef_joint_drive_transit_ASC_rh_shopping_eatout_othmaint_social_othdiscr,-9.61,
-coef_joint_ride_hail_ASC_sr2_shopping_eatout_othmaint_social_othdiscr,-7,
-coef_joint_ride_hail_ASC_sr2_work_univ_school_escort_atwork,0,
-coef_joint_ride_hail_ASC_sr3p_shopping_eatout_othmaint_social_othdiscr,-7,
-coef_joint_ride_hail_ASC_sr3p_work_univ_school_escort_atwork,0,
-coef_joint_ride_hail_ASC_taxi_shopping_eatout_othmaint_social_othdiscr,-100,
-coef_joint_ride_hail_ASC_taxi_work_univ_school_escort_atwork,-100,
-coef_joint_ride_hail_ASC_tnc_shared,0,
-coef_joint_ride_hail_ASC_tnc_single_shopping_eatout_othmaint_social_othdiscr,-4.7339,
-coef_joint_ride_hail_ASC_tnc_single_work_univ_school_escort_atwork,0,
-coef_joint_ride_hail_ASC_walk_shopping_eatout_othmaint_social_othdiscr,-7,
-coef_joint_ride_hail_ASC_walk_work_univ_school_escort_atwork,0,
-coef_joint_ride_hail_ASC_walk_transit,0,
-coef_joint_walk_ASC_rh_shopping_eatout_othmaint_social_othdiscr,-8,
-coef_joint_walk_ASC_rh_work_univ_school_escort_atwork,-5,
 coef_joint_walk_transit_ASC_commuter_work_univ_school_escort_atwork,0,
 coef_joint_walk_transit_ASC_commuter_shopping_eatout_othmaint_social_othdiscr,0.5129,
 coef_joint_walk_transit_ASC_express_work_univ_school_escort_atwork,0,
@@ -171,8 +150,6 @@ coef_joint_walk_transit_ASC_heavyrail_work_univ_school_escort_atwork,0,
 coef_joint_walk_transit_ASC_heavyrail_shopping_eatout_othmaint_social_othdiscr,0.5403,
 coef_joint_walk_transit_ASC_lightrail_work_univ_school_escort_atwork,0,
 coef_joint_walk_transit_ASC_lightrail_shopping_eatout_othmaint_social_othdiscr,0.5392,
-coef_joint_walk_transit_ASC_rh_work_univ_school_escort_atwork,-5,
-coef_joint_walk_transit_ASC_rh_shopping_eatout_othmaint_social_othdiscr,-6.22,
 coef_joint_walk_transit_ASC_sr2_eatout,-14.9134,
 coef_joint_walk_transit_ASC_sr2_othdiscr,-14.9801,
 coef_joint_walk_transit_ASC_sr2_social,-20.5022,
@@ -192,53 +169,12 @@ coef_joint_walk_transit_ASC_walk_work_univ_school_escort_atwork,0,
 coef_joint_walk_transit_ASC_walk_othmaint,1.1876,
 coef_joint_walk_transit_ASC_walk_eatout,2.3017,
 #duplicates apparently intrduced with TNC mode,,
-coef_ride_hail_ASC_sr2_school,-1.5869,False
-coef_ride_hail_ASC_sr2_univ,-4.3372,False
-coef_ride_hail_ASC_sr2_atwork,-5.2763,False
-coef_ride_hail_ASC_sr2_escort_shopping_othmaint,-5.6483,False
-coef_ride_hail_ASC_sr2_eatout_social_othdiscr,-5.9692,False
-coef_ride_hail_ASC_sr2_work,-6.108,False
-# coef_ride_hail_ASC_sr2_univ,-2.5785,False
-# coef_ride_hail_ASC_sr2_school,-3.0613,False
-# coef_ride_hail_ASC_sr2_eatout_social_othdiscr,-3.301,False
-# coef_ride_hail_ASC_sr2_escort_shopping_othmaint,-3.3353,False
-# coef_ride_hail_ASC_sr2_work,-3.9085,False
-# coef_ride_hail_ASC_sr2_atwork,-4.2636,False
 #,,
 #duplicates apparently intrduced with TNC mode,,
-coef_ride_hail_ASC_sr3p_school,-2.5362,False
-coef_ride_hail_ASC_sr3p_univ,-4.922,False
-coef_ride_hail_ASC_sr3p_eatout_social_othdiscr,-6.7199,False
-coef_ride_hail_ASC_sr3p_work_escort_shopping_othmaint_atwork,-7,False
-# coef_ride_hail_ASC_sr3p_work,-10.8661,False
-# coef_ride_hail_ASC_sr3p_univ,-3.1888,False
-# coef_ride_hail_ASC_sr3p_eatout_social_othdiscr,-4.0649,False
-# coef_ride_hail_ASC_sr3p_school,-4.0886,False
-# coef_ride_hail_ASC_sr3p_escort_shopping_othmaint_atwork,-7,False
-#,,
-coef_ride_hail_ASC_taxi_school,-100,
-coef_ride_hail_ASC_taxi_univ,-100,
-coef_ride_hail_ASC_taxi_atwork,-100,
-coef_ride_hail_ASC_taxi_work,-100,
-coef_ride_hail_ASC_taxi_eatout_social_othdiscr,-100,
-coef_ride_hail_ASC_taxi_escort_shopping_othmaint,-100,
-#duplicates apparently intrduced with TNC mode,,
-coef_ride_hail_ASC_walk_atwork,-2.6103,False
-coef_ride_hail_ASC_walk_eatout_social_othdiscr,-3.3603,False
-coef_ride_hail_ASC_walk_univ_escort_shopping_othmaint,-7,False
-coef_ride_hail_ASC_walk_school,0.245,False
-coef_ride_hail_ASC_walk_work,0.2858,False
-# coef_ride_hail_ASC_walk_school,-1.2386,False
-# coef_ride_hail_ASC_walk_eatout_social_othdiscr,-1.3318,False
-# coef_ride_hail_ASC_walk_atwork,-1.6755,False
-# coef_ride_hail_ASC_walk_univ,-10.8471,False
-# coef_ride_hail_ASC_walk_escort_shopping_othmaint,-7,False
-# coef_ride_hail_ASC_walk_work,1.497,False
 #,,
 #duplicates apparently intrduced with TNC mode,,
-coef_ride_hail_ASC_walk_transit,0,True
-# coef_ride_hail_ASC_walk_transit_work,-10.8661,False
-# coef_ride_hail_ASC_walk_transit_univ_school_escort_shopping_eatout_othmaint_social_othdiscr_atwork,-7,False
+#,,
+#duplicates apparently intrduced with TNC mode,,
 #,,
 coef_sov_ASC_sr2_work_univ_school_shopping_eatout_othmaint_social_othdiscr_atwork,-999,T
 coef_sov_ASC_sr2_escort,0,T
@@ -356,38 +292,5 @@ coef_walk_transit_ASC_walk_atwork,-1.169649005,F
 coef_walk_transit_ASC_walk_othmaint,-0.961349,F
 coef_walk_transit_ASC_walk_eatout,-0.335749,F
 walk_express_penalty,10,T
-adjust_tnc_shared,30,T
 coef_origin_density_applied_work_univ_school,0,T
 coef_origin_density_applied_escort_shopping_eatout_othmaint_social_othdiscr_atwork,1,T
-coef_bike_ASC_rh,-12.991876520687708,T
-coef_drive_transit_ASC_rh,-10.241876520687708,
-# coef_drive_transit_ASC_rh_school,-6.119076520687711,
-# coef_drive_transit_ASC_rh_univ,-6.624676520687712,
-# coef_drive_transit_ASC_rh_atwork,-12.943876520687713,
-# coef_drive_transit_ASC_rh_work,-5.324476520687711,
-# coef_drive_transit_ASC_rh_escort_shopping_othmaint,-5.304876520687711,
-# coef_drive_transit_ASC_rh_eatout_social_othdiscr,-2.421776520687711,
-coef_ride_hail_ASC_tnc_shared,-5.991876520687711,
-coef_ride_hail_ASC_tnc_single_univ,-5.883776520687711,
-coef_ride_hail_ASC_tnc_single_school,-5.671776520687711,
-coef_ride_hail_ASC_tnc_single_work,-5.256876520687712,
-coef_ride_hail_ASC_tnc_single_escort_shopping_othmaint,-5.203976520687711,
-coef_ride_hail_ASC_tnc_single_eatout_social_othdiscr,-5.164476520687711,
-coef_ride_hail_ASC_tnc_single_atwork,-4.777576520687711,
-coef_sov_ASC_rh_school,-11.64677652068771,F
-coef_sov_ASC_rh_univ,-12.64087652068771,F
-coef_sov_ASC_rh_work_atwork,-12.991876520687708,T
-coef_sov_ASC_rh_escort_shopping_eatout_othmaint_social_othdiscr,-5.991876520687711,T
-coef_sr2_ASC_rh_univ,-12.681576520687713,F
-coef_sr2_ASC_rh_work_school_escort_shopping_eatout_othmaint_social_othdiscr_atwork,-12.991876520687708,T
-coef_sr3p_ASC_rh_atwork,-12.01787652068771,F
-coef_sr3p_ASC_rh_school,-12.663276520687713,F
-coef_sr3p_ASC_rh_univ_escort_shopping_eatout_othmaint_social_othdiscr,-12.991876520687708,T
-coef_sr3p_ASC_rh_work,-77.90957652068771,F
-coef_walk_ASC_rh,-12.991876520687708,T
-coef_walk_transit_ASC_rh_escort_shopping_othmaint,-9.105476520687711,F
-coef_walk_transit_ASC_rh_work,-9.73267652068771,F
-coef_walk_transit_ASC_rh_atwork,-9.84247652068771,F
-coef_walk_transit_ASC_rh_univ,-10.260976520687713,F
-coef_walk_transit_ASC_rh_eatout_social_othdiscr,-10.742676520687713,F
-coef_walk_transit_ASC_rh_school,-12.991876520687708,F
