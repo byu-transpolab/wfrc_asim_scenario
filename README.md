@@ -9,4 +9,7 @@ This uses ActivitySim to run.... Please see [the
 documentation](https://activitysim.github.io/activitysim/v1.2.0/users-guide/index.html#userguide)
 for how to set up and run ActivitySim using Mambaforge. This includes
 installing on the BYU supercomputer. You may need to edit the `PATH` in order
-to run Mambaforge commands since it is installed locally.
+to run Mambaforge commands since it is installed locally. One nice thing is
+that you don't need to load any modules to run mamba or activitysim on the
+supercomputer once the needed environment is created. This repository assumes
+that you are able to run activitysim from the command line.
