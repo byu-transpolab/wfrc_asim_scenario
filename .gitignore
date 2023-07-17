@@ -4,22 +4,6 @@
 .Ruserdata
 .Renviron
 
-lib/
-
-AS_package/
-data/
-data_popsim/
-output_popsim/
-data_activitysim/
-output_activitysim/
-data_beam
-calibration/**/output/
-.idea/
-
-reference/SLC_gtfs.zip
-
-*.swp
-
 __pycache__/
 _targets/
 
