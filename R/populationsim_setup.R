@@ -347,27 +347,28 @@ make_seed <- function(hh_seed_file, pp_seed_file, crosswalk){
 }
 
 
-#' Write out populationsim files
+#' Set up and write out input data files for PopulationSim
 #' 
-#' 
-#' @param meta
-#' @param tract_controls
-#' @param taz_control
-#' @param seed
-#' @param crosswalk
-#' @param path Path to output folder
-#'
-write_files <- function(meta, tract_controls, taz_control, seed, crosswalk, path, ...){
+setup_popsim <- function(se_taz, out_dir, meta, tract_controls, seed, crosswalk){
   
+  if(!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
+  
+  # Clean taz_control data
+  # NOTE: The only TAZ-level control we get from WFRC is the number of
+  # households in each TAZ. We get this from the travel model SE file
+  taz_control <- get_taz_control(se_taz, crosswalk)
+  
+  # Write files
   # Controls
-  write_csv(meta, file.path(path, "control_totals_meta.csv"))
-  write_csv(tract_controls, file.path(path, "control_totals_tract.csv"))
-  write_csv(taz_control, file.path(path, "control_totals_taz.csv"))
+  write_csv(meta, file.path(out_dir, "control_totals_meta.csv"))
+  write_csv(tract_controls, file.path(out_dir, "control_totals_tract.csv"))
+  write_csv(taz_control, file.path(out_dir, "control_totals_taz.csv"))
   
   # Seed
-  write_csv(seed$households, file.path(path, "seed_households.csv"))
-  write_csv(seed$persons, file.path(path, "seed_persons.csv"))
- 
+  write_csv(seed$households, file.path(out_dir, "seed_households.csv"))
+  write_csv(seed$persons, file.path(out_dir, "seed_persons.csv"))
+  
   # Crosswalk
-  write_csv(crosswalk, file.path(path, "geo_cross_walk.csv"))
+  write_csv(crosswalk, file.path(out_dir, "geo_cross_walk.csv"))
+  
 }
