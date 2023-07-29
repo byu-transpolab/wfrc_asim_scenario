@@ -28,10 +28,10 @@ tar_option_set(packages = c("tidyverse", "sf", "tigris", "tidycensus", "xml2"))
 
 scenarios <- tar_plan(
   
-  #base2019_popsim = setup_popsim(
-    #se_taz = "populationsim/base2019/SE_2019.csv",
-    #out_dir = "populationsim/base2019/data",
-    #meta, tract_controls, seed, crosswalk),
+  base2019_popsim = setup_popsim(
+    se_taz = "populationsim/base2019/SE_2019.csv",
+    out_dir = "populationsim/base2019/data",
+    meta, tract_controls, seed, crosswalk),
   
   #base2019_asim = setup_asim(skims_dir = "skims/dir")
   

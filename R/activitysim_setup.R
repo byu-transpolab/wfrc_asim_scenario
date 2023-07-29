@@ -194,7 +194,8 @@ read_sedata <- function(se_wfrc, se_boxelder){
       OTHEMPN = OTHR + HBJ + FM_CONS,
       AGREMPN = FM_AGRI + FM_MING,
       MWTEMPN = MANU + WSLE,
-      HSENROLL, GRADEENROLL = Enrol_Elem + Enrol_Midl
+      HSENROLL,
+      GRADEENROLL = Enrol_Elem + Enrol_Midl
     ) %>%
     mutate(
       across(-zone_id, na_int)
