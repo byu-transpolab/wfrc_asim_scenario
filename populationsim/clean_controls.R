@@ -1,31 +1,32 @@
 library(tidyverse)
 
-counties <- c("Box Elder",
-              "Davis",
-              "Salt Lake",
-              "Utah",
-              "Weber - WFRC")
+########
+wfrc_se <- "populationsim/reference/SE_WFRC_2019.csv"
+be_se <- "populationsim/reference/SE_BOX ELDER_2019.csv"
+out_file <- "populationsim/base2019/data/taz_controls.csv"
 
-# grand_tot <-
-#   read_csv("populationsim/reference/ControlTotal_SE_AllCounties.csv") %>% 
-#   filter(YEAR==2019, CO_NAME %in% counties) %>% 
-#   select(-YEAR)
-# 
-# grand_tot %>% 
-#   write_csv("populationsim/data/county_controls.csv")
-
-wfrc <-
-  read_csv("populationsim/reference/SE_WFRC_2019.csv") %>%
-  rename(zone_id = `;TAZID`, HSENROLL = Enrol_High)
-filter(CO_NAME != "BOX ELDER")
+# landuse_se <- "populationsim/reference/SE_prison.csv"
+########
 
 be <-
-  read_csv("populationsim/reference/SE_BOX ELDER_2019.csv") %>%
-  rename(zone_id = Index, HSENROLL = Enrol_High) %>%
-  filter(DISTLRG == 1) %>%
-  mutate(zone_id = `;CO_TAZID` - 3000)
+  read_csv(be_se) %>%
+  filter(DLRG_NAME == "Box Elder - WFRC") %>% 
+  select(-`;CO_TAZID`) %>% 
+  rename(zone_id = Index, HSENROLL = Enrol_High)
 
-se_data <- bind_rows(wfrc, be)
+be_zones <- range(be$zone_id)[2]
+
+wfrc <-
+  read_csv(wfrc_se) %>%
+  select(-CO_TAZID) %>% 
+  rename(zone_id = `;TAZID`, HSENROLL = Enrol_High) %>% 
+  filter(zone_id > be_zones)
+
+
+
+se_data <-
+  bind_rows(wfrc, be) %>% 
+  arrange(zone_id)
 
 se_data %>% 
-  write_csv("populationsim/data/taz_controls.csv")
+  write_csv(out_file)
