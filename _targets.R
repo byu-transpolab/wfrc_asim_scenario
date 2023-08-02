@@ -1,8 +1,10 @@
 library(targets)
 library(tarchetypes)
 
-r_scripts <- list.files("R", full.names = TRUE)
-sapply(r_scripts, source)
+# r_scripts <- list.files("R", full.names = TRUE)
+# sapply(r_scripts, source)
+
+source("R/populationsim_setup.R")
 
 # debugging
 #tar_option_set(debug = "land_use")
@@ -29,9 +31,15 @@ tar_option_set(packages = c("tidyverse", "sf", "tigris", "tidycensus", "xml2"))
 scenarios <- tar_plan(
   
   base2019_popsim = setup_popsim(
-    se_taz = "populationsim/base2019/SE_2019.csv",
-    out_dir = "populationsim/base2019/data",
+    se_taz = "populationsim/taz_se_2019_all.csv",
+    out_dir = "populationsim/data_2019",
     meta, tract_controls, seed, crosswalk),
+  
+  landuse_popsim = setup_popsim(
+    se_taz = "populationsim/taz_se_new_landuse_all.csv",
+    out_dir = "populationsim/data_new_landuse",
+    meta, tract_controls, seed, crosswalk
+  )
   
   #base2019_asim = setup_asim(skims_dir = "skims/dir")
   
@@ -44,13 +52,18 @@ populationsim_setup <- tar_plan(
 	st_fips = 49, # the state fips code for Utah
 	puma_list = c(49001:49004, 11001:11002, 35001:35009, 57001:57002, 03001:03004),
 	puma_tract = get_puma_tr_cwalk(st_fips, puma_list),
-	tr = get_tracts(st_fips, puma_tract),
+	tr = get_tracts(st_fips, puma_tract, crs = 26912), #crs should match `taz_geo`
 
 	# Taz geometry
-	tar_target(taz_geo, "inputs/taz.geojson", format = "file"), ###########
+	#The TAZ geojson can have a field `EMPTY` with TRUE/FALSE values. If `EMPTY`
+	#is `TRUE`, then the TAZ will be excluded. This is useful for TAZs that are
+	#not connected to the network, such as Utah Lake.
+	#A file listing TAZs to exclude may also be provided. If so, a TAZ will be
+	#excluded either if it is listed or if it is marked `EMPTY` (or both).
+	tar_target(taz_geo, "reference/WFRC_TAZ.geojson", format = "file"), ###########
 	#list of excluded TAZs (Utah Lake, etc.):
-	tar_target(ivt0,    "inputs/IVT0_tazs.csv", format = "file"), ##########
-	taz = get_taz(taz_geo, ivt0, tr),
+	# tar_target(ivt0, "reference/IVT0_tazs.csv", format = "file"), ##########
+	taz = get_taz(taz_geo, tr),
 	crosswalk = get_crosswalk(taz, tr),
 
 
@@ -63,7 +76,7 @@ populationsim_setup <- tar_plan(
 	# - Income, derived from Table `B19001:HOUSEHOLD INCOME IN THE PAST 12 MONTHS (IN 2018 INFLATION-ADJUSTED DOLLARS)`
 	mytracts = unique(crosswalk$TRACT),
 	mycounties = unique(substr(crosswalk$TRACT, 3, 5)),
-	acsvars = load_variables(2018, "acs5", cache = TRUE),
+	acsvars = load_variables(2019, "acs5", cache = TRUE),
 	sizes = get_sizework_controls(acsvars, mycounties),
 	incs = get_income_controls(acsvars, mycounties),
 	ages = get_age_controls(acsvars, mycounties),
@@ -72,8 +85,8 @@ populationsim_setup <- tar_plan(
 
 
 	# Seed
-	tar_target(hh_seed_file, "inputs/psam_h49.csv.zip", format = "file"),
-	tar_target(pp_seed_file, "inputs/psam_p49.csv.zip", format = "file"),
+	tar_target(hh_seed_file, "reference/psam_h49.csv.zip", format = "file"),
+	tar_target(pp_seed_file, "reference/psam_p49.csv.zip", format = "file"),
 	seed = make_seed(hh_seed_file, pp_seed_file, crosswalk)
 
 )

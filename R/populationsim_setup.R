@@ -42,10 +42,10 @@ get_puma_tr_cwalk <- function(st_fips, puma_list){
 #' @param puma_tract
 #'
 #'
-get_tracts <- function(st_fips, puma_tract){
+get_tracts <- function(st_fips, puma_tract, crs = 4326){
   tigris::tracts(st_fips, county = unique(substr(puma_tract$TRACT, 3, 5)), 
          class = "sf", progress_bar = FALSE, year = 2019) %>%
-    st_transform(4326) %>%
+    st_transform(crs) %>%
     transmute(GEOID) %>%
     left_join(puma_tract, by = c("GEOID" = "TRACT")) %>%
     filter(!is.na(PUMA))
@@ -57,50 +57,50 @@ get_tracts <- function(st_fips, puma_tract){
 #' @param ivt0 file with tazes to omit
 #' 
 #' 
-get_taz <- function(taz_geo, ivt0, tr){
+get_taz <- function(taz_geo, tr, ivt0 = NULL){
   
-  # WFRC has 2,881 zones, including zones that are uninhabited and zones
+  # WFRC has a lot of zones, including zones that are uninhabited and zones
   # that are external to the region.
   taz <- st_read(taz_geo)
   
-  # explicitly removing external zones gets us down to 2,858
-  interntaz <- taz %>%
-    # remove external stations
-    filter(!EXTERNAL == 1) %>%
-    arrange(TAZID) %>%
+  if ("EMPTY" %in% colnames(taz)){
+    taz <- taz %>% 
+      filter(!EMPTY)
+  }
+  if (!is.null(ivt0)){
+    exclude <- read_lines(ivt0)
+    taz <- taz %>% 
+      filter(!TAZID %in% exclude)
+  }
+  
+  clean_taz <-
+    taz %>% 
     transmute(
-      TAZ = TAZID, 
-      ACRES, DEVACRES,
+      TAZ = TAZID,
+      ACRES,
+      DEVACRES,
       DISTRICT = DISTLRG,
       SD = DISTSML
-    ) 
+    )
   
   
   # each taz needs to belong to at least one tract / PUMA
-  tigris_taz <- interntaz %>%
-    
+  tigris_taz <- clean_taz %>%
     # remove taz that do not map to a tract
     st_join(tr) %>% 
     filter(!is.na(PUMA)) %>%
     # remove duplicates of TAZ that map to many tracts
     group_by(TAZ) %>% slice(1) %>%  ungroup()
   
-  # Additionally, some tazs should be excluded  because they are 
-  # not connected to the highway network in 2019 (Utah Lake, Eagle Mountain)
-  # These were put into a list by Christian Hunter.
-  IVT0 <- read_csv(ivt0)
-  IVT0$TAZ <- as.character(IVT0$TAZ)
-  
-  
-  # after removing these TAZ, we have 2,817 TAZs left
-  finaltaz <- tigris_taz %>% 
-    filter(!TAZ %in% IVT0$TAZ) %>%
+  # after removing these TAZ, we have some TAZs left
+  final_taz <- tigris_taz %>% 
     arrange(TAZ) %>%
     mutate(
-      asim_taz = row_number()
+      asim_taz = row_number(),
+      .after = TAZ
     )
     
-  finaltaz
+  final_taz
 }
 
 write_taz_map <- function(taz) {
@@ -142,6 +142,7 @@ get_crosswalk <- function(taz, tr){
 #'
 get_taz_control <- function(se, crosswalk){
   se %>%
+    read_csv() %>% 
     transmute(
       TAZ = as.character(zone_id), 
       HHBASE = as.integer(TOTHH)
@@ -309,7 +310,7 @@ replace_na <- function(x) {
 make_seed <- function(hh_seed_file, pp_seed_file, crosswalk){
   # read in pums HH file, specifying datatypes for key columns
   pums_hh <- read_csv(
-    "inputs/psam_h49.csv.zip",  
+    hh_seed_file,  
     col_types = list(SERIALNO = col_character(), NP = col_integer(), 
                      FINCP = col_number(), ADJINC = col_number(),
                      WGTP = col_number())
@@ -332,7 +333,7 @@ make_seed <- function(hh_seed_file, pp_seed_file, crosswalk){
   
   
   pums_persons <- read_csv(
-    "inputs/psam_p49.csv.zip", 
+    pp_seed_file, 
     col_types = list(SERIALNO = col_character(), PWGTP = col_number())
   )
   
