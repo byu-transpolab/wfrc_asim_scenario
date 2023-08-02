@@ -7,6 +7,9 @@
 __pycache__/
 _targets/
 
+OLD_inputs/skims/skm_auto_Ok.mtx.omx
+OLD_inputs/skims/skm_auto_Pk.mtx.omx
+OLD_inputs/skims/skim_taz_map.csv
 inputs/skims/skm_auto_Ok.mtx.omx
 inputs/skims/skm_auto_Pk.mtx.omx
 inputs/skims/skim_taz_map.csv
