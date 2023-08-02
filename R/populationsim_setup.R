@@ -372,4 +372,6 @@ setup_popsim <- function(se_taz, out_dir, meta, tract_controls, seed, crosswalk)
   # Crosswalk
   write_csv(crosswalk, file.path(out_dir, "geo_cross_walk.csv"))
   
+  out_dir
+  
 }

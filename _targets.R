@@ -33,15 +33,24 @@ scenarios <- tar_plan(
   base2019_popsim = setup_popsim(
     se_taz = "populationsim/taz_se_2019_all.csv",
     out_dir = "populationsim/data/2019",
-    meta, tract_controls, seed, crosswalk),
+    meta, tract_controls, seed, crosswalk
+    ),
   
   landuse_popsim = setup_popsim(
     se_taz = "populationsim/taz_se_new_landuse_all.csv",
     out_dir = "populationsim/data/new_landuse",
     meta, tract_controls, seed, crosswalk
-  )
+  ),
+  
+  popsim = c(base2019_popsim, landuse_popsim)
+  
   
   #base2019_asim = setup_asim(skims_dir = "skims/dir")
+  #landuse_asim
+  #transit_asim
+  #wfh_asim
+  
+  #asim = c(base2019_asim, landuse_asim, transit_asim, wfh_asim)
   
 )
 
