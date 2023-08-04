@@ -40,7 +40,7 @@ scenarios <- tar_plan(
     meta, tract_controls, seed, crosswalk
   ),
   
-  popsim = c(base2019_popsim, landuse_popsim),
+  popsim = list(base2019_popsim, landuse_popsim),
   
   
   base2019_asim = setup_asim(
@@ -53,7 +53,7 @@ scenarios <- tar_plan(
   #transit_asim
   #wfh_asim
   
-  #asim = c(base2019_asim, landuse_asim, transit_asim, wfh_asim)
+  #asim = list(base2019_asim, landuse_asim, transit_asim, wfh_asim)
   
 )
 
