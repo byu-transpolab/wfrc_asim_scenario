@@ -103,40 +103,6 @@ populationsim_setup <- tar_plan(
 
 )
 
-# build_land_use_dataset <- tar_plan(
-# 	# se = read_sedata(se_wfrc, se_boxelder),
-# 
-# 	# tar_target(urbanfile, "data/land_use/urbanization.csv", format = "file"),
-# 	# tar_target(buildfile, "data/land_use/buildings.csv", format = "file"),
-# 	# tar_target(parcelsfile, "data/land_use/parcels.csv", format = "file"),
-# 	# tar_target(topofile, "data/land_use/topography.csv", format = "file"),
-# 	# tar_target(schoolfile, "data/land_use/schools.csv", format = "file"),
-# 
-# 	perdata = read_perdata("output_popsim", popsim_success),
-# 	hhdata = read_hhdata("output_popsim", popsim_success),
-# 	# urbanization = read_urbanization(urbanfile),
-# 	# buildings = make_buildings(buildfile, parcelsfile),
-# 	# schools = make_schools(schoolfile),
-# 	# topo = make_topo(topofile),
-# 	land_use = make_land_use(se, perdata, hhdata, urbanization, buildings,
-# 		topo, schools, taz),
-# 
-# 	tar_target(land_use_file, write_land_use(land_use, file.path("data_activitysim",
-# 				"land_use.csv")), format = "file")
-# )
- 
-# # build_network <- tar_plan(
-# # 	tar_target(matsim_lib, get_matsim_lib("lib/payson_generator-0.0.1-SNAPSHOT.jar")),
-# # 	tar_target(link_file, "inputs/wfrc_links.dbf", format = "file"),
-# # 	tar_target(node_file, "inputs/wfrc_nodes.dbf", format = "file"),
-# # 	tar_target(network, read_wfrcmag(node_file, link_file, 32612)),
-# # 	tar_target(write_net, write_linknodes(network, "data/wfrc_network"), format = "file")
-# # 	# I don't believe matsim_net is necessary since we're writing the pbf directly.
-# # 	# Maybe we should do that here instead?
-# # 	# TODO
-# # 	#tar_target(matsim_net, make_matsim_network(network, "data/wfrc_network/highways_network.xml"), format = "file"),
-# # )
-
 # build_skims <- tar_plan(
 # 	# The omx files with which we begin this process are converted from MTX files
 # 	# output from the WFRC model. Those files are stored on BOX, and can be converted
@@ -174,12 +140,6 @@ populationsim_setup <- tar_plan(
 # 
 # 	run_asim = run_activitysim("data_activitysim", activitysim_configs, activitysim_outputs, asim_setup,
 # 	land_use_file, gtfs, skims_file, config_tour_mc, config_trip_mc, tour_freq)
-# )
-
-# build_beam_inputs <- tar_plan(
-# 	tar_target(beam_lu, build_beam_lu(land_use), format = "file"),
-# 	tar_target(beam_centroids, build_beam_centroids(land_use, network), format = "file"),
-# 	tar_target(gtfs, get_gtfs("reference", dirs), format = "file")
 # )
 
 # Run all targets
