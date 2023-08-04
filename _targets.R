@@ -32,7 +32,7 @@ scenarios <- tar_plan(
   
   base2019_popsim = setup_popsim(
     se_taz = "data/taz_se/taz_se_2019_all.csv",
-    out_dir_data = "data/taz_se/data/2019",
+    out_dir_data = "populationsim/data/2019",
     meta, tract_controls, seed, crosswalk
     ),
   
@@ -74,7 +74,7 @@ populationsim_setup <- tar_plan(
 	#not connected to the network, such as Utah Lake.
 	#A file listing TAZs to exclude may also be provided. If so, a TAZ will be
 	#excluded either if it is listed or if it is marked `EMPTY` (or both).
-	tar_target(taz_geo, "reference/WFRC_TAZ.geojson", format = "file"), ###########
+	tar_target(taz_geo, "data/WFRC_TAZ.geojson", format = "file"), ###########
 	#list of excluded TAZs (Utah Lake, etc.):
 	# tar_target(ivt0, "reference/IVT0_tazs.csv", format = "file"), ##########
 	taz = get_taz(taz_geo, tr),
@@ -99,8 +99,8 @@ populationsim_setup <- tar_plan(
 
 
 	# Seed
-	tar_target(hh_seed_file, "reference/psam_h49.csv.zip", format = "file"),
-	tar_target(pp_seed_file, "reference/psam_p49.csv.zip", format = "file"),
+	tar_target(hh_seed_file, "data/psam_h49.csv.zip", format = "file"),
+	tar_target(pp_seed_file, "data/psam_p49.csv.zip", format = "file"),
 	seed = make_seed(hh_seed_file, pp_seed_file, crosswalk)
 
 )
