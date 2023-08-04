@@ -31,21 +31,6 @@ setup_popsim <- function(se_taz, out_dir_data, meta, tract_controls, seed, cross
 }
 
 
-# write_taz_map <- function(taz) {
-#   mapfile <- "inputs/skims/skim_taz_map.csv"
-#   
-#   m <- tibble(
-#     wfrc_taz = 1:2881
-#   ) %>%
-#     left_join(
-#       taz %>% st_set_geometry(NULL) %>% select(TAZ, asim_taz),
-#       by = c("wfrc_taz" = "TAZ")) 
-#   
-#   write_csv(m, mapfile)
-#   return(mapfile)
-# }
-
-
 #' make meta information
 #' 
 #' @param tract_controls
