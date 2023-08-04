@@ -94,28 +94,32 @@ get_taz <- function(taz_geo, tr, ivt0 = NULL){
   
   # after removing these TAZ, we have some TAZs left
   final_taz <- tigris_taz %>% 
-    arrange(TAZ) %>%
-    mutate(
-      asim_taz = row_number(),
-      .after = TAZ
-    )
+    arrange(TAZ) %>% 
+    mutate(TAZ = as.character(TAZ))
+  # ActivitySim can now deal with non-sequential zone numbers, so I
+  # don't think we need this
+  # %>%
+  #   mutate(
+  #     asim_taz = row_number(),
+  #     .after = TAZ
+  #   )
     
   final_taz
 }
 
-write_taz_map <- function(taz) {
-  mapfile <- "inputs/skims/skim_taz_map.csv"
-  
-  m <- tibble(
-    wfrc_taz = 1:2881
-  ) %>%
-    left_join(
-      taz %>% st_set_geometry(NULL) %>% select(TAZ, asim_taz),
-      by = c("wfrc_taz" = "TAZ")) 
-  
-  write_csv(m, mapfile)
-  return(mapfile)
-}
+# write_taz_map <- function(taz) {
+#   mapfile <- "inputs/skims/skim_taz_map.csv"
+#   
+#   m <- tibble(
+#     wfrc_taz = 1:2881
+#   ) %>%
+#     left_join(
+#       taz %>% st_set_geometry(NULL) %>% select(TAZ, asim_taz),
+#       by = c("wfrc_taz" = "TAZ")) 
+#   
+#   write_csv(m, mapfile)
+#   return(mapfile)
+# }
 
 #' Get taz / puma/ tract crosswalk
 #' 
