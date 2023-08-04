@@ -655,7 +655,7 @@ make_land_use <- function(se_file, popsim_out_dir, taz_geometry, land_use_dir = 
     )
 }
 
-setup_asim <- function(se_file, popsim_out_dir, asim_out_dir_data, taz_geometry){
+setup_asim <- function(se_file, popsim_out_dir, asim_out_dir_data, taz_geometry, skims_dir){
   
   if(!dir.exists(asim_out_dir_data)) dir.create(asim_out_dir_data, recursive = TRUE)
   
