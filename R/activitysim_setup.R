@@ -592,7 +592,7 @@ mysample <- function(sf, size){
 
 
 
-make_land_use <- function(se_file, popsim_out_dir, taz_geometry, land_use_dir = "data/land_use"){
+make_land_use <- function(se_file, popsim_out_dir, taz_geometry, land_use_dir = "data/land_use", out_dir){
   read_csv(se_file) %>%
     inner_join(taz_geometry, by = c("zone_id" = "TAZ")) %>%
     mutate(zone_id = as.character(zone_id)) %>%
@@ -655,6 +655,13 @@ make_land_use <- function(se_file, popsim_out_dir, taz_geometry, land_use_dir = 
     )
 }
 
-setup_asim <- function(se_file, popsim_out_dir, taz_geometry){
+setup_asim <- function(se_file, popsim_out_dir, asim_out_dir_data, taz_geometry){
+  
+  if(!dir.exists(asim_out_dir_data)) dir.create(asim_out_dir_data, recursive = TRUE)
+  
   land_use <- make_land_use(se_file, popsim_out_dir, taz_geometry) 
+  land_use %>% 
+    mutate(geometry = st_as_text(geometry)) %>% 
+    write_csv(file.path(asim_out_dir_data, "land_use.csv"))
+  
 }

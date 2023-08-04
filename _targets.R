@@ -47,6 +47,7 @@ scenarios <- tar_plan(
   
   base2019_asim = setup_asim(
     se_file = "data/taz_se/taz_se_2019_all.csv",
+    asim_out_dir_data = "activitysim/data/base_2019",
     popsim_out_dir = "populationsim/output/2019",
     taz_geometry = taz,
     skims_dir = "skims/dir")
@@ -104,27 +105,27 @@ populationsim_setup <- tar_plan(
 
 )
 
-build_land_use_dataset <- tar_plan(
-	# se = read_sedata(se_wfrc, se_boxelder),
-
-	# tar_target(urbanfile, "data/land_use/urbanization.csv", format = "file"),
-	# tar_target(buildfile, "data/land_use/buildings.csv", format = "file"),
-	# tar_target(parcelsfile, "data/land_use/parcels.csv", format = "file"),
-	# tar_target(topofile, "data/land_use/topography.csv", format = "file"),
-	# tar_target(schoolfile, "data/land_use/schools.csv", format = "file"),
-
-	perdata = read_perdata("output_popsim", popsim_success),
-	hhdata = read_hhdata("output_popsim", popsim_success),
-	# urbanization = read_urbanization(urbanfile),
-	# buildings = make_buildings(buildfile, parcelsfile),
-	# schools = make_schools(schoolfile),
-	# topo = make_topo(topofile),
-	land_use = make_land_use(se, perdata, hhdata, urbanization, buildings,
-		topo, schools, taz),
-
-	tar_target(land_use_file, write_land_use(land_use, file.path("data_activitysim",
-				"land_use.csv")), format = "file")
-)
+# build_land_use_dataset <- tar_plan(
+# 	# se = read_sedata(se_wfrc, se_boxelder),
+# 
+# 	# tar_target(urbanfile, "data/land_use/urbanization.csv", format = "file"),
+# 	# tar_target(buildfile, "data/land_use/buildings.csv", format = "file"),
+# 	# tar_target(parcelsfile, "data/land_use/parcels.csv", format = "file"),
+# 	# tar_target(topofile, "data/land_use/topography.csv", format = "file"),
+# 	# tar_target(schoolfile, "data/land_use/schools.csv", format = "file"),
+# 
+# 	perdata = read_perdata("output_popsim", popsim_success),
+# 	hhdata = read_hhdata("output_popsim", popsim_success),
+# 	# urbanization = read_urbanization(urbanfile),
+# 	# buildings = make_buildings(buildfile, parcelsfile),
+# 	# schools = make_schools(schoolfile),
+# 	# topo = make_topo(topofile),
+# 	land_use = make_land_use(se, perdata, hhdata, urbanization, buildings,
+# 		topo, schools, taz),
+# 
+# 	tar_target(land_use_file, write_land_use(land_use, file.path("data_activitysim",
+# 				"land_use.csv")), format = "file")
+# )
  
 # # build_network <- tar_plan(
 # # 	tar_target(matsim_lib, get_matsim_lib("lib/payson_generator-0.0.1-SNAPSHOT.jar")),
