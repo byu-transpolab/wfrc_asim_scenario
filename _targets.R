@@ -1,10 +1,8 @@
 library(targets)
 library(tarchetypes)
 
-# r_scripts <- list.files("R", full.names = TRUE)
-# sapply(r_scripts, source)
-
-source("R/populationsim_setup.R")
+r_scripts <- list.files("R", full.names = TRUE)
+sapply(r_scripts, source)
 
 # debugging
 #tar_option_set(debug = "land_use")
