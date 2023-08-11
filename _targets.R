@@ -47,8 +47,8 @@ scenarios <- tar_plan(
     se_file = "data/taz_se/taz_se_2019_all.csv",
     asim_out_dir_data = "activitysim/data/base_2019",
     popsim_out_dir = "populationsim/output/2019",
-    taz_geometry = taz,
-    skims_dir = "skims/dir")
+    taz = taz,
+    skims_dir = "data/skims/BY_2019")
   #landuse_asim
   #transit_asim
   #wfh_asim

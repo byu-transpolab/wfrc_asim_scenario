@@ -25,10 +25,10 @@
 #  are presented as a csv file named land_use.csv.
 #'
 #'
-make_land_use <- function(se_file, popsim_out_dir, taz_geometry, land_use_dir = "data/land_use", out_dir){
+make_land_use <- function(se_file, popsim_out_dir, taz, land_use_dir = "data/land_use", out_dir){
   read_csv(se_file) %>%
     mutate(zone_id = as.character(zone_id)) %>%
-    inner_join(taz_geometry, by = c("zone_id" = "TAZ")) %>%
+    inner_join(taz, by = c("zone_id" = "TAZ")) %>%
     # TOTHH gets updated values from the synthetic population
     select(-TOTHH) %>% 
     list(
