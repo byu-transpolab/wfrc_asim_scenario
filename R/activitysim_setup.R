@@ -11,6 +11,8 @@ setup_asim <- function(se_file, popsim_out_dir, asim_out_dir_data, taz, skims_di
     mutate(geometry = st_as_text(geometry)) %>% 
     write_csv(file.path(asim_out_dir_data, "land_use.csv"))
   
+  # build_skims(skims_dir, asim_out_dir_data)
+  
 }
 
 

@@ -1,66 +1,55 @@
 #' Prepare skims file
 #' 
 #' 
-prepare_skims <- function(ok_skims_file, pk_skims_file, manifest, skim_taz_map, skim_omx_dir, ...){
+build_skims <- function(skims_dir, out_dir){
+  
+  # download_skims(pk_path, ok_path)
+  
   skimsStatus <- system2(
-  command = "bash",
-  args = c("./sh/build_skims.sh", dirname(manifest), dirname(skim_taz_map), skim_omx_dir),
+    command = "python",
+    args = c("activitysim/build_omx.py", skims_dir, out_dir)
   )
   
   if(skimsStatus != 0){
     stop("\n\nBuilding the skims failed. Check console and/or log(s) for details.\n")
   }
   
-  return(paste0(skim_omx_dir, "/skims.omx"))
+  return(file.path(out_dir, "skims.omx"))
 }
 
-
-
-#' Get off-peak skims omx file from box
+#' Download big skims files from box
 #' 
+#' Can't do this right now since direct links are a premium feature on box.
+#' For now, download them manually.
 #' 
-get_ok_skims <- function(path){
+download_skims <- function(pk_path, ok_path){
   
-  
-  if(file.exists(path)){
-    message("Off-peak skim already downloaded")
-  } else {
-    tryCatch({
-      download.file("https://byu.box.com/shared/static/s4tkpcdtz367dbgiyu1q9jy5kxp44fcm.omx", destfile = path)
-    }, error = function(e){
-      file.remove(path)
-      stop("Could not download file")
-    }
-    )
-  }
-  
-  return(path)
-  
-}
-
-
-#' Get peak skims omx file from box
-#' 
-#' 
-get_pk_skims <- function(path){
-  
-  if(file.exists(path)){
+  if(file.exists(pk_path)){
     message("Peak skim already downloaded")
   } else {
     tryCatch({
-      download.file("https://byu.box.com/shared/static/j2jx524u6exlzcfjiyh6p0wgao1wunr8.omx", destfile = path)
+      download.file(
+        # "https://byu.box.com/shared/static/j2jx524u6exlzcfjiyh6p0wgao1wunr8.omx",
+        destfile = pk_path)
     }, error = function(e){
-      file.remove(path)
+      file.remove(pk_path)
       stop("Could not download file")
-    }
-    )
+    })
   }
   
-  return(path)
-  
-  
+  if(file.exists(ok_path)){
+    message("Off-peak skim already downloaded")
+  } else {
+    tryCatch({
+      download.file(
+        # "https://byu.box.com/s/ixa1s6bpp0hdxi327q2ybiva3pv3tacy",
+        destfile = ok_path)
+    }, error = function(e){
+      file.remove(ok_path)
+      stop("Could not download file")
+    })
+  }
 }
-
 
 
 # write_taz_map <- function(taz) {

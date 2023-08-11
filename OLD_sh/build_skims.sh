@@ -12,11 +12,10 @@ else
 	exit 1
 fi
 
-printf "Manifest path: $1\n"
-printf "Data path: $2\n"
-printf "Skims omx output path: $3\n"
+printf "Data path: $1\n"
+printf "Skims omx output path: $2\n"
 
 conda activate ASIM_DEV
 conda info
 
-python py/build_omx.py "$1" "$2" "$3" || exit 1
+python py/build_omx.py "$1" "$2" || exit 1
