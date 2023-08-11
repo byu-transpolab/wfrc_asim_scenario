@@ -15,7 +15,7 @@ tar_option_set(packages = c("tidyverse", "sf", "tigris", "tidycensus"))
 #
 # This targets script runs setup steps for PopulationSim and ActivitySim,
 # which are then run from a command line. Mostly this includes getting the
-# population control data and travel skims to be in the correct format.
+# population control and land use data to be in the correct format.
 # Below is a list of scenarios as targets. Run individual setups with
 # `tar_make(names = c(<target names>))`. Running `tar_make()` with no 
 # arguments will run setup for all scenarios.
@@ -23,8 +23,7 @@ tar_option_set(packages = c("tidyverse", "sf", "tigris", "tidycensus"))
 #
 # NOTE: Crucially, the ActivitySim setup steps won't work until after the
 # relevant PopulationSim scenario is run. If you try to run an ActivitySim
-# setup target otherwise, it will throw an error, but the other scenarios
-# *should* still run.
+# setup target otherwise, it will throw an error.
 
 scenarios <- tar_plan(
   
@@ -40,6 +39,7 @@ scenarios <- tar_plan(
     meta, tract_controls, seed, crosswalk
   ),
   
+  # To make all popsim scenarios
   popsim = list(base2019_popsim, landuse_popsim),
   
   
@@ -47,12 +47,29 @@ scenarios <- tar_plan(
     se_file = "data/taz_se/taz_se_2019_all.csv",
     asim_out_dir_data = "activitysim/data/base_2019",
     popsim_out_dir = "populationsim/output/2019",
-    taz = taz)
-  #landuse_asim
-  #transit_asim
-  #wfh_asim
+    taz = taz),
   
-  #asim = list(base2019_asim, landuse_asim, transit_asim, wfh_asim)
+  landuse_asim = setup_asim(
+    se_file = "data/taz_se/taz_se_new_landuse_all.csv",
+    asim_out_dir_data = "activitysim/data/landuse",
+    popsim_out_dir = "populationsim/output/new_landuse",
+    taz = taz
+  ),
+  
+  transit_asim = setup_asim(
+    se_file = "data/taz_se/taz_se_2019_all.csv",
+    asim_out_dir_data = "activitysim/data/transit",
+    popsim_out_dir = "populationsim/output/2019",
+    taz = taz
+  ),
+  
+  wfh_asim = setup_asim(
+    se_file = "data/taz_se/taz_se_2019_all.csv",
+    asim_out_dir_data = "activitysim/data/wfh",
+    popsim_out_dir = "populationsim/output/2019",
+    taz = taz),
+  
+  asim = list(base2019_asim, landuse_asim, transit_asim, wfh_asim)
   
 )
 
