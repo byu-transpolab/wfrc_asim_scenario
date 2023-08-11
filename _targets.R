@@ -8,7 +8,7 @@ sapply(r_scripts, source)
 #tar_option_set(debug = "land_use")
 
 # Set target-specific options such as packages.
-tar_option_set(packages = c("tidyverse", "sf", "tigris", "tidycensus", "xml2"))
+tar_option_set(packages = c("tidyverse", "sf", "tigris", "tidycensus"))
 
 
 # Targets list
@@ -67,6 +67,7 @@ populationsim_setup <- tar_plan(
 	tr = get_tracts(st_fips, puma_tract, crs = 26912), #crs should match `taz_geo`
 
 	# Taz geometry
+	### The following paraghaph is no longer true; no zones get removed ###
 	#The TAZ geojson can have a field `EMPTY` with TRUE/FALSE values. If `EMPTY`
 	#is `TRUE`, then the TAZ will be excluded. This is useful for TAZs that are
 	#not connected to the network, such as Utah Lake.

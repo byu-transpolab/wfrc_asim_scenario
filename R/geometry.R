@@ -48,18 +48,19 @@ get_taz <- function(taz_geo, tr, ivt0 = NULL){
   # that are external to the region.
   taz <- st_read(taz_geo)
   
-  if ("EMPTY" %in% colnames(taz)){
-    taz <- taz %>% 
-      filter(!EMPTY)
-  }
-  if (!is.null(ivt0)){
-    exclude <- read_lines(ivt0)
-    taz <- taz %>% 
-      filter(!TAZID %in% exclude)
-  }
-  
+  ### We are no longer removing empty TAZs since activitysim can handle them ###
+  # if ("EMPTY" %in% colnames(taz)){
+  #   taz <- taz %>% 
+  #     filter(!EMPTY)
+  # }
+  # if (!is.null(ivt0)){
+  #   exclude <- read_lines(ivt0)
+  #   taz <- taz %>% 
+  #     filter(!TAZID %in% exclude)
+  # }
+
   clean_taz <-
-    taz %>% 
+    taz %>%
     transmute(
       TAZ = TAZID,
       ACRES,
