@@ -1,2 +1,4 @@
 skm_auto_Ok.mtx.omx
 skm_auto_Pk.mtx.omx
+#in case the zip file is left in the directory
+*.zip

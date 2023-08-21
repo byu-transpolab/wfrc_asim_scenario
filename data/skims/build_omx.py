@@ -46,11 +46,10 @@ def omx_getMatrix(omx_file_name, omx_key):
   return data
 
 
-def build_omx(source_data_dir, dest_data_dir):
+def build_omx(source_data_dir, dest_file_name):
 
   manifest_file_name = os.path.join(source_data_dir, 'skim_manifest.csv')
   # taz_map_name = os.path.join(source_data_dir, "skim_taz_map.csv")
-  dest_file_name = os.path.join(dest_data_dir, 'skims.omx')
   
   print("Manifest file: ", manifest_file_name)
   # print("Taz map: ", taz_map_name)
