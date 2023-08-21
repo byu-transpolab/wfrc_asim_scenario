@@ -1,12 +1,12 @@
 #' Set up and write out input data files for PopulationSim
 #' 
-setup_popsim <- function(se_taz, out_dir_data, meta, tract_controls, seed, crosswalk){
+setup_popsim <- function(se_taz, popsim_data_dir, meta, tract_controls, seed, crosswalk){
   
-  if(!dir.exists(out_dir_data)) dir.create(out_dir_data, recursive = TRUE)
+  if(!dir.exists(popsim_data_dir)) dir.create(popsim_data_dir, recursive = TRUE)
   # Make popsim output dir
   dir_output <-
-    str_replace(out_dir_data, "^populationsim/data/", "populationsim/output/")
-  if((!dir_output == out_dir_data) && !dir.exists(dir_output)){
+    str_replace(popsim_data_dir, "^populationsim/data/", "populationsim/output/")
+  if((!dir_output == popsim_data_dir) && !dir.exists(dir_output)){
     dir.create(dir_output, recursive = TRUE)
   }
   
@@ -17,18 +17,18 @@ setup_popsim <- function(se_taz, out_dir_data, meta, tract_controls, seed, cross
   
   # Write files
   # Controls
-  write_csv(meta, file.path(out_dir_data, "control_totals_meta.csv"))
-  write_csv(tract_controls, file.path(out_dir_data, "control_totals_tract.csv"))
-  write_csv(taz_control, file.path(out_dir_data, "control_totals_taz.csv"))
+  write_csv(meta, file.path(popsim_data_dir, "control_totals_meta.csv"))
+  write_csv(tract_controls, file.path(popsim_data_dir, "control_totals_tract.csv"))
+  write_csv(taz_control, file.path(popsim_data_dir, "control_totals_taz.csv"))
   
   # Seed
-  write_csv(seed$households, file.path(out_dir_data, "seed_households.csv"))
-  write_csv(seed$persons, file.path(out_dir_data, "seed_persons.csv"))
+  write_csv(seed$households, file.path(popsim_data_dir, "seed_households.csv"))
+  write_csv(seed$persons, file.path(popsim_data_dir, "seed_persons.csv"))
   
   # Crosswalk
-  write_csv(crosswalk, file.path(out_dir_data, "geo_cross_walk.csv"))
+  write_csv(crosswalk, file.path(popsim_data_dir, "geo_cross_walk.csv"))
   
-  out_dir_data
+  popsim_data_dir
   
 }
 

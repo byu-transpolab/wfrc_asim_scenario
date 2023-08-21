@@ -2,20 +2,20 @@
 #'
 #'
 #'
-setup_asim <- function(se_file, popsim_out_dir, asim_out_dir_data, taz, skims_file){
+setup_asim <- function(se_file, popsim_out_dir, asim_data_dir, taz, skims_file){
   
-  if(!dir.exists(asim_out_dir_data)) dir.create(asim_out_dir_data, recursive = TRUE)
+  if(!dir.exists(asim_data_dir)) dir.create(asim_data_dir, recursive = TRUE)
   
   dir_output <-
-    str_replace(asim_out_dir_data, "^activitysim/data/", "activitysim/output/")
-  if((!dir_output == asim_out_dir_data) && !dir.exists(dir_output)){
+    str_replace(asim_data_dir, "^activitysim/data/", "activitysim/output/")
+  if((!dir_output == asim_data_dir) && !dir.exists(dir_output)){
     dir.create(dir_output, recursive = TRUE)
   }
   
-  land_use <- make_land_use(se_file, popsim_out_dir, taz, out_dir = asim_out_dir_data) 
+  land_use <- make_land_use(se_file, popsim_out_dir, taz, out_dir = asim_data_dir) 
   land_use %>% 
     mutate(geometry = st_as_text(geometry)) %>% 
-    write_csv(file.path(asim_out_dir_data, "land_use.csv"))
+    write_csv(file.path(asim_data_dir, "land_use.csv"))
   
   # build_skims(skims_dir, asim_out_dir_data)
   

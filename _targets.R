@@ -29,13 +29,13 @@ scenarios <- tar_plan(
   
   base2019_popsim = setup_popsim(
     se_taz = "data/taz_se/taz_se_2019_all.csv",
-    out_dir_data = "populationsim/data/2019",
+    popsim_data_dir = "populationsim/data/2019",
     meta, tract_controls, seed, crosswalk
   ),
   
   landuse_popsim = setup_popsim(
     se_taz = "data/taz_se/taz_se_new_landuse_all.csv",
-    out_dir_data = "populationsim/data/new_landuse",
+    popsim_data_dir = "populationsim/data/new_landuse",
     meta, tract_controls, seed, crosswalk
   ),
   
@@ -45,28 +45,28 @@ scenarios <- tar_plan(
   
   base2019_asim = setup_asim(
     se_file = "data/taz_se/taz_se_2019_all.csv",
-    asim_out_dir_data = "activitysim/data/base_2019",
+    asim_data_dir = "activitysim/data/base_2019",
     popsim_out_dir = "populationsim/output/2019",
     taz = taz
   ),
   
   landuse_asim = setup_asim(
     se_file = "data/taz_se/taz_se_new_landuse_all.csv",
-    asim_out_dir_data = "activitysim/data/landuse",
+    asim_data_dir = "activitysim/data/landuse",
     popsim_out_dir = "populationsim/output/new_landuse",
     taz = taz
   ),
   
   transit_asim = setup_asim(
     se_file = "data/taz_se/taz_se_2019_all.csv",
-    asim_out_dir_data = "activitysim/data/transit",
+    asim_data_dir = "activitysim/data/transit",
     popsim_out_dir = "populationsim/output/2019",
     taz = taz
   ),
   
   wfh_asim = setup_asim(
     se_file = "data/taz_se/taz_se_2019_all.csv",
-    asim_out_dir_data = "activitysim/data/wfh",
+    asim_data_dir = "activitysim/data/wfh",
     popsim_out_dir = "populationsim/output/2019",
     taz = taz
   ),
