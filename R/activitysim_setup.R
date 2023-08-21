@@ -22,7 +22,7 @@ setup_asim <- function(se_file, popsim_out_dir, asim_data_dir, taz, skims_file){
 }
 
 
-make_asim_persons <- function(popsim_out_dir, taz){ 
+make_asim_persons <- function(popsim_out_dir){ 
   persons <- read_csv(
     file.path(popsim_out_dir, "synthetic_persons.csv"),
     col_types = list(PUMA = col_character(), TRACT = col_character()))
