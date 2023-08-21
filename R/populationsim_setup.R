@@ -6,7 +6,9 @@ setup_popsim <- function(se_taz, out_dir_data, meta, tract_controls, seed, cross
   # Make popsim output dir
   dir_output <-
     str_replace(out_dir_data, "^populationsim/data/", "populationsim/output/")
-  if(!dir_output == out_dir_data) dir.create(dir_output, recursive = TRUE)
+  if((!dir_output == out_dir_data) && !dir.exists(dir_output)){
+    dir.create(dir_output, recursive = TRUE)
+  }
   
   # Clean taz_control data
   # NOTE: The only TAZ-level control we get from WFRC is the number of

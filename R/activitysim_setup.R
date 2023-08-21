@@ -2,9 +2,15 @@
 #'
 #'
 #'
-setup_asim <- function(se_file, popsim_out_dir, asim_out_dir_data, taz, skims_dir){
+setup_asim <- function(se_file, popsim_out_dir, asim_out_dir_data, taz, skims_file){
   
   if(!dir.exists(asim_out_dir_data)) dir.create(asim_out_dir_data, recursive = TRUE)
+  
+  dir_output <-
+    str_replace(asim_out_dir_data, "^activitysim/data/", "activitysim/output/")
+  if((!dir_output == asim_out_dir_data) && !dir.exists(dir_output)){
+    dir.create(dir_output, recursive = TRUE)
+  }
   
   land_use <- make_land_use(se_file, popsim_out_dir, taz, out_dir = asim_out_dir_data) 
   land_use %>% 
@@ -16,32 +22,24 @@ setup_asim <- function(se_file, popsim_out_dir, asim_out_dir_data, taz, skims_di
 }
 
 
-#' Make persons file for activitysim
-#' 
-#' @param popsim_outputs
-#' 
-make_asim_persons <- function(popsim_outputs, popsim_success, taz) {
-  perfile <- file.path(popsim_outputs, "synthetic_persons.csv")
-  persons <- read_csv(perfile, col_types = list(
-    PUMA = col_character(),
-    TRACT = col_character()
-  )) 
+make_asim_persons <- function(popsim_out_dir, taz){ 
+  persons <- read_csv(
+    file.path(popsim_out_dir, "synthetic_persons.csv"),
+    col_types = list(PUMA = col_character(), TRACT = col_character()))
   
-  persons %>%
-    
+  asim_persons <- persons %>%
     # ActivitySim really wants to have sequential person numbers.
-    mutate(person_id = row_number(),
-           PNUM = per_num)%>%
-    rename(age = AGEP) %>%
+    mutate(person_id = row_number(), .before = 1) %>%
+    rename(age = AGEP, PNUM = per_num) %>%
     mutate(
       # create person type variables
-      # ['ptype', 'pemploy', 'pstudent', 'PNUM']
+      # ['ptype', 'pemploy', 'pstudent']
       ptype = case_when(
         age >= 18 & SCH == 1 & WKHP >= 30 ~ 1,
         age >= 18 & SCH == 1 & WKHP > 0 & WKHP < 30 ~ 2,
-        age >= 18 & age < 65 & SCH == 1 & ESR == 3 | age >= 18 & age < 65 & SCH == 1 & ESR == 6 ~ 4,
-        age >= 65 & SCH == 1 & ESR == 3 | age >= 65 & SCH == 1 & ESR == 6 ~ 5,
-        age >= 18 & SCH == 2 | age >= 18 & SCH == 3 ~ 3,
+        age >= 18 & SCH %in% c(2,3) ~ 3,
+        age >= 18 & age < 65 & SCH == 1 & ESR %in% c(3,6) ~ 4,
+        age >= 65 & SCH == 1 & ESR %in% c(3,6) ~ 5,
         age > 15 & age < 18 ~ 6,
         age > 5 & age < 16 ~ 7,
         age >= 0 & age < 6 ~ 8
@@ -49,21 +47,63 @@ make_asim_persons <- function(popsim_outputs, popsim_success, taz) {
       pstudent = case_when(
         SCHG >= 2 & SCHG <= 14 ~ 1,
         SCHG > 14 & SCHG <= 16 ~ 2,
-        T ~ 3
-      ),
+        T ~ 3),
       pemploy = case_when(
         WKHP >= 30 ~ 1,
         WKHP > 0 & WKHP < 30 ~ 2,
-        age >= 16 & ESR == 3 | age >= 16 & ESR == 6 ~ 3,
+        age >= 16 & ESR %in% c(3,6) ~ 3,
         T ~ 4
       ),
-    )  %>%
-    left_join(
-      taz %>% transmute(TAZ = TAZ, asim_taz) %>% st_set_geometry(NULL)
-    ) %>%
-    rename(zone_id = asim_taz, wfrc_taz = TAZ) %>%
-    relocate(zone_id, .before = wfrc_taz)
+    )
+  
+  asim_persons
 }
+
+
+# make_asim_persons <- function(popsim_outputs, taz) {
+#   perfile <- file.path(popsim_outputs, "synthetic_persons.csv")
+#   persons <- read_csv(perfile, col_types = list(
+#     PUMA = col_character(),
+#     TRACT = col_character()
+#   ))
+#   
+#   persons %>%
+#     
+#     # ActivitySim really wants to have sequential person numbers.
+#     mutate(person_id = row_number(),
+#            PNUM = per_num)%>%
+#     rename(age = AGEP) %>%
+#     mutate(
+#       # create person type variables
+#       # ['ptype', 'pemploy', 'pstudent', 'PNUM']
+#       ptype = case_when(
+#         age >= 18 & SCH == 1 & WKHP >= 30 ~ 1,
+#         age >= 18 & SCH == 1 & WKHP > 0 & WKHP < 30 ~ 2,
+#         age >= 18 & age < 65 & SCH == 1 & ESR == 3 | age >= 18 & age < 65 & SCH == 1 & ESR == 6 ~ 4,
+#         age >= 65 & SCH == 1 & ESR == 3 | age >= 65 & SCH == 1 & ESR == 6 ~ 5,
+#         age >= 18 & SCH == 2 | age >= 18 & SCH == 3 ~ 3,
+#         age > 15 & age < 18 ~ 6,
+#         age > 5 & age < 16 ~ 7,
+#         age >= 0 & age < 6 ~ 8
+#       ),
+#       pstudent = case_when(
+#         SCHG >= 2 & SCHG <= 14 ~ 1,
+#         SCHG > 14 & SCHG <= 16 ~ 2,
+#         T ~ 3
+#       ),
+#       pemploy = case_when(
+#         WKHP >= 30 ~ 1,
+#         WKHP > 0 & WKHP < 30 ~ 2,
+#         age >= 16 & ESR == 3 | age >= 16 & ESR == 6 ~ 3,
+#         T ~ 4
+#       ),
+#     )  %>%
+#     left_join(
+#       taz %>% transmute(TAZ = TAZ, asim_taz) %>% st_set_geometry(NULL)
+#     ) %>%
+#     rename(zone_id = asim_taz, wfrc_taz = TAZ) %>%
+#     relocate(zone_id, .before = wfrc_taz)
+# }
 
 
 
