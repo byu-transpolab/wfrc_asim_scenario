@@ -25,11 +25,11 @@ setup_asim <- function(se_file, popsim_out_dir, asim_data_dir, taz, skims_file){
     make_asim_persons(popsim_out_dir),
     file.path(asim_data_dir, "synthetic_persons.csv")
   )
-  
-  # write_csv(
-  #   make_asim_households(popsim_out_dir),
-  #   file.path(asim_data_dir, "synthetic_households.csv")
-  # )
+
+  write_csv(
+    make_asim_households(popsim_out_dir, "OLD_inputs/AddressCoordinates.csv", taz),
+    file.path(asim_data_dir, "synthetic_households.csv")
+  )
   
   asim_data_dir
 }
@@ -73,80 +73,30 @@ make_asim_persons <- function(popsim_out_dir){
 }
 
 
-# make_asim_persons <- function(popsim_outputs, taz) {
-#   perfile <- file.path(popsim_outputs, "synthetic_persons.csv")
-#   persons <- read_csv(perfile, col_types = list(
-#     PUMA = col_character(),
-#     TRACT = col_character()
-#   ))
-#   
-#   persons %>%
-#     
-#     # ActivitySim really wants to have sequential person numbers.
-#     mutate(person_id = row_number(),
-#            PNUM = per_num)%>%
-#     rename(age = AGEP) %>%
-#     mutate(
-#       # create person type variables
-#       # ['ptype', 'pemploy', 'pstudent', 'PNUM']
-#       ptype = case_when(
-#         age >= 18 & SCH == 1 & WKHP >= 30 ~ 1,
-#         age >= 18 & SCH == 1 & WKHP > 0 & WKHP < 30 ~ 2,
-#         age >= 18 & age < 65 & SCH == 1 & ESR == 3 | age >= 18 & age < 65 & SCH == 1 & ESR == 6 ~ 4,
-#         age >= 65 & SCH == 1 & ESR == 3 | age >= 65 & SCH == 1 & ESR == 6 ~ 5,
-#         age >= 18 & SCH == 2 | age >= 18 & SCH == 3 ~ 3,
-#         age > 15 & age < 18 ~ 6,
-#         age > 5 & age < 16 ~ 7,
-#         age >= 0 & age < 6 ~ 8
-#       ),
-#       pstudent = case_when(
-#         SCHG >= 2 & SCHG <= 14 ~ 1,
-#         SCHG > 14 & SCHG <= 16 ~ 2,
-#         T ~ 3
-#       ),
-#       pemploy = case_when(
-#         WKHP >= 30 ~ 1,
-#         WKHP > 0 & WKHP < 30 ~ 2,
-#         age >= 16 & ESR == 3 | age >= 16 & ESR == 6 ~ 3,
-#         T ~ 4
-#       ),
-#     )  %>%
-#     left_join(
-#       taz %>% transmute(TAZ = TAZ, asim_taz) %>% st_set_geometry(NULL)
-#     ) %>%
-#     rename(zone_id = asim_taz, wfrc_taz = TAZ) %>%
-#     relocate(zone_id, .before = wfrc_taz)
-# }
-
-
-
-
 #' Make Activitysim households file
 #' 
 #' @param popsim_outputs Folder with popsim outputs
 #' @param addressfile Path to address points file from WFRC
 #' @param taz SF boundary file for TAZ numbering
-#' @param popsim_success 
 #' 
 #' @details 
 #'  ActivitySim requires sequential zone numbering beginning at 1. We have 
 #'  kept the zone numbers from the WFRC zones up to this point, with the `taz`
 #'  input file holding a list of all WFRC / ASIM ids. It was necessary to keep the
 #'  WFRC id's up to this point because 
-make_asim_hholds <- function(popsim_outputs, addressfile, taz, popsim_success) {
-  hhfile <- file.path(popsim_outputs, "synthetic_households.csv")
-  
-  # households data table
-  hh <- read_csv(hhfile, col_types = list(
-    household_id = col_character(),
-    PUMA = col_character(),
-    TRACT = col_character(),
-    TAZ = col_character(),
-    NP = col_integer(),
-    WIF = col_integer(),
-    HHT = col_integer(),
-    VEH = col_integer()
-  )) %>%
+make_asim_households <- function(popsim_out_dir, addressfile, taz) {
+  hh <- read_csv(
+    file.path(popsim_out_dir, "synthetic_households.csv"),
+    col_types = list(
+      household_id = col_character(),
+      PUMA = col_character(),
+      TRACT = col_character(),
+      TAZ = col_character(),
+      NP = col_integer(),
+      WIF = col_integer(),
+      HHT = col_integer(),
+      VEH = col_integer()
+    )) %>%
     arrange(TAZ)
   
   # Addresses from WFRC 
@@ -214,37 +164,11 @@ make_asim_hholds <- function(popsim_outputs, addressfile, taz, popsim_success) {
   
   
   out_hh %>%
-    select(-ptTAZ)  %>%
-    left_join(
-      taz %>% transmute(TAZ = as.character(TAZ), asim_taz) %>% st_set_geometry(NULL)
-    ) %>%
-    rename(zone_id = asim_taz, wfrc_taz = TAZ) %>%
-    relocate(zone_id, .before = wfrc_taz)
+    select(-ptTAZ) %>% 
+    relocate(household_id, TAZ) %>% 
+    arrange(as.integer(household_id))
 }
 
-#' Write households and population to activitysim
-#' 
-#' @param popsim_outputs
-#' @param parcelsfile
-#' @param taz
-#' @param popsim_success Only necessary for targets
-#'
-#' @details This function does quite a bit of cleaning to move the populationsim
-#' outputs over and get them ready for activitysim.
-#' 
-move_population <- function(asim_persons, asim_hholds, activitysim_inputs){
-
-  asim_persons %>% 
-    write_csv(file.path(activitysim_inputs, "synthetic_persons.csv"))
-  
-  # read households file and append random coordinate =================
-  asim_hholds %>%
-    write_csv(file.path(activitysim_inputs, "synthetic_households.csv"))
-  
-  # return path to the households file
-  file.path(activitysim_inputs, "synthetic_households.csv")
-  
-}
 
 mysample <- function(sf, size){
   pts <- st_sample(sf, size)
