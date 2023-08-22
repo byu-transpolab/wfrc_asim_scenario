@@ -20,6 +20,18 @@ setup_asim <- function(se_file, popsim_out_dir, asim_data_dir, taz, skims_file){
   #Put skims in the right place and with the right name
   file.copy(skims_file, file.path(asim_data_dir, "skims.omx"))
   
+  #Make/write asim persons and households
+  write_csv(
+    make_asim_persons(popsim_out_dir),
+    file.path(asim_data_dir, "synthetic_persons.csv")
+  )
+  
+  # write_csv(
+  #   make_asim_households(popsim_out_dir),
+  #   file.path(asim_data_dir, "synthetic_households.csv")
+  # )
+  
+  asim_data_dir
 }
 
 

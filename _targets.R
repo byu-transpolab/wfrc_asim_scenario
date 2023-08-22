@@ -47,28 +47,32 @@ scenarios <- tar_plan(
     se_file = "data/taz_se/taz_se_2019_all.csv",
     asim_data_dir = "activitysim/data/base_2019",
     popsim_out_dir = "populationsim/output/2019",
-    taz = taz
+    taz = taz,
+    skims_file = "data/skims/_built/BY_2019.omx"
   ),
   
   landuse_asim = setup_asim(
     se_file = "data/taz_se/taz_se_new_landuse_all.csv",
     asim_data_dir = "activitysim/data/landuse",
     popsim_out_dir = "populationsim/output/new_landuse",
-    taz = taz
+    taz = taz,
+    skims_file = "data/skims/_built/BY_2019.omx"
   ),
   
   transit_asim = setup_asim(
     se_file = "data/taz_se/taz_se_2019_all.csv",
     asim_data_dir = "activitysim/data/transit",
     popsim_out_dir = "populationsim/output/2019",
-    taz = taz
+    taz = taz,
+    skims_file = "data/skims/_built/doubletrack.omx"
   ),
   
   wfh_asim = setup_asim(
     se_file = "data/taz_se/taz_se_2019_all.csv",
     asim_data_dir = "activitysim/data/wfh",
     popsim_out_dir = "populationsim/output/2019",
-    taz = taz
+    taz = taz,
+    skims_file = "data/skims/_built/BY_2019.omx"
   ),
   
   asim = list(base2019_asim, landuse_asim, transit_asim, wfh_asim)
