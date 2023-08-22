@@ -27,7 +27,7 @@ setup_asim <- function(se_file, popsim_out_dir, asim_data_dir, taz, skims_file){
   )
 
   write_csv(
-    make_asim_households(popsim_out_dir, "OLD_inputs/AddressCoordinates.csv", taz),
+    make_asim_households(popsim_out_dir, "data/AddressCoordinates.csv", taz),
     file.path(asim_data_dir, "synthetic_households.csv")
   )
   
