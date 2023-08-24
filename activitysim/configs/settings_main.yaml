@@ -223,34 +223,6 @@ multiprocess_steps:
   - name: mp_summarize
     begin: write_data_dictionary
 
-output_tables:
-  h5_store: False
-  action: include
-  prefix: final_
-  tables:
-    - checkpoints
-    - accessibility
-    - tablename: land_use
-      decode_columns:
-        zone_id: land_use.zone_id
-    - tablename: households
-      decode_columns:
-        home_zone_id: land_use.zone_id
-    - tablename: persons
-      decode_columns:
-        home_zone_id: land_use.zone_id
-        school_zone_id: nonnegative | land_use.zone_id
-        workplace_zone_id: nonnegative | land_use.zone_id
-    - tablename: tours
-      decode_columns:
-        origin: land_use.zone_id
-        destination: land_use.zone_id
-    - tablename: trips
-      decode_columns:
-        origin: land_use.zone_id
-        destination: land_use.zone_id
-    - joint_tour_participants
-    
 # output_tables:
 #   h5_store: False
 #   action: include
@@ -258,14 +230,42 @@ output_tables:
 #   tables:
 #     - checkpoints
 #     - accessibility
-#     - blocks
-#     - land_use
-#     - households
-#     - persons
-#     - tours
-#     - trips
+#     - tablename: land_use
+#       decode_columns:
+#         zone_id: land_use.zone_id
+#     - tablename: households
+#       decode_columns:
+#         home_zone_id: land_use.zone_id
+#     - tablename: persons
+#       decode_columns:
+#         home_zone_id: land_use.zone_id
+#         school_zone_id: nonnegative | land_use.zone_id
+#         workplace_zone_id: nonnegative | land_use.zone_id
+#     - tablename: tours
+#       decode_columns:
+#         origin: land_use.zone_id
+#         destination: land_use.zone_id
+#     - tablename: trips
+#       decode_columns:
+#         origin: land_use.zone_id
+#         destination: land_use.zone_id
 #     - joint_tour_participants
-#     - plans
+    
+output_tables:
+  h5_store: False
+  action: include
+  prefix: final_
+  tables:
+    - checkpoints
+    - accessibility
+    - blocks
+    - land_use
+    - households
+    - persons
+    - tours
+    - trips
+    - joint_tour_participants
+    # - plans
 
 # area_types less than this are considered urban
 urban_threshold: 4
