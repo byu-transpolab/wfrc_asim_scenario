@@ -17,7 +17,7 @@ input_table_list:
     filename: synthetic_households.csv
     index_col: household_id
     rename_columns:
-      zone_id: home_zone_id
+      TAZ: home_zone_id
       NP: hhsize
       WIF: num_workers
       VEH: auto_ownership
@@ -36,6 +36,7 @@ input_table_list:
     index_col: person_id
     rename_columns:
       SEX: sex
+      TAZ: zone_id
     keep_columns:
       - household_id
       - age
