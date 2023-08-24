@@ -12,8 +12,6 @@ Description,Target,Expression
 #,,
 ,i_tour_mode,df.tour_mode.map(I_MODE_MAP)
 ,tour_mode_is_SOV,i_tour_mode.isin(I_SOV_MODES)
-,tour_mode_is_SR2,i_tour_mode.isin(I_SR2_MODES)
-,tour_mode_is_SR3P,i_tour_mode.isin(I_SR3P_MODES)
 ,tour_mode_is_auto,i_tour_mode.isin(I_AUTO_MODES)
 ,tour_mode_is_walk,i_tour_mode == I_WALK_MODE
 ,tour_mode_is_bike,i_tour_mode == I_BIKE_MODE
@@ -81,10 +79,6 @@ dest terminal time not counted at home,_dest_terminal_time,"np.where(inbound & l
 ,drive_heavyrail_available_inbound,drive_transit_available & ~df.outbound & (i_tour_mode >= 17) & (odt_skims['WLK_HVY_DRV_KEYIVT']/TRANSIT_SCALE_FACTOR>0)
 ,drive_commuter_available_outbound,drive_transit_available & df.outbound & (i_tour_mode >= 18) & (odt_skims['DRV_COM_WLK_KEYIVT']/TRANSIT_SCALE_FACTOR>0)
 ,drive_commuter_available_inbound,drive_transit_available & ~df.outbound & (i_tour_mode >= 18) & (odt_skims['WLK_COM_DRV_KEYIVT']/TRANSIT_SCALE_FACTOR>0)
-,walk_ferry_available,walk_lrf_available & (odt_skims['WLK_LRF_WLK_FERRYIVT']/TRANSIT_SCALE_FACTOR>0)
-,_drive_ferry_available_outbound,drive_lrf_available_outbound & (odt_skims['DRV_LRF_WLK_FERRYIVT']/TRANSIT_SCALE_FACTOR>0)
-,_drive_ferry_available_inbound,drive_lrf_available_inbound & (odt_skims['WLK_LRF_DRV_FERRYIVT']/TRANSIT_SCALE_FACTOR>0)
-,drive_ferry_available,"np.where(df.outbound, _drive_ferry_available_outbound, _drive_ferry_available_inbound)"
 #,od_dist_walk,od_skims['DISTWALK']
 #,do_dist_walk,od_skims.reverse('DISTWALK')
 #,max_dist_walk,od_skims.max('DISTWALK')
@@ -92,4 +86,4 @@ dest terminal time not counted at home,_dest_terminal_time,"np.where(inbound & l
 #,dist_only,od_skims['DIST']
 ,distance,od_skims['DIST']
 ,distance_walk_od,od_skims['DISTWALK']
-,distance_bike_od,od_skims['DISTBIKE'] 
+,distance_bike_od,od_skims['DISTBIKE']

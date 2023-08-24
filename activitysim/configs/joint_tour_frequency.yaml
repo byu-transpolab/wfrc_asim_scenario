@@ -7,5 +7,5 @@ preprocessor:
   SPEC: joint_tour_frequency_annotate_households_preprocessor
   DF: households
   TABLES:
-    #- persons
+    - persons
     - accessibility
