@@ -1,6 +1,6 @@
 #!/bin/bash -l
 
-echo "Make sure conda is set up with the correct environments \n
+echo "Make sure conda is set up with the correct environments
 (popsim and asim)"
 
 conda activate popsim
