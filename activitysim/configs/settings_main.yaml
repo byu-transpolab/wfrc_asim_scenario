@@ -19,13 +19,13 @@ input_table_list:
     rename_columns:
       TAZ: home_zone_id
       NP: hhsize
-      WIF: num_workers
+      #WIF: num_workers
       VEH: auto_ownership
       HHINCADJ: income
     keep_columns:
       - hhsize
       - home_zone_id
-      - num_workers
+      #- num_workers
       - auto_ownership
       - HHT
       - income

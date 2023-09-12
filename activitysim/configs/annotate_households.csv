@@ -14,6 +14,7 @@ hh_value_of_time,hh_value_of_time,"rng.lognormal_for_df(df, mu=np.log(median_val
 #,,
 #num_workers was renamed in import,,
 #,num_workers,households.workers
+number of workers,num_workers,"_PERSON_COUNT('1 <= COW <= 8', persons, households)"
 number of non_workers,num_non_workers,households.hhsize - households.num_workers
 #,,
 #,,we assume that everyone 16 and older is a potential driver
