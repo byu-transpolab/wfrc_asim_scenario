@@ -59,7 +59,7 @@ make_seed <- function(hh_seed_file, pp_seed_file, crosswalk){
   pums_hh <- read_csv(
     hh_seed_file,  
     col_types = list(SERIALNO = col_character(), NP = col_integer(), 
-                     FINCP = col_number(), ADJINC = col_number(),
+                     HINCP = col_number(), ADJINC = col_number(),
                      WGTP = col_number())
   )
   
