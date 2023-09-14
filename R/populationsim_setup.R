@@ -73,7 +73,7 @@ make_seed <- function(hh_seed_file, pp_seed_file, crosswalk){
       # create unique hh_id field
       hh_id = 1:nrow(.),
       # compute adjusted numeric income
-      HHINCADJ = HINCP * ADJINC/10^6
+      HHINCADJ = ifelse(HINCP < 0, 0, HINCP * ADJINC/10^6)
     ) %>%
     # apply replacement function to key variables
     mutate_at(.vars = vars(NP, WIF, WGTP, HHINCADJ), \(x) ifelse(is.na(x), -8, x))
