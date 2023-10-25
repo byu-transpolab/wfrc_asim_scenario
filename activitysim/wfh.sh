@@ -4,7 +4,7 @@
 #SBATCH --ntasks=12   # number of processor cores (i.e. tasks)
 #SBATCH --nodes=1   # number of nodes
 #SBATCH --mem-per-cpu=30720M   # memory per CPU core
-#SBATCH -J "base_2019"   # job name
+#SBATCH -J "wfh"   # job name
 #SBATCH --mail-user=satchley@byu.edu   # email address
 # #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
@@ -20,4 +20,4 @@ mamba activate asim
 mamba info
 #mamba list
 
-activitysim run -c configs -d data/base_2019 -o output/base_2019
+activitysim run -c configs_wfh -c configs -d data/base_2019 -o output/wfh
