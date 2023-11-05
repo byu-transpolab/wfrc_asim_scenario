@@ -144,3 +144,28 @@ make_controls <- function(mytracts, ages, incs, sizes){
      left_join(sizes$works %>% spread(workcat, count), by = c("TRACT" = "GEOID")) %>%
      left_join(sizes$sizes %>% spread(sizecat, count), by = c("TRACT" = "GEOID"))
 }
+
+# `from` and `to` must be the same size unless `length(from)` is 1
+replace_tract_controls <- function(from, to, popsim_data_dir) {
+  tract_controls_file <- file.path(popsim_data_dir, "control_totals_tract.csv")
+  tract_controls_old <- read_csv(tract_controls_file)
+  
+  if(length(from) == 1) {
+    new_row <- tract_controls_old %>% 
+      filter(TRACT == from)
+    if(nrow(new_row) > 1) stop(paste("Duplicate tract controls for tract", from))
+    new_rows <- uncount(new_row, length(to)) %>% 
+      mutate(TRACT = to)
+    
+    tract_controls_new <- bind_rows(
+      tract_controls_old %>% 
+        filter(!TRACT %in% to),
+      new_rows
+    )
+    
+  }
+  ### TODO: write for case where `length(from)` > 1
+  
+  write_csv(tract_controls_new, tract_controls_file)
+  tract_controls_new
+}

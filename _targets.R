@@ -33,11 +33,16 @@ scenarios <- tar_plan(
     meta, tract_controls, seed, crosswalk
   ),
   
-  landuse_popsim = setup_popsim(
-    se_taz = "data/taz_se/taz_se_new_landuse_all.csv",
+  landuse_popsim_prelim = setup_popsim(
+    se_taz = "data/taz_se/taz_se_new_landuse_diff.csv",
     popsim_data_dir = "populationsim/data/new_landuse",
     meta, tract_controls, seed, crosswalk
   ),
+  
+  landuse_popsim = replace_tract_controls(
+    popsim_data_dir = "populationsim/data/new_landuse",
+    from = c(49035114000),
+    to = c(49035112818)),
   
   # To make all popsim scenarios
   popsim = list(base2019_popsim, landuse_popsim),
