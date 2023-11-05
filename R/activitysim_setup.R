@@ -2,7 +2,7 @@
 #'
 #'
 #'
-setup_asim <- function(se_file, popsim_out_dir, asim_data_dir, taz, skims_file){
+setup_asim <- function(se_file, popsim_out_dir, asim_data_dir, taz, skims_file, ...){
   
   if(!dir.exists(asim_data_dir)) dir.create(asim_data_dir, recursive = TRUE)
   
@@ -180,4 +180,16 @@ mysample <- function(sf, size){
     
 }
 
-
+bind_population <- function(base_dir, diff_dir, out_dir = diff_dir) {
+  base_hh <- read_csv(file.path(base_dir, "synthetic_households.csv"))
+  base_per <- read_csv(file.path(base_dir, "synthetic_persons.csv"))
+  
+  diff_hh <- read_csv(file.path(diff_dir, "synthetic_households.csv"))
+  diff_per <- read_csv(file.path(diff_dir, "synthetic_persons.csv"))
+  
+  ##### Needs to fix column in perfile for hhid
+  hh <- bind_rows(base_hh, diff_hh) %>% 
+    mutate(household_id = 1:nrow(.))
+  per <- bind_rows(base_per, diff_per) %>% 
+    mutate(household_id = 1:nrow(.))
+}

@@ -137,7 +137,7 @@ get_income_controls <- function(acsvars, mycounties){
 #' 
 #' @details  When all of the controls have been gathered, we can put them into one large table.
 #'
-make_controls <- function(mytracts, ages, incs, sizes){
+make_controls <- function(mytracts, ages, incs, sizes, ...){
   tibble(TRACT = mytracts) %>%
      left_join(ages  %>% spread(agecat,  count), by = c("TRACT" = "GEOID")) %>%
      left_join(incs  %>% spread(inccat,  count), by = c("TRACT" = "GEOID")) %>%

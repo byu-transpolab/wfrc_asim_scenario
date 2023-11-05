@@ -42,7 +42,8 @@ scenarios <- tar_plan(
   landuse_popsim = replace_tract_controls(
     popsim_data_dir = "populationsim/data/new_landuse",
     from = c(49035114000),
-    to = c(49035112818)),
+    to = c(49035112818),
+    landuse_popsim_prelim),
   
   # To make all popsim scenarios
   popsim = list(base2019_popsim, landuse_popsim),
@@ -56,12 +57,18 @@ scenarios <- tar_plan(
     skims_file = "data/skims/_built/BY_2019.omx"
   ),
   
+  landuse_asim_prelim = bind_population(
+    base_dir = "populationsim/output/2019",
+    diff_dir = "populationsim/output/new_landuse"
+  ),
+    
   landuse_asim = setup_asim(
     se_file = "data/taz_se/taz_se_new_landuse_all.csv",
     asim_data_dir = "activitysim/data/landuse",
     popsim_out_dir = "populationsim/output/new_landuse",
     taz = taz,
-    skims_file = "data/skims/_built/BY_2019.omx"
+    skims_file = "data/skims/_built/BY_2019.omx",
+    landuse_asim_prelim
   ),
   
   transit_asim = setup_asim(
