@@ -181,15 +181,59 @@ mysample <- function(sf, size){
 }
 
 bind_population <- function(base_dir, diff_dir, out_dir = diff_dir) {
-  base_hh <- read_csv(file.path(base_dir, "synthetic_households.csv"))
+  base_hh <- read_csv(file.path(base_dir, "synthetic_households.csv")) %>% 
+    arrange(household_id)
   base_per <- read_csv(file.path(base_dir, "synthetic_persons.csv"))
   
-  diff_hh <- read_csv(file.path(diff_dir, "synthetic_households.csv"))
-  diff_per <- read_csv(file.path(diff_dir, "synthetic_persons.csv"))
+  ### Don't do this because the new population will overwrite the diff
+  ### Do it manually
+  # if(file.exists(file.path(diff_dir, "synthetic_persons.csv"))) file.rename(
+  #   file.path(diff_dir, "synthetic_persons.csv"),
+  #   file.path(diff_dir, "synthetic_persons_diff.csv"))
+  # if(file.exists(file.path(diff_dir, "synthetic_households.csv"))) file.rename(
+  #   file.path(diff_dir, "synthetic_households.csv"),
+  #   file.path(diff_dir, "synthetic_households_diff.csv"))
   
-  ##### Needs to fix column in perfile for hhid
-  hh <- bind_rows(base_hh, diff_hh) %>% 
-    mutate(household_id = 1:nrow(.))
-  per <- bind_rows(base_per, diff_per) %>% 
-    mutate(household_id = 1:nrow(.))
+  # The files will need to be renamed manually (for now) to avoid accidental overwriting
+  diff_hh <- read_csv(file.path(diff_dir, "synthetic_households_diff.csv")) %>% 
+    arrange(household_id)
+  diff_per <- read_csv(file.path(diff_dir, "synthetic_persons_diff.csv"))
+  
+  hh_bound <- bind_rows(base = base_hh, diff = diff_hh, .id = "source") %>%
+    mutate(new_household_id = 1:nrow(.))
+  
+  #Check in case base hh_ids aren't sequential
+  #### TODO: add handling of non-sequential IDs
+  if(any(
+    filter(hh_bound, source == "base")$new_household_id
+    != filter(hh_bound, source == "base")$household_id
+    )) stop("Misarranged household IDs in combined file")
+  
+  #translation table from "diff" hh_ids to unique ones
+  hh_trans <- hh_bound %>% 
+    filter(household_id != new_household_id) %>% 
+    select(household_id, new_household_id) %>% 
+    mutate(source = "diff")
+  
+  per_bound <- bind_rows(base = base_per, diff = diff_per, .id = "source") %>% 
+    left_join(hh_trans, join_by(source, household_id)) %>% 
+    mutate(new_household_id = case_when(
+      is.na(new_household_id) ~ household_id,
+      TRUE ~ new_household_id
+    ))
+  
+  
+  hh <- hh_bound %>% 
+    select(-c(source, household_id)) %>% 
+    rename(household_id = new_household_id) %>% 
+    relocate(household_id)
+    
+  per <- per_bound %>% 
+    select(-c(source, household_id)) %>% 
+    rename(household_id = new_household_id) %>% 
+    relocate(household_id, .before = per_num)
+  
+  write_csv(hh, file.path(out_dir, "synthetic_households.csv"))
+  write_csv(per, file.path(out_dir, "synthetic_persons.csv"))
+  
 }
