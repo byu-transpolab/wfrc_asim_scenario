@@ -4,15 +4,17 @@
 #install.packages('sf')
 
 package_list <- list(
-	"targets",
-	"tarchetypes",
+#	"targets",
+#	"tarchetypes",
 	"stringr",
-	"tidyverse",
+	"broom",
+	"tidyr",
+#	"tidyverse",
 	"sf",
 	"tigris",
 	"tidycensus"
 	)
 
 for(package in package_list) {
-	require(package, character.only = TRUE) || install.packages(pkgs = packagei, quiet = TRUE)
+	require(package, character.only = TRUE) || install.packages(pkgs = package, quiet = TRUE)
 }
