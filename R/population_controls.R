@@ -146,7 +146,7 @@ make_controls <- function(mytracts, ages, incs, sizes, ...){
 }
 
 # `from` and `to` must be the same size unless `length(from)` is 1
-replace_tract_controls <- function(from, to, popsim_data_dir) {
+replace_tract_controls <- function(from, to, popsim_data_dir, ...) {
   tract_controls_file <- file.path(popsim_data_dir, "control_totals_tract.csv")
   tract_controls_old <- read_csv(tract_controls_file)
   
