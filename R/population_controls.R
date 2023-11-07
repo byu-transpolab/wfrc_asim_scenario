@@ -36,7 +36,7 @@ get_sizework_controls <- function(acsvars, mycounties){
   works <- size_work %>%
     filter(grepl("work", label)) %>%
     mutate(
-      num_work = str_extract(label, "\\d+"),
+      num_work = as.integer(str_extract(label, "\\d+")),
       workcat = case_when(
         num_work == 1 ~ "HHWORK1",
         num_work == 2 ~ "HHWORK2",
@@ -49,7 +49,7 @@ get_sizework_controls <- function(acsvars, mycounties){
   sizes <- size_work %>%
     filter(!grepl("work", label)) %>%
     mutate(
-      num_size = str_extract(label, "\\d+"),
+      num_size = as.integer(str_extract(label, "\\d+")),
       sizecat = str_c("HHSIZE", num_size) 
     ) %>%
     group_by(GEOID, sizecat) %>% summarize(count = as.integer(sum(estimate)))
@@ -113,7 +113,7 @@ get_income_controls <- function(acsvars, mycounties){
     select(GEOID, income, estimate)  %>%
     # regroup income categories
     mutate(
-      numinc  = stringr::str_extract(income, "\\d+"),
+      numinc  = as.numeric(stringr::str_extract(income, "\\d+")),
       inccat = case_when(
         numinc <  25 ~ "HHINC1",
         numinc <  50 ~ "HHINC2",
