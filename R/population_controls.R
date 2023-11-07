@@ -115,10 +115,10 @@ get_income_controls <- function(acsvars, mycounties){
     mutate(
       numinc  = stringr::str_extract(income, "\\d+"),
       inccat = case_when(
-        numinc <  15 ~ "HHINC1",
-        numinc <  30 ~ "HHINC2",
-        numinc <  60 ~ "HHINC3",
-        numinc >= 60 ~ "HHINC4",
+        numinc <  25 ~ "HHINC1",
+        numinc <  50 ~ "HHINC2",
+        numinc <  100 ~ "HHINC3",
+        numinc >= 100 ~ "HHINC4",
         TRUE ~ as.character(NA)
       )
     ) %>%
