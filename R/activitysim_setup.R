@@ -70,7 +70,10 @@ make_asim_persons <- function(popsim_out_dir){
       ),
     )
   
-  asim_persons
+  asim_persons %>%
+    mutate(
+      across(!where(is.character), \(x) replace_na(x,0))
+    )
 }
 
 
@@ -167,7 +170,10 @@ make_asim_households <- function(popsim_out_dir, addressfile, taz) {
   out_hh %>%
     select(-ptTAZ) %>% 
     relocate(household_id, TAZ) %>% 
-    arrange(as.integer(household_id))
+    arrange(as.integer(household_id)) %>%
+    mutate(
+      across(!where(is.character), \(x) replace_na(x,0))
+    )
 }
 
 
