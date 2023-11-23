@@ -85,7 +85,7 @@ input_table_list:
 # number of households to simulate
 #households_sample_size:  100000
 # simulate all households
-households_sample_size: 1000
+households_sample_size: 100
 
 # set false to disable variability check in simple_simulate and interaction_simulate
 check_for_variability: False
@@ -107,11 +107,6 @@ log_alt_losers: False
 # alternate dir to read/write cache (defaults to output_dir)
 # used for skim cache, tvpb, and chunk_log caches
 #cache_dir: data/cache
-
-read_skim_cache: True
-write_skim_cache: True
-skim_cache:
-  enabled: True
 
 ##############
 #
