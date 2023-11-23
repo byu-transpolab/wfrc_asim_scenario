@@ -175,7 +175,7 @@ models:
   - initialize_landuse
   - initialize_households
   - compute_accessibility
-    #  - work_from_home
+  - work_from_home
 
   - school_location
   - workplace_location
