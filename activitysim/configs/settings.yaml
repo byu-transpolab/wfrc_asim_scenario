@@ -85,7 +85,7 @@ input_table_list:
 # number of households to simulate
 #households_sample_size:  100000
 # simulate all households
-households_sample_size: 100
+households_sample_size: 0
 
 # set false to disable variability check in simple_simulate and interaction_simulate
 check_for_variability: False
