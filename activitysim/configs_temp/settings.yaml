@@ -108,11 +108,6 @@ log_alt_losers: False
 # used for skim cache, tvpb, and chunk_log caches
 #cache_dir: data/cache
 
-read_skim_cache: True
-write_skim_cache: True
-skim_cache:
-  enabled: True
-
 ##############
 #
 # chunking
@@ -186,7 +181,7 @@ models:
   - workplace_location
   - auto_ownership_simulate
   - free_parking
-    #  - telecommute_frequency
+  - telecommute_frequency
   - cdap_simulate
   - mandatory_tour_frequency
   - mandatory_tour_scheduling
