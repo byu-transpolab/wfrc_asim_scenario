@@ -18,3 +18,4 @@ slurm*
 old_slurm_files/
 
 *.DS_store
+.~lock*
