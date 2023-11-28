@@ -158,7 +158,7 @@ trace_od:
 
 # to resume after last successful checkpoint, specify resume_after: _
 #resume_after: trip_destination
-resume_after:
+#resume_after: track_skim_usage
 
 checkpoints: True
 # if checkpoints is False, no intermediate checkpoints will be written before the end of run
@@ -255,16 +255,16 @@ output_tables:
   h5_store: False
   action: include
   prefix: final_
-  tables:
-    - checkpoints
-    - accessibility
-    - blocks
-    - land_use
-    - households
-    - persons
-    - tours
-    - trips
-    - joint_tour_participants
+  #tables:
+  # - checkpoints
+  # - accessibility
+  # - blocks
+  # - land_use
+  # - households
+  # - persons
+  # - tours
+  # - trips
+  # - joint_tour_participants
     # - plans
 
 # area_types less than this are considered urban
