@@ -68,6 +68,25 @@ make_asim_persons <- function(popsim_out_dir){
         age >= 16 & ESR %in% c(3,6) ~ 3,
         T ~ 4
       ),
+      pjobcat = case_when(
+        OCCP == 0 ~ "none",
+        OCCP < 2200 ~ "OFFI",
+        OCCP < 2600 ~ "GVED",
+        OCCP < 3000 ~ "OTHR",
+        OCCP < 3700 ~ "HLTH",
+        OCCP < 4000 ~ "GVED",
+        OCCP < 4200 ~ "FOOD",
+        OCCP < 4700 ~ "OTHR",
+        OCCP < 5000 ~ "RETL",
+        OCCP < 6000 ~ "GVED",
+        OCCP < 6200 ~ "AGRI",
+        OCCP < 6800 ~ "CONS",
+        OCCP < 7000 ~ "MING",
+        OCCP < 7700 ~ "OTHR",
+        OCCP < 9000 ~ "MANU",
+        OCCP < 10000 ~ "OTHR",
+        TRUE ~ "none"
+      )
     )
   
   asim_persons %>%

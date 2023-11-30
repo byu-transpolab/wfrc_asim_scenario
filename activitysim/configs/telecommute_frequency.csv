@@ -1,8 +1,15 @@
 Label,Description,Expression,No_Telecommute,1_day_week,2_3_days_week,4_days_week
-#util_Services,Services,@df.occup==52,0,coef_Services_1day,coef_Services_23day,coef_Services_4day
-#util_SalesOffice,SalesOffice,@df.occup==53,0,coef_SalesOffice_1day,coef_SalesOffice_23day,coef_SalesOffice_4day
-#util_ResourceConstruct,ResourceConstruct,@df.occup==54,0,coef_ResourceConstruct_1day,coef_ResourceConstruct_23day,coef_ResourceConstruct_4day
-#util_TransportMat,TransportMat,@df.occup==55,0,coef_TransportMat_1day,coef_TransportMat_23day,coef_TransportMat_4day
+util_RETL,Retail,@df.pjobcat == RETL,0,coefj_RETL_1day,coefj_RETL_23day,coefj_RETL_4day
+util_FOOD,Food,@df.pjobcat == FOOD,0,coefj_FOOD_1day,coefj_FOOD_23day,coefj_FOOD_4day
+util_MANU,Manufacturing,@df.pjobcat == MANU,0,coefj_MANU_1day,coefj_MANU_23day,coefj_MANU_4day
+#util_WSLE,??,@df.pjobcat == WSLE,0,coefj_WSLE_1day,coefj_WSLE_23day,coefj_WSLE_4day
+util_OFFI,Office,@df.pjobcat == OFFI,0,coefj_OFFI_1day,coefj_OFFI_23day,coefj_OFFI_4day
+util_GVED,Government and education,@df.pjobcat == GVED,0,coefj_GVED_1day,coefj_GVED_23day,coefj_GVED_4day
+util_HLTH,Health,@df.pjobcat == HLTH,0,coefj_HLTH_1day,coefj_HLTH_23day,coefj_HLTH_4day
+util_OTHR,other,@df.pjobcat == OTHR,0,coefj_OTHR_1day,coefj_OTHR_23day,coefj_OTHR_4day
+util_AGRI,Agriculture,@df.pjobcat == AGRI,0,coefj_AGRI_1day,coefj_AGRI_23day,coefj_AGRI_4day
+util_MING,Mining,@df.pjobcat == MING,0,coefj_MING_1day,coefj_MING_23day,coefj_MING_4day
+util_CONS,Construction,@df.pjobcat == CONS,0,coefj_CONS_1day,coefj_CONS_23day,coefj_CONS_4day
 util_HasChildren0to5,Has children 0 to 5 years old,@df.num_young_children > 0,0,coef_HasChildren0to5_1day,coef_HasChildren0to5_23day,coef_HasChildren0to5_4day
 util_HasChildren6to12,Has children 6 to 12 years old,@df.has_school_kid,0,coef_HasChildren6to12_1day,coef_HasChildren6to12_23day,coef_HasChildren6to12_4day
 util_OneAdultInHH,One adult in hh,@df.num_adults==1,0,coef_OneAdultInHH_1day,coef_OneAdultInHH_23day,coef_OneAdultInHH_4day
