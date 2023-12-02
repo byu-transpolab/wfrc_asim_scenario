@@ -1,10 +1,12 @@
 library(tidyverse)
 
-odir <- "activitysim/output"
-cdir <- "activitysim/calibrate_wfh_configs"
+odir <- "output"
+cdir <- "calibrate_wfh_configs"
+
+iter <- 0 # set later in script
 
 while(iter <= 15) {
-  wfh_targets <- read_csv("data/ControlTotal_WorkAtHome.csv") %>% 
+  wfh_targets <- read_csv("../data/ControlTotal_WorkAtHome.csv") %>% 
     filter(CO_FIPS == 1049) %>% 
     select(YEAR, contains("Tel"))
   wfh_targets_2019 <- wfh_targets %>% 
@@ -85,7 +87,14 @@ while(iter <= 15) {
   read_lines(file.path(cdir, "telecommute_frequency.yaml")) %>% 
     str_replace("COEFFICIENTS:.+", paste("COEFFICIENTS:", new_coeffs_file)) %>% 
     write_lines(file.path(cdir, "telecommute_frequency.yaml"))
+
+  out_dir <- file.path(odir, paste0("calibrate_wfh_", iter))  
+  mkdir(out_dir)
   
-  system2("./activitysim/calibrate_wfh.sh")
+  read_lines("calibrate_wfh.sh") %>% 
+    str_replace("-o output/.+", paste("-o", out_dir)) %>% 
+    write_lines("calibrate_wfh.sh")
+  
+  system2("./calibrate_wfh.sh")
   
 }
