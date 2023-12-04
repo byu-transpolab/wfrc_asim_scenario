@@ -1,0 +1,40 @@
+inherit_settings: True
+
+models:
+  - initialize_landuse
+  - initialize_households
+  - compute_accessibility
+  - work_from_home
+
+  - school_location
+  - workplace_location
+  - auto_ownership_simulate
+  - free_parking
+  - telecommute_frequency
+  - cdap_simulate
+
+  - write_data_dictionary
+  - write_tables
+  
+multiprocess_steps:
+  - name: mp_initialize
+    begin: initialize_landuse
+  - name: mp_households
+    begin: school_location
+    slice:
+      tables:
+        - households
+        - persons
+  - name: mp_summarize
+    begin: write_data_dictionary
+
+  
+output_tables:
+  h5_store: False
+  action: include
+  prefix: wfh_
+  tables:
+   - checkpoints
+   - households
+   - persons
+
