@@ -49,15 +49,15 @@ coef_calib_1_day_week_asc,-3.503,FALSE
 coef_calib_2_3_days_week_asc,-4.206,FALSE
 coef_calib_4_days_week_asc,-6.219,FALSE
 coefj_RETL_1day,0.312,FALSE
-coefj_FOOD_1day,-0.368,FALSE
+coefj_FOOD_1day,-0.369,FALSE
 coefj_MANU_1day,0.038,FALSE
 coefj_WSLE_1day,0,FALSE
-coefj_OFFI_1day,1.782,FALSE
+coefj_OFFI_1day,1.781,FALSE
 coefj_GVED_1day,-0.56,FALSE
 coefj_HLTH_1day,0.158,FALSE
 coefj_OTHR_1day,1.535,FALSE
-coefj_AGRI_1day,2.262,FALSE
-coefj_MING_1day,-2.03,FALSE
+coefj_AGRI_1day,2.264,FALSE
+coefj_MING_1day,-2.067,FALSE
 coefj_CONS_1day,0.816,FALSE
 coefj_RETL_23day,0.125,FALSE
 coefj_FOOD_23day,-0.148,FALSE
@@ -67,8 +67,8 @@ coefj_OFFI_23day,0.712,FALSE
 coefj_GVED_23day,-0.224,FALSE
 coefj_HLTH_23day,0.063,FALSE
 coefj_OTHR_23day,0.614,FALSE
-coefj_AGRI_23day,0.904,FALSE
-coefj_MING_23day,-0.81,FALSE
+coefj_AGRI_23day,0.905,FALSE
+coefj_MING_23day,-0.828,FALSE
 coefj_CONS_23day,0.326,FALSE
 coefj_RETL_4day,0.078,FALSE
 coefj_FOOD_4day,-0.092,FALSE
@@ -79,5 +79,5 @@ coefj_GVED_4day,-0.14,FALSE
 coefj_HLTH_4day,0.039,FALSE
 coefj_OTHR_4day,0.384,FALSE
 coefj_AGRI_4day,0.566,FALSE
-coefj_MING_4day,-0.511,FALSE
+coefj_MING_4day,-0.517,FALSE
 coefj_CONS_4day,0.204,FALSE

@@ -20,4 +20,4 @@ mamba activate asim
 mamba info
 #mamba list
 
-activitysim run -c calibrate_wfh_configs -c configs -d data/base_2019 -o output/calibrate_wfh
+activitysim run -c calibrate_wfh_configs -c configs -d data/base_2019 -o output/calibrate_wfh_16

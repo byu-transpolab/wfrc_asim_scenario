@@ -57,7 +57,7 @@ coefj_GVED_1day,-0.56,FALSE
 coefj_HLTH_1day,0.158,FALSE
 coefj_OTHR_1day,1.535,FALSE
 coefj_AGRI_1day,2.262,FALSE
-coefj_MING_1day,-2.03,FALSE
+coefj_MING_1day,-2.042,FALSE
 coefj_CONS_1day,0.816,FALSE
 coefj_RETL_23day,0.125,FALSE
 coefj_FOOD_23day,-0.148,FALSE
@@ -68,7 +68,7 @@ coefj_GVED_23day,-0.224,FALSE
 coefj_HLTH_23day,0.063,FALSE
 coefj_OTHR_23day,0.614,FALSE
 coefj_AGRI_23day,0.904,FALSE
-coefj_MING_23day,-0.81,FALSE
+coefj_MING_23day,-0.818,FALSE
 coefj_CONS_23day,0.326,FALSE
 coefj_RETL_4day,0.078,FALSE
 coefj_FOOD_4day,-0.092,FALSE

@@ -89,7 +89,7 @@ while(iter <= 15) {
     write_lines(file.path(cdir, "telecommute_frequency.yaml"))
 
   out_dir <- file.path(odir, paste0("calibrate_wfh_", iter))  
-  mkdir(out_dir)
+  dir.create(out_dir)
   
   read_lines("calibrate_wfh.sh") %>% 
     str_replace("-o output/.+", paste("-o", out_dir)) %>% 
