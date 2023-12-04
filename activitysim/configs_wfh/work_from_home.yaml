@@ -1,11 +1,23 @@
-WORK_FROM_HOME_ALT: 1
-# WORK_FROM_HOME_ITERATIONS: 1
-WORK_FROM_HOME_CHOOSER_FILTER: 1
-WORK_FROM_HOME_COEFFICIENT_CONSTANT: 0.3
-WORK_FROM_HOME_TARGET_PERCENT: 0.3
-WORK_FROM_HOME_TARGET_PERCENT_TOLERANCE: 0.01
+
 SPEC: work_from_home.csv
 COEFFICIENTS: work_from_home_coefficients.csv
-# LOGIT_TYPE: [NL, MNL]
-# if LOGIT_TYPE == NL
-# NESTS:
+
+#LOGIT_TYPE: NL
+LOGIT_TYPE: MNL
+
+WORK_FROM_HOME_ALT: 0 # MTC == 1
+
+# boolean column to filter choosers (True means keep)
+CHOOSER_FILTER_COLUMN_NAME: is_worker
+
+# iterative what-if analysis example
+# omit these settings to not iterate
+WORK_FROM_HOME_ITERATIONS: 5
+WORK_FROM_HOME_CHOOSER_FILTER: is_worker # MTC == 1
+WORK_FROM_HOME_TARGET_PERCENT: 0.023
+WORK_FROM_HOME_TARGET_PERCENT_TOLERANCE: 0.003
+WORK_FROM_HOME_COEFFICIENT_CONSTANT: coef_work_from_home_constant
+
+#preprocessor:
+    #SPEC: work_from_home_annotate_persons_preprocessor
+    #DF: persons
