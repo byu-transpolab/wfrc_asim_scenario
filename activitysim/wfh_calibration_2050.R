@@ -23,6 +23,9 @@ while(iter <= 15) {
     max()
   
   iter <- prev_iter + 1
+
+	paste("prev_iter:", prev_iter)
+	paste("iter:", iter)
   
   last_telecommute <- read_csv(
     file.path(odir, paste0("calibrate_wfh_", prev_iter), "wfh_persons.csv")
