@@ -174,10 +174,11 @@ checkpoints: True
 models:
   - initialize_landuse
   - initialize_households
+
   - compute_accessibility
-  - work_from_home
 
   - school_location
+  - work_from_home
   - workplace_location
   - auto_ownership_simulate
   - free_parking
@@ -214,6 +215,13 @@ models:
 multiprocess_steps:
   - name: mp_initialize
     begin: initialize_landuse
+  - name: mp_accessibility
+    begin: compute_accessibility
+    slice:
+      tables:
+        - accessibility
+      # don't slice any tables not explicitly listed above in slice.tables
+      exclude: True
   - name: mp_households
     begin: school_location
     slice:

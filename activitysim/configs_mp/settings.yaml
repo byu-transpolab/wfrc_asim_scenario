@@ -1,0 +1,33 @@
+
+inherit_settings: True
+
+# raise error if any sub-process fails without waiting for others to complete
+fail_fast: True
+
+
+# - ------------------------- no chunking due to sufficient RAM
+# chunk_training_mode: disabled
+
+# - ------------------------- dev config
+multiprocess: True
+strict: False
+use_shadow_pricing: False
+
+households_sample_size: 0
+chunk_size: 0
+num_processes: 12
+
+# - -------------------------
+
+# not recommended or supported for multiprocessing
+want_dest_choice_sample_tables: False
+
+#read_skim_cache: True
+#write_skim_cache: True
+
+# - tracing
+#trace_hh_id:
+#trace_od: [2,2]
+
+# to resume after last successful checkpoint, specify resume_after: _
+#resume_after: trip_purpose_and_destination
