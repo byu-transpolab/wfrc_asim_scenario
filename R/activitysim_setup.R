@@ -18,7 +18,7 @@ setup_asim <- function(se_file, popsim_out_dir, asim_data_dir, taz, skims_file, 
     write_csv(file.path(asim_data_dir, "land_use.csv"))
   
   #Put skims in the right place and with the right name
-  file.copy(skims_file, file.path(asim_data_dir, "skims.omx"))
+  file.copy(skims_file, file.path(asim_data_dir, "skims.omx"), overwrite = TRUE)
   
   #Make/write asim persons and households
   write_csv(
