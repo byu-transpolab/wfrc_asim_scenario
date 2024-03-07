@@ -64,7 +64,11 @@ while(iter <= 5) {
   
   iter <- prev_iter + 1
   
-  prev_trips_file <- read_csv(file.path(odir, paste("calibrate_mc", prev_iter, sep = "_"))) %>%
+  prev_trips_file <- read_csv(file.path(
+			odir,
+			paste("calibrate_mc", prev_iter, sep = "_"),
+			"final_trips.csv"))
+
     prev_trips <- prev_trips_file %>% 
     mutate(asim_mode = case_when(
       trip_mode == "SHARED2FREE" ~ "sr2",
