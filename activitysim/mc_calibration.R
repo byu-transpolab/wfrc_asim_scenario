@@ -53,7 +53,7 @@ asim_mode_translation <- read_csv("../data/asim_mode_translation.csv")
 
 mc_targets <- read_csv("../data/cube_mc_base_2019.csv")
 
-while(iter <= 5) {
+while(iter <= 8) {
   
   prev_iter <- list.files(cdir, recursive = FALSE) %>% 
     str_extract("\\d+_trip_mode_choice_coefficients.csv") %>% 
@@ -129,7 +129,9 @@ while(iter <= 5) {
     ) %>% 
     left_join(adjustments) %>% 
     mutate(adjust = replace_na(adjust, 0)) %>% 
-    mutate(value = value + adjust) %>% 
+    mutate(value = case_when(
+      constrain ~ value,
+      TRUE ~ value + adjust) %>% 
     select(coefficient_name, value, constrain)
   
   new_tour_coeffs_file <- paste(iter, "tour_mode_choice_coefficients.csv", sep = "_")
@@ -167,7 +169,9 @@ while(iter <= 5) {
       ) %>% 
     left_join(adjustments) %>% 
     mutate(adjust = replace_na(adjust, 0)) %>% 
-    mutate(value = value + adjust) %>% 
+    mutate(value = case_when(
+      constrain ~ value,
+      TRUE ~ value + adjust) %>% 
     select(coefficient_name, value, constrain)
   
   new_trip_coeffs_file <- paste(iter, "trip_mode_choice_coefficients.csv", sep = "_")
