@@ -1,7 +1,7 @@
 # trip_mode_choice.yaml
 
 SPEC: trip_mode_choice.csv
-COEFFICIENTS: 0_trip_mode_choice_coefficients.csv
+COEFFICIENTS: 6_trip_mode_choice_coefficients.csv
 COEFFICIENT_TEMPLATE: trip_mode_choice_coefficients_template.csv
 
 LOGIT_TYPE: NL

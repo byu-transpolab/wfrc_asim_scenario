@@ -20,4 +20,4 @@ mamba activate asim
 mamba info
 #mamba list
 
-activitysim run -c calibrate_mc_configs -c configs_mp -c configs -d data/base_2019 -o output/calibrate_mc_0
+activitysim run -c calibrate_mc_configs -c configs_mp -c configs -d data/base_2019 -o output/calibrate_mc_6
