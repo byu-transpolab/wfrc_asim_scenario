@@ -131,7 +131,7 @@ while(iter <= 8) {
     mutate(adjust = replace_na(adjust, 0)) %>% 
     mutate(value = case_when(
       constrain ~ value,
-      TRUE ~ value + adjust) %>% 
+      TRUE ~ value + adjust)) %>% 
     select(coefficient_name, value, constrain)
   
   new_tour_coeffs_file <- paste(iter, "tour_mode_choice_coefficients.csv", sep = "_")
@@ -171,7 +171,7 @@ while(iter <= 8) {
     mutate(adjust = replace_na(adjust, 0)) %>% 
     mutate(value = case_when(
       constrain ~ value,
-      TRUE ~ value + adjust) %>% 
+      TRUE ~ value + adjust)) %>% 
     select(coefficient_name, value, constrain)
   
   new_trip_coeffs_file <- paste(iter, "trip_mode_choice_coefficients.csv", sep = "_")
