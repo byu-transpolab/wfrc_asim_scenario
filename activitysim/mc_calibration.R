@@ -5,49 +5,39 @@ cdir <- "configs_mc_calibration"
 
 iter <- 0 # set later in script
 
-# get_cube_targets <- function(cube_omx, out_file) {
-#   library(omxr)
-#   
-#   cube <- cube_omx %>% 
-#     read_all_omx() 
-#   cube %>%
-#     mutate(
-#       DRIVEALONEFREE = DA,
-#       sr2 = SR2,
-#       sr3p = SR3p,
-#       local_bus = rowSums(across(c(contains("LCL"), contains("BRT")))),
-#       express_bus = rowSums(across(contains("EXP"))),
-#       commuter_rail = rowSums(across(contains("CRT"))),
-#       walk_transit = wTRN,
-#       drive_transit = dTRN,
-#       walk_light_rail = wLRT,
-#       drive_light_rail = dLRT,
-#       other_transit = transit -
-#         local_bus - express_bus - commuter_rail - walk_light_rail - drive_light_rail
-#     ) %>% 
-#     select(
-#       DRIVEALONEFREE, sr2, sr3p,
-#       bike, walk,
-#       walk_transit, drive_transit, other_transit,
-#       local_bus, express_bus,
-#       commuter_rail, walk_light_rail, drive_light_rail) %>%
-#     # pivot_longer(everything(), names_to = "mode", values_to = "cube_trips") %>% 
-#     # arrange(mode)
-#     # #mutate(other_transit = transit - sum(dBRT, dCOR, wBRT, wCOR, na.rm = TRUE)) %>%
-#     # mutate(
-#     #   other_transit = transit - dCOR - wCOR,
-#     #   dLOC = dLCL + dBRT, wLOC = wLCL + wBRT) %>%
-#     # select(
-#     #   #origin, destination,
-#     #   DA, SR2, SR3p,
-#     #   dCRT, dEXP, dLOC, dLRT,
-#     #   wCRT, wEXP, wLOC, wLRT,
-#     #   other_transit, bike, walk) %>% 
-#     colSums() %>% 
-#     magrittr::divide_by(100) %>% 
-#     enframe(name = "mode", value = "cube_trips") %>% 
-#     write_csv(out_file)
-# }
+get_cube_targets <- function(cube_omx, out_file) {
+  library(tidyverse)
+  library(omxr)
+
+  cube <- cube_omx %>%
+    read_all_omx()
+  shares <- cube %>%
+    select(
+      DA, SR2, SR3p, walk, bike,
+      contains("LCL"), contains("BRT"), contains("COR"),
+      contains("CRT"), contains("EXP"), contains("LRT")
+    ) %>% 
+    mutate(
+      drive_alone = DA,
+      sr2 = SR2,
+      sr3 = SR3p,
+      walk,
+      bike,
+      local_bus = rowSums(across(
+        c(contains("LCL"), contains("BRT"), contains("COR")))),
+      express_bus = rowSums(across(contains("EXP"))),
+      crt = rowSums(across(contains("CRT"))),
+      lrt = rowSums(across(contains("LRT"))),
+      .keep = "none"
+    ) %>%
+    colSums() %>%
+    magrittr::divide_by(100) %>%
+    enframe(name = "mode", value = "cube_trips") %>%
+    mutate(cube_share = cube_trips / sum(cube_trips))
+  
+  shares %>% 
+    write_csv(out_file)
+}
 
 asim_mode_translation <- read_csv("../data/asim_mode_translation.csv")
 
