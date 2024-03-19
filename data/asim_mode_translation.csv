@@ -1,6 +1,0 @@
-coef_mode,mode
-taxi,other_transit
-tnc_shared,other_transit
-tnc_single,other_transit
-heavy_rail,commuter_rail
-commuter_rail,commuter_rail

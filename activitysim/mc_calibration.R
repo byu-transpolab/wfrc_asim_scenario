@@ -5,102 +5,91 @@ cdir <- "configs_mc_calibration"
 
 iter <- 0 # set later in script
 
-get_cube_targets <- function(cube_omx, out_file) {
-  library(tidyverse)
-  library(omxr)
-
-  cube <- cube_omx %>%
-    read_all_omx()
-  shares <- cube %>%
-    select(
-      DA, SR2, SR3p, walk, bike,
-      contains("LCL"), contains("BRT"), contains("COR"),
-      contains("CRT"), contains("EXP"), contains("LRT")
-    ) %>% 
-    mutate(
-      drive_alone = DA,
-      sr2 = SR2,
-      sr3 = SR3p,
-      walk,
-      bike,
-      local_bus = rowSums(across(
-        c(contains("LCL"), contains("BRT"), contains("COR")))),
-      express_bus = rowSums(across(contains("EXP"))),
-      crt = rowSums(across(contains("CRT"))),
-      lrt = rowSums(across(contains("LRT"))),
-      .keep = "none"
-    ) %>%
-    colSums() %>%
-    magrittr::divide_by(100) %>%
-    enframe(name = "mode", value = "cube_trips") %>%
-    mutate(cube_share = cube_trips / sum(cube_trips))
-  
-  shares %>% 
-    write_csv(out_file)
-}
-
-asim_mode_translation <- read_csv("../data/asim_mode_translation.csv")
-
 mc_targets <- read_csv("../data/cube_mc_base_2019.csv")
 
-while(iter <= 8) {
+make_asim_purpose <- function(df) {
+  df %>%
+    group_by(tour_id) %>%
+    mutate(
+      #If a tour doesn't start at work, assume it starts at home
+      trip_purpose = replace(trip_purpose, 1, "home"),
+      home_based = case_when(
+        tour_purpose == "atwork" ~ FALSE,
+        trip_purpose == "home" ~ TRUE,
+        TRUE ~ FALSE
+      ),
+      purpose = case_when(
+        !home_based ~ "nhb",
+        tour_purpose == "work" ~ "hbw",
+        TRUE ~ "hbo"
+      ) %>%
+        factor(c("hbw", "hbo", "nhb"))
+    ) %>%
+    pull(purpose)
+}
+
+while(iter <= 5) {
   
   prev_iter <- list.files(cdir, recursive = FALSE) %>% 
     str_extract("\\d+_trip_mode_choice_coefficients.csv") %>% 
-    {.[!is.na(.)]} %>% 
     str_extract("\\d+") %>% 
     as.integer() %>% 
-    max()
+    max(na.rm = TRUE)
   
   iter <- prev_iter + 1
   
   prev_trips_file <- read_csv(file.path(
-			odir,
-			paste("calibrate_mc", prev_iter, sep = "_"),
-			"final_trips.csv"))
-
-    prev_trips <- prev_trips_file %>% 
-    mutate(asim_mode = case_when(
-      trip_mode == "SHARED2FREE" ~ "sr2",
-      trip_mode == "SHARED3FREE" ~ "sr3p",
-      trip_mode %in% c(
-        "WALK", "BIKE", "TNC_SINGLE", "TNC_SHARED", "TAXI"
-      ) ~ str_to_lower(trip_mode),
-      TRUE ~ trip_mode
-    )) %>% 
-    count(asim_mode, name = "asim_trips") %>% 
-      pivot_wider(names_from = asim_mode, values_from = asim_trips) %>% 
-      mutate(
-        walk_transit = rowSums(across(starts_with("WALK_"))),
-        drive_transit = rowSums(across(starts_with("DRIVE_"))),
-        local_bus = rowSums(across(ends_with("_LOC"))),
-        express_bus = rowSums(across(ends_with("_EXP"))),
-        # heavy_rail = rowSums(across(ends_with("_HVY"))),
-        commuter_rail = rowSums(across(c(ends_with("_COM"), ends_with("_HVY")))),
-        walk_light_rail = WALK_LRF,
-        drive_light_rail = DRIVE_LRF,
-        other_transit = rowSums(across(c(contains("taxi"), starts_with("tnc_")))),
-        .keep = "unused"
-      ) %>% 
-      pivot_longer(everything(), names_to = "mode", values_to = "asim_trips")
+    odir,
+    paste("calibrate_mc", prev_iter, sep = "_"),
+    "final_trips.csv"))
   
+  prev_trips_raw <- prev_trips_file %>% 
+    read_csv()
+  
+  prev_trips <- prev_trips_raw %>% 
+    mutate(
+      mode = case_when(
+        str_detect(trip_mode, "DRIVEALONE") ~ "drive_alone",
+        str_detect(trip_mode, "SHARED2") ~ "sr2",
+        str_detect(trip_mode, "SHARED3") ~ "sr3",
+        str_detect(trip_mode, "TNC") ~ "TNC",
+        str_detect(trip_mode, "TAXI") ~ "TNC",
+        str_detect(trip_mode, "LOC") ~ "local_bus",
+        str_detect(trip_mode, "EXP") ~ "express_bus",
+        str_detect(trip_mode, "COM|HVY") ~ "crt",
+        str_detect(trip_mode, "LRF") ~ "lrt",
+        trip_mode %in% c("WALK", "BIKE") ~ str_to_lower(trip_mode)),
+      purpose =  make_asim_purpose(
+        select(
+          .,
+          tour_id,
+          tour_purpose = primary_purpose,
+          trip_purpose = purpose)),
+      .keep = "none"
+    ) %>% 
+    count(purpose, mode, name = "asim_trips") %>% 
+    mutate(
+      asim_share = asim_trips/sum(asim_trips),
+      .by = purpose
+    )
+    
   adjustments <- prev_trips %>% 
-    full_join(mc_targets, join_by(mode)) %>% 
-    pivot_longer(c(asim_trips, cube_trips), names_to = "model", values_to = "trips") %>% 
-    pivot_wider(names_from = mode, values_from = trips) %>% 
-    mutate(light_rail = walk_light_rail + drive_light_rail) %>% 
-    pivot_longer(-model, names_to = "mode", values_to = "trips") %>% 
-    mutate(model = str_remove(model, "_trips"), .keep = "unused") %>% 
-    group_by(model) %>% 
-    mutate(share = trips/sum(trips)) %>% 
-    select(-trips) %>% 
-    pivot_wider(names_from = model, values_from = share, names_prefix = "share_") %>% 
-    mutate(adjust = log(share_cube/share_asim)) %>% 
-    select(mode, adjust) %>% 
-    filter(mode != "DRIVEALONEFREE") %>% 
-    full_join(asim_mode_translation) %>% 
-    mutate(coef_mode = if_else(is.na(coef_mode), mode, coef_mode)) %>% 
-    select(mode = coef_mode, adjust)
+    full_join(mc_targets, join_by(purpose, mode)) %>% 
+    # pivot_longer(c(asim_trips, cube_trips), names_to = "model", values_to = "trips") %>% 
+    # pivot_wider(names_from = mode, values_from = trips) %>% 
+    # mutate(light_rail = walk_light_rail + drive_light_rail) %>% 
+    # pivot_longer(-model, names_to = "mode", values_to = "trips") %>% 
+    # mutate(model = str_remove(model, "_trips"), .keep = "unused") %>% 
+    # group_by(model) %>% 
+    # mutate(share = trips/sum(trips)) %>% 
+    # select(-trips) %>% 
+    # pivot_wider(names_from = model, values_from = share, names_prefix = "share_") %>% 
+    mutate(adjust = log(wfrc_share/asim_share)) %>% 
+    select(purpose, mode, adjust) %>% 
+    filter(mode != "drive_alone") #%>% 
+    # full_join(asim_mode_translation) %>% 
+    # mutate(coef_mode = if_else(is.na(coef_mode), mode, coef_mode)) %>% 
+    # select(mode = coef_mode, adjust)
   
   
   prev_tour_coeffs <- file.path(
