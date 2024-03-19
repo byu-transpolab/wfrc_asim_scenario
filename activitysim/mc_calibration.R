@@ -3,9 +3,10 @@ library(tidyverse)
 odir <- "output"
 cdir <- "configs_mc_calibration"
 
-iter <- 0 # set later in script
+iters <- 5
+tolerance <- 0.05
 
-mc_targets <- read_csv("../data/cube_mc_base_2019.csv")
+mc_targets <- read_csv("../data/mc_targets.csv")
 
 make_asim_purpose <- function(df) {
   df %>%
@@ -34,6 +35,8 @@ asim_mode_translation <- function(mode) {
     c("heavy_rail", "commuter_rail") ~ "crt",
     "sr3p" ~ "sr3",
     c("walk_light_rail", "drive_light_rail", "light_rail") ~ "lrt",
+    c("taxi", "tnc_single", "tnc_shared", "rh") ~ "TNC",
+    NA ~ NA,
     .default = mode
   )
 }
@@ -43,14 +46,15 @@ asim_purpose_translation <- function(purpose) {
     purpose,
     "work" ~ "hbw",
     "atwork" ~ "nhb",
+    NA ~ NA,
     .default = "hbo"
   )
 }
 
-while(iter <= 5) {
+for(i in 1:iters) {
   
   prev_iter <- list.files(cdir, recursive = FALSE) %>% 
-    str_extract("\\d+_trip_mode_choice_coefficients.csv") %>% 
+    str_extract("^\\d+_trip_mode_choice_coefficients.csv") %>% 
     str_extract("\\d+") %>% 
     as.integer() %>% 
     max(na.rm = TRUE)
@@ -91,26 +95,26 @@ while(iter <= 5) {
       asim_share = asim_trips/sum(asim_trips),
       .by = purpose
     )
-    
+  
   adjustments <- prev_trips %>% 
     full_join(mc_targets, join_by(purpose, mode)) %>% 
-    # pivot_longer(c(asim_trips, cube_trips), names_to = "model", values_to = "trips") %>% 
-    # pivot_wider(names_from = mode, values_from = trips) %>% 
-    # mutate(light_rail = walk_light_rail + drive_light_rail) %>% 
-    # pivot_longer(-model, names_to = "mode", values_to = "trips") %>% 
-    # mutate(model = str_remove(model, "_trips"), .keep = "unused") %>% 
-    # group_by(model) %>% 
-    # mutate(share = trips/sum(trips)) %>% 
-    # select(-trips) %>% 
-    # pivot_wider(names_from = model, values_from = share, names_prefix = "share_") %>% 
-    mutate(adjust = log(wfrc_share/asim_share)) %>% 
-    select(purpose, mode, adjust) %>% 
-    filter(mode != "drive_alone") #%>% 
-    # full_join(asim_mode_translation) %>% 
-    # mutate(coef_mode = if_else(is.na(coef_mode), mode, coef_mode)) %>% 
-    # select(mode = coef_mode, adjust)
-  
-  
+    mutate(wfrc_share = if_else(
+      mode != "TNC",
+      wfrc_share,
+      case_match(
+        purpose,
+        "hbw" ~ 0.00015, #Made-up numbers
+        "hbo" ~ 0.0038,  #roughly based on Chris's thesis
+        "nhb" ~ 0.004    #and common sense
+      ))) %>% 
+    mutate(
+      error = 1 - asim_share/wfrc_share,
+      close_enough = abs(error) < tolerance,
+      adjust = log(wfrc_share/asim_share)) %>% 
+    select(purpose, mode, adjust, close_enough) %>% 
+    filter(mode != "drive_alone")
+
+
   prev_tour_coeffs <- file.path(
     cdir,
     paste(prev_iter, "tour_mode_choice_coefficients.csv", sep = "_")) %>% 
@@ -119,27 +123,30 @@ while(iter <= 5) {
   new_tour_coeffs <- prev_tour_coeffs %>% 
     mutate(
       mode = case_when(
-        !str_detect(coefficient_name, "ASC") ~ "",
+        !str_detect(coefficient_name, "ASC") ~ NA,
         TRUE ~ str_remove(coefficient_name, "_ASC.+") %>% 
           str_remove("^joint_") %>% 
           str_remove("_CBD")
       ),
       purpose = case_when(
-        str_detect(coefficient_name, "joint") ~ "",
-        !str_detect(coefficient_name, "ASC") ~ "",
+        str_detect(coefficient_name, "joint") ~ NA,
+        !str_detect(coefficient_name, "ASC") ~ NA,
         TRUE ~ str_remove(coefficient_name, ".+ASC_") %>% 
-        str_remove(".*auto_") %>% 
-        str_remove(".*sufficient_?") %>% 
-        str_remove(".*deficient_?")) %>% 
+          str_remove(".*auto_") %>% 
+          str_remove(".*sufficient_?") %>% 
+          str_remove(".*deficient_?")) %>% 
         str_remove("_.+")
     ) %>% 
     mutate(
       mode = asim_mode_translation(mode),
       purpose = asim_purpose_translation(purpose)) %>% 
-    print(n = Inf)
     left_join(adjustments, join_by(mode, purpose)) %>% 
-    mutate(adjust = replace_na(adjust, 0)) %>% 
-    mutate(value = case_when(
+    mutate(
+      adjust = replace_na(adjust, 0), 
+      across(c(close_enough, constrain), \(x) replace_na(x, FALSE))
+    ) %>% 
+    mutate(value2 = case_when(
+      close_enough ~ value,
       constrain ~ value,
       TRUE ~ value + adjust)) %>% 
     select(coefficient_name, value, constrain)
@@ -155,19 +162,21 @@ while(iter <= 5) {
     paste(prev_iter, "trip_mode_choice_coefficients.csv", sep = "_")) %>% 
     read_csv()
   
-  new_trip_coeffs <- prev_trip_coeffs %>% 
+  # new_trip_coeffs <- 
+  prev_trip_coeffs %>% 
     filter(!str_detect(coefficient_name, "#")) %>% 
+    mutate(constrain = as.logical(constrain)) %>% 
     mutate(
       value = as.numeric(value),
       mode = case_when(
-        !str_detect(coefficient_name, "ASC") ~ "",
+        !str_detect(coefficient_name, "ASC") ~ NA,
         TRUE ~ str_remove(coefficient_name, "^.+_ASC_") %>% 
           str_remove("_.+")
       ),
       purpose = case_when(
-        !str_detect(coefficient_name, "ASC") ~ "",
-        as.logical(constrain) ~ "",
-        # mode %in% c("rh") ~ "",
+        !str_detect(coefficient_name, "ASC") ~ NA,
+        # as.logical(constrain) ~ NA,
+        # mode %in% c("rh") ~ NA,
         TRUE ~ str_remove(coefficient_name, ".+ASC_.+?_")) %>% 
         str_remove(".+?_") %>% 
         str_remove("_.+")
@@ -188,9 +197,13 @@ while(iter <= 5) {
       mode = asim_mode_translation(mode),
       purpose = asim_purpose_translation(purpose)) %>% 
     left_join(adjustments, join_by(mode, purpose)) %>% 
-    mutate(adjust = replace_na(adjust, 0)) %>% 
-    mutate(value = case_when(
+    mutate(
+      adjust = replace_na(adjust, 0), 
+      across(c(close_enough, constrain), \(x) replace_na(x, FALSE))
+    ) %>% 
+    mutate(value2 = case_when(
       constrain ~ value,
+      close_enough ~ value,
       TRUE ~ value + adjust)) %>% 
     select(coefficient_name, value, constrain)
   
@@ -198,11 +211,11 @@ while(iter <= 5) {
   
   write_csv(new_trip_coeffs, file.path(
     cdir, new_trip_coeffs_file))
-
+  
   
   file.path(cdir, "tour_mode_choice.yaml") %>%
     read_lines() %>% 
-      str_replace("COEFFICIENTS:.+", paste("COEFFICIENTS:", new_tour_coeffs_file)) %>% 
+    str_replace("COEFFICIENTS:.+", paste("COEFFICIENTS:", new_tour_coeffs_file)) %>% 
     write_lines(file.path(cdir, "tour_mode_choice.yaml"))
   
   file.path(cdir, "trip_mode_choice.yaml") %>%
