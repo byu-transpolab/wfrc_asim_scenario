@@ -162,8 +162,7 @@ for(i in 1:iters) {
     paste(prev_iter, "trip_mode_choice_coefficients.csv", sep = "_")) %>% 
     read_csv()
   
-  # new_trip_coeffs <- 
-  prev_trip_coeffs %>% 
+  new_trip_coeffs <- prev_trip_coeffs %>% 
     filter(!str_detect(coefficient_name, "#")) %>% 
     mutate(constrain = as.logical(constrain)) %>% 
     mutate(
