@@ -61,10 +61,10 @@ for(i in 1:iters) {
   
   iter <- prev_iter + 1
   
-  prev_trips_file <- read_csv(file.path(
+  prev_trips_file <- file.path(
     odir,
     paste("calibrate_mc", prev_iter, sep = "_"),
-    "final_trips.csv"))
+    "final_trips.csv")
   
   prev_trips_raw <- prev_trips_file %>% 
     read_csv()
