@@ -28,6 +28,25 @@ make_asim_purpose <- function(df) {
     pull(purpose)
 }
 
+asim_mode_translation <- function(mode) {
+  case_match(
+    mode,
+    c("heavy_rail", "commuter_rail") ~ "crt",
+    "sr3p" ~ "sr3",
+    c("walk_light_rail", "drive_light_rail", "light_rail") ~ "lrt",
+    .default = mode
+  )
+}
+
+asim_purpose_translation <- function(purpose) {
+  case_match(
+    purpose,
+    "work" ~ "hbw",
+    "atwork" ~ "nhb",
+    .default = "hbo"
+  )
+}
+
 while(iter <= 5) {
   
   prev_iter <- list.files(cdir, recursive = FALSE) %>% 
@@ -104,9 +123,21 @@ while(iter <= 5) {
         TRUE ~ str_remove(coefficient_name, "_ASC.+") %>% 
           str_remove("^joint_") %>% 
           str_remove("_CBD")
-      )
+      ),
+      purpose = case_when(
+        str_detect(coefficient_name, "joint") ~ "",
+        !str_detect(coefficient_name, "ASC") ~ "",
+        TRUE ~ str_remove(coefficient_name, ".+ASC_") %>% 
+        str_remove(".*auto_") %>% 
+        str_remove(".*sufficient_?") %>% 
+        str_remove(".*deficient_?")) %>% 
+        str_remove("_.+")
     ) %>% 
-    left_join(adjustments) %>% 
+    mutate(
+      mode = asim_mode_translation(mode),
+      purpose = asim_purpose_translation(purpose)) %>% 
+    print(n = Inf)
+    left_join(adjustments, join_by(mode, purpose)) %>% 
     mutate(adjust = replace_na(adjust, 0)) %>% 
     mutate(value = case_when(
       constrain ~ value,
@@ -132,21 +163,31 @@ while(iter <= 5) {
         !str_detect(coefficient_name, "ASC") ~ "",
         TRUE ~ str_remove(coefficient_name, "^.+_ASC_") %>% 
           str_remove("_.+")
+      ),
+      purpose = case_when(
+        !str_detect(coefficient_name, "ASC") ~ "",
+        as.logical(constrain) ~ "",
+        # mode %in% c("rh") ~ "",
+        TRUE ~ str_remove(coefficient_name, ".+ASC_.+?_")) %>% 
+        str_remove(".+?_") %>% 
+        str_remove("_.+")
+    ) %>% 
+    mutate(
+      mode = case_match(
+        mode,
+        "rh" ~ "tnc_single",
+        "commuter" ~ "commuter_rail",
+        "express" ~ "express_bus",
+        "heavyrail" ~ "heavy_rail",
+        "lightrail" ~ "light_rail",
+        "tnc" ~ "tnc_single",
+        .default = mode
       )
     ) %>% 
-      mutate(
-        mode = case_match(
-          mode,
-          "rh" ~ "tnc_single",
-          "commuter" ~ "commuter_rail",
-          "express" ~ "express_bus",
-          "heavyrail" ~ "heavy_rail",
-          "lightrail" ~ "light_rail",
-          "tnc" ~ "tnc_single",
-          .default = mode
-        )
-      ) %>% 
-    left_join(adjustments) %>% 
+    mutate(
+      mode = asim_mode_translation(mode),
+      purpose = asim_purpose_translation(purpose)) %>% 
+    left_join(adjustments, join_by(mode, purpose)) %>% 
     mutate(adjust = replace_na(adjust, 0)) %>% 
     mutate(value = case_when(
       constrain ~ value,
