@@ -109,7 +109,7 @@ for(i in 1:iters) {
       ))) %>% 
     mutate(
       error = 1 - asim_share/wfrc_share,
-      close_enough = FALSE, #abs(error) < tolerance,
+      close_enough = abs(error) < tolerance,
       adjust = log(wfrc_share/asim_share)) %>% 
     select(purpose, mode, adjust, close_enough) %>% 
     filter(mode != "drive_alone")
