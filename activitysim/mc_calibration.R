@@ -149,7 +149,7 @@ for(i in 1:iters) {
       adjust = replace_na(adjust, 0), 
       across(c(close_enough, constrain), \(x) replace_na(x, FALSE))
     ) %>% 
-    mutate(value2 = case_when(
+    mutate(value = case_when(
       close_enough ~ value,
       constrain ~ value,
       TRUE ~ value + adjust)) %>% 
@@ -204,7 +204,7 @@ for(i in 1:iters) {
       adjust = replace_na(adjust, 0), 
       across(c(close_enough, constrain), \(x) replace_na(x, FALSE))
     ) %>% 
-    mutate(value2 = case_when(
+    mutate(value = case_when(
       constrain ~ value,
       close_enough ~ value,
       TRUE ~ value + adjust)) %>% 
