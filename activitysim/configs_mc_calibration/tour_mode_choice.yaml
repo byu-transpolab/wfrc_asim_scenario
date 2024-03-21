@@ -1,7 +1,7 @@
 # tour_mode_choice.yaml
 
 SPEC: tour_mode_choice.csv
-COEFFICIENTS: 5_tour_mode_choice_coefficients.csv
+COEFFICIENTS: 0_tour_mode_choice_coefficients.csv
 COEFFICIENT_TEMPLATE: tour_mode_choice_coefficients_template.csv
 
 LOGIT_TYPE: NL
