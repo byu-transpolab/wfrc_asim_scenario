@@ -4,8 +4,9 @@ library(magrittr)
 odir <- "output"
 cdir <- "configs_mc_calibration"
 
-iters <- 5
-tolerance <- 0.05
+iters <- 7
+tolerance_carpool <- 0.05
+tolerance_nonauto <- 0.03
 
 mc_targets <- read_csv("../data/mc_targets.csv")
 
@@ -109,8 +110,16 @@ for(i in 1:iters) {
         "nhb" ~ 0.004    #and common sense
       ))) %>% 
     mutate(
-      error = 1 - asim_share/wfrc_share,
-      close_enough = abs(error) < tolerance,
+      #pcterror = 1 - asim_share/wfrc_share,
+      #close_enough = abs(pcterror) < tolerance,
+      error = asim_share - wfrc_share,
+      close_enough = case_match(
+        mode,
+        c("sr2", "sr3") ~ abs(error) < tolerance_carpool,
+        c("local_bus", "express_bus", "crt", "lrt", "walk", "bike") ~ abs(error) < tolerance_nonauto,
+        c("TNC") ~ abs(error) < 0.001,
+        .default = FALSE
+      ),
       adjust = log(wfrc_share/asim_share)) %T>%
     write_csv(file.path(
       cdir,
@@ -122,9 +131,10 @@ for(i in 1:iters) {
   prev_tour_coeffs <- file.path(
     cdir,
     paste(prev_iter, "tour_mode_choice_coefficients.csv", sep = "_")) %>% 
-    read_csv()
+    read_csv() %>% 
+    mutate(constrain = as.logical(constrain))
   
-  new_tour_coeffs <- prev_tour_coeffs %>% 
+  new_tour_coeffs <- prev_tour_coeffs %>%
     mutate(
       mode = case_when(
         !str_detect(coefficient_name, "ASC") ~ NA,
@@ -164,11 +174,11 @@ for(i in 1:iters) {
   prev_trip_coeffs <- file.path(
     cdir,
     paste(prev_iter, "trip_mode_choice_coefficients.csv", sep = "_")) %>% 
-    read_csv()
+    read_csv() %>% 
+    mutate(constrain = as.logical(constrain))
   
   new_trip_coeffs <- prev_trip_coeffs %>% 
     filter(!str_detect(coefficient_name, "#")) %>% 
-    mutate(constrain = as.logical(constrain)) %>% 
     mutate(
       value = as.numeric(value),
       mode = case_when(
