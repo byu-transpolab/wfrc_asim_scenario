@@ -1,4 +1,5 @@
 library(tidyverse)
+library(magrittr)
 
 odir <- "output"
 cdir <- "configs_mc_calibration"
@@ -110,7 +111,10 @@ for(i in 1:iters) {
     mutate(
       error = 1 - asim_share/wfrc_share,
       close_enough = abs(error) < tolerance,
-      adjust = log(wfrc_share/asim_share)) %>% 
+      adjust = log(wfrc_share/asim_share)) %T>%
+    write_csv(file.path(
+      cdir,
+      paste(prev_iter, "adjustments.csv", sep = "_"))) %>% 
     select(purpose, mode, adjust, close_enough) %>% 
     filter(mode != "drive_alone")
 
@@ -162,8 +166,7 @@ for(i in 1:iters) {
     paste(prev_iter, "trip_mode_choice_coefficients.csv", sep = "_")) %>% 
     read_csv()
   
-  # new_trip_coeffs <- 
-  prev_trip_coeffs %>% 
+  new_trip_coeffs <- prev_trip_coeffs %>% 
     filter(!str_detect(coefficient_name, "#")) %>% 
     mutate(constrain = as.logical(constrain)) %>% 
     mutate(
