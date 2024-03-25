@@ -20,4 +20,4 @@ mamba activate asim
 mamba info
 #mamba list
 
-activitysim run -c configs -d data/landuse -o output/landuse
+activitysim run -c configs_mp -c configs -d data/landuse -o output/landuse

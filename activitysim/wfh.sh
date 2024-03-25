@@ -20,4 +20,4 @@ mamba activate asim
 mamba info
 #mamba list
 
-activitysim run -c configs_wfh -c configs -d data/wfh -o output/wfh
+activitysim run -c configs_wfh -c configs_mp -c configs -d data/wfh -o output/wfh
